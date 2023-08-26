@@ -1,0 +1,68 @@
+<resources>
+    <string name="app_name">SkaterTrade</string>
+    <string name="login">Login</string>
+    <string name="cadastro">Cadastro</string>
+    <string name="btn_cadastrar">Cadastrar</string>
+    <string name="btn_logar">Logar</string>
+    <string name="emailHint">E-mail</string>
+    <string name="senhaHint">Senha</string>
+    <string name="btn_cadastrar_anuncio">SALVAR ANÚNCIO</string>
+    <string name="valor">Valor</string>
+    <string name="titulo">Título</string>
+    <string name="regiao">REGIÃO</string>
+    <string name="categoria">CATEGORIA</string>
+    <string name="div">|</string>
+    <string name="telefone">Número do WhatsApp</string>
+    <string name="valor_hint">R$900,00</string>
+    <string name="t_tulo">Título</string>
+    <string name="descri_o">Descrição</string>
+    <string name="estado">RS</string>
+    <string name="menu_redefinir">Redefinir filtro</string>
+    <string name="menu_meus_anuncios">Meus Anúncios</string>
+    <string name="menu_sair">Sair</string>
+    <string name="menu_logar_cadastrar">Logar / Cadastrar</string>
+    <string name="conversar">Conversar no WhatsApp</string>
+
+    <string-array name="categorias">
+        <item>Roupas</item>
+        <item>Tênis</item>
+        <item>Boné</item>
+        <item>Truck</item>
+        <item>Rodas</item>
+        <item>Rolamentos</item>
+        <item>Shape</item>
+        <item>Acessórios</item>
+        <item>Outros</item>
+    </string-array>
+    <string-array name="estados">
+        <item>RS</item>
+        <item>SC</item>
+        <item>RJ</item>
+        <item>RN</item>
+        <item>RO</item>
+        <item>RR</item>
+        <item>AC</item>
+        <item>AL</item>
+        <item>AM</item>
+        <item>AP</item>
+        <item>BA</item>
+        <item>CE</item>
+        <item>DF</item>
+        <item>ES</item>
+        <item>GO</item>
+        <item>MA</item>
+        <item>MG</item>
+        <item>MS</item>
+        <item>MT</item>
+        <item>PA</item>
+        <item>PB</item>
+        <item>PE</item>
+        <item>PI</item>
+        <item>PR</item>
+        <item>SE</item>
+        <item>SP</item>
+        <item>TO</item>
+    </string-array>
+
+</resources>
+
