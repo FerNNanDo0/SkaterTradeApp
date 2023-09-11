@@ -17,10 +17,14 @@
         android:theme="@style/Theme.skateTrade"
         tools:targetApi="31">
         <activity
+            android:name=".activity.RedefinirSenhaActivity"
+            android:parentActivityName=".activity.AcessoActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.DetalhesProdutosActivity"
             android:exported="false"
             android:parentActivityName=".activity.ActivityMain"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.CadastrarAnunciosActivity"
             android:exported="false"

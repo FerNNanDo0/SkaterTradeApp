@@ -1,7 +1,5 @@
 package com.droid.app.olx.adapter;
 
-import static android.os.SystemClock.sleep;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +14,6 @@ import com.droid.app.olx.model.Anuncio;
 import com.squareup.picasso.Picasso;
 import java.util.List;
 public class AdapterAnuncios extends RecyclerView.Adapter<AdapterAnuncios.MyViewHolder> {
-
     List<Anuncio> listAnuncios;
     Context context;
     public AdapterAnuncios(List<Anuncio> listAnuncios, Context context) {
