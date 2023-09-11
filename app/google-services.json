@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:225965920340:android:5ef0c6449a065d676c9dc1",
+        "mobilesdk_app_id": "1:225965920340:android:a1571f9e6b69a3516c9dc1",
         "android_client_info": {
-          "package_name": "com.droid.app.olx"
+          "package_name": "com.droid.app.skater"
         }
       },
       "oauth_client": [
         {
-          "client_id": "225965920340-a0lg7dh550v30pj2p2q7t6933n5iaqb3.apps.googleusercontent.com",
+          "client_id": "225965920340-hm4f9hqc8n3mr41c73evfh162oa5ah6r.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.droid.app.olx",
+            "package_name": "com.droid.app.skater",
             "certificate_hash": "df5f13bad1e180f05baaefbf7d1ee2b9ef44ab9f"
           }
         },

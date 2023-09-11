@@ -1,4 +1,4 @@
-package com.droid.app.olx.adapter;
+package com.droid.app.skater.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,8 +9,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.droid.app.olx.R;
-import com.droid.app.olx.model.Anuncio;
+import com.droid.app.skater.R;
+import com.droid.app.skater.model.Anuncio;
 import com.squareup.picasso.Picasso;
 import java.util.List;
 public class AdapterAnuncios extends RecyclerView.Adapter<AdapterAnuncios.MyViewHolder> {

@@ -1,4 +1,4 @@
-package com.droid.app.olx.firebaseRefs;
+package com.droid.app.skater.firebaseRefs;
 
 import androidx.annotation.NonNull;
 

@@ -1,4 +1,4 @@
-package com.droid.app.olx.helper;
+package com.droid.app.skater.helper;
 
 import android.content.Context;
         import android.content.Intent;

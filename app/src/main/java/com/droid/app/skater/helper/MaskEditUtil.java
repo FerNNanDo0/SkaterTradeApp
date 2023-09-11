@@ -1,4 +1,4 @@
-package com.droid.app.olx.helper;
+package com.droid.app.skater.helper;
 
 import android.text.Editable;
 import android.text.TextWatcher;

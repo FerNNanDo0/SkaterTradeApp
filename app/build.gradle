@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.droid.app.olx'
+    namespace 'com.droid.app.skater'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.droid.app.olx"
+        applicationId "com.droid.app.skater"
         minSdk 24
         targetSdk 33
         versionCode 1

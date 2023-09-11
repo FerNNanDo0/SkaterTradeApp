@@ -1,4 +1,4 @@
-package com.droid.app.olx;
+package com.droid.app.skater;
 
 import org.junit.Test;
 

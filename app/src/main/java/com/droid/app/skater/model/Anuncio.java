@@ -1,15 +1,14 @@
-package com.droid.app.olx.model;
+package com.droid.app.skater.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import com.droid.app.olx.firebaseRefs.FirebaseRef;
+import com.droid.app.skater.firebaseRefs.FirebaseRef;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.Serializable;
 import java.util.List;
 public class Anuncio implements Parcelable {
     private String idAnuncio;
