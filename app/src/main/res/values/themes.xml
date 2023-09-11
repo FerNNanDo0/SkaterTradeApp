@@ -19,6 +19,13 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="botaoGoogle" parent="@style/Theme.AppCompat.Light">
+        <item name="colorControlHighlight">#FBFFFE</item>
+        <item name="android:textSize">17sp</item>
+        <item name="rippleColor">#BAE0E4</item>
+        <item name="android:radius">10dp</item>
+    </style>
+
     <style name="botaoPadrao" parent="@style/Theme.AppCompat.Light">
         <item name="colorControlHighlight">@color/purple_500</item>
         <item name="android:textSize">18sp</item>

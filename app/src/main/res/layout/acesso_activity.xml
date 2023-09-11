@@ -9,9 +9,11 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="200dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="16dp"
         android:elevation="6dp"
         android:src="@drawable/skate_is_life"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,7 +25,6 @@
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:layout_marginStart="45dp"
-        android:layout_marginTop="10dp"
         android:layout_marginEnd="45dp"
         android:background="@drawable/bg_edit_text"
         android:drawableEnd="@drawable/baseline_person_24"
@@ -46,7 +47,7 @@
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:layout_marginStart="45dp"
-        android:layout_marginTop="61dp"
+        android:layout_marginTop="52dp"
         android:layout_marginEnd="45dp"
         android:background="@drawable/bg_edit_text"
         android:drawableEnd="@drawable/baseline_email_24"
@@ -98,11 +99,24 @@
         app:layout_constraintTop_toBottomOf="@+id/editTextPassword"
         tools:visibility="visible" />
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:progressTint="#7400A5"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewRedefinir"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextPassword"
+        tools:visibility="visible" />
+
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="54dp"
+        android:layout_marginTop="53dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -150,9 +164,9 @@
         android:id="@+id/btnAcessar"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
+        android:layout_height="48dp"
         android:layout_marginStart="75dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="75dp"
         android:background="@drawable/bg_btn"
         android:drawableEnd="@drawable/as_small"
@@ -167,17 +181,23 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
         app:rippleColor="@color/rippleColorBtn" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/btnGoogle"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="75dp"
         android:layout_marginTop="5dp"
-        android:elevation="2dp"
-        android:progressTint="#7400A5"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="75dp"
+        android:background="@drawable/bg_btn_google"
+        android:elevation="1dp"
+        android:text="todo"
+        android:src="@drawable/fui_ic_googleg_color_24dp"
+        android:theme="@style/botaoGoogle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnAcessar"/>
+        app:layout_constraintTop_toBottomOf="@+id/btnAcessar"
+        app:rippleColor="@color/rippleColorBtn"
+        tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

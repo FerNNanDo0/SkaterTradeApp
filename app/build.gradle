@@ -47,6 +47,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.firebase:firebase-storage'
     implementation 'com.google.firebase:firebase-auth'
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
 
     // mask edit text para moedas
 //    implementation 'com.github.dkzwm:fet-core:0.2.1'

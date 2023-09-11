@@ -3,6 +3,8 @@ package com.droid.app.olx.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import com.droid.app.olx.firebaseRefs.FirebaseRef;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
@@ -28,7 +30,7 @@ public class Anuncio implements Parcelable {
         user = new User();
     }
 
-    protected Anuncio(Parcel in) {
+    protected Anuncio(@NonNull Parcel in) {
         idAnuncio = in.readString();
         titulo = in.readString();
         valor = in.readString();
@@ -40,7 +42,7 @@ public class Anuncio implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(idAnuncio);
         dest.writeString(titulo);
         dest.writeString(valor);
