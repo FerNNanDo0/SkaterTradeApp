@@ -1,4 +1,4 @@
-package com.droid.app.skater.helper;
+package com.droid.app.skaterTrader.helper;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;
@@ -39,6 +39,7 @@ public class Permissions {
             //solitar permissao
             ActivityCompat.requestPermissions( activity, neewPerssion, requestCode );
 
+            Informe.salvarCode("0", activity.getApplicationContext());
         }
         return true;
     }

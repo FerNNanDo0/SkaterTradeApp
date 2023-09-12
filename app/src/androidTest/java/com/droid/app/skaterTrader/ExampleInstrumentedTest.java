@@ -1,4 +1,4 @@
-package com.droid.app.skater;
+package com.droid.app.skaterTrader;
 
 import android.content.Context;
 

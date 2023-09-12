@@ -1,4 +1,4 @@
-package com.droid.app.skater.firebaseRefs;
+package com.droid.app.skaterTrader.firebaseRefs;
 
 import androidx.annotation.NonNull;
 

@@ -1,11 +1,11 @@
-package com.droid.app.skater.model;
+package com.droid.app.skaterTrader.model;
 
 import android.content.Context;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.droid.app.skater.firebaseRefs.FirebaseRef;
+import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;

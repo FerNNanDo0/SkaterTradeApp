@@ -1,42 +1,42 @@
 {
   "project_info": {
-    "project_number": "225965920340",
-    "firebase_url": "https://projeto-olx-25b94-default-rtdb.firebaseio.com",
-    "project_id": "projeto-olx-25b94",
-    "storage_bucket": "projeto-olx-25b94.appspot.com"
+    "project_number": "198156392671",
+    "firebase_url": "https://skatertrader-b3993-default-rtdb.firebaseio.com",
+    "project_id": "skatertrader-b3993",
+    "storage_bucket": "skatertrader-b3993.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:225965920340:android:a1571f9e6b69a3516c9dc1",
+        "mobilesdk_app_id": "1:198156392671:android:44e316e2851efe629ef16a",
         "android_client_info": {
-          "package_name": "com.droid.app.skater"
+          "package_name": "com.droid.app.skaterTrader"
         }
       },
       "oauth_client": [
         {
-          "client_id": "225965920340-hm4f9hqc8n3mr41c73evfh162oa5ah6r.apps.googleusercontent.com",
+          "client_id": "198156392671-njt5ddk2jm6k57m1shtp3meceta6jqso.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.droid.app.skater",
+            "package_name": "com.droid.app.skaterTrader",
             "certificate_hash": "df5f13bad1e180f05baaefbf7d1ee2b9ef44ab9f"
           }
         },
         {
-          "client_id": "225965920340-1cskkgggnilpc6i035cqdoq86la0ub5t.apps.googleusercontent.com",
+          "client_id": "198156392671-oj0lvucp2o8s2ojhb1terpjqt4dd033l.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBCbuQ-QxHGwYwTIR_AUbGivV1MlBDzwFk"
+          "current_key": "AIzaSyAfHGuojKqSzU8KJgujOKkqOX_kwnoRKU8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "225965920340-1cskkgggnilpc6i035cqdoq86la0ub5t.apps.googleusercontent.com",
+              "client_id": "198156392671-iufop8nvstomuc9h2ciq389e3eekgde1.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -10,7 +10,7 @@
     <string name="btn_cadastrar_anuncio">SALVAR ANÚNCIO</string>
     <string name="valor">Valor</string>
     <string name="titulo">Título</string>
-    <string name="regiao">REGIÃO</string>
+    <string name="regiao">REGIÃO   </string>
     <string name="categoria">CATEGORIA</string>
     <string name="div">|</string>
     <string name="telefone">Número do WhatsApp</string>
@@ -27,6 +27,7 @@
     <string name="txtBtnRedefinir">Enviar email de redefinição</string>
     <string name="esqueci_senha"><u>Esqueci minha senha</u></string>
     <string name="informe_meusAnuncio">Você ainda não adicionou nenhum anúncio.</string>
+    <string name="msg_inicial_logo">Feito por skatista para skatistas.</string>
 
     <string-array name="categorias">
         <item>Roupas</item>

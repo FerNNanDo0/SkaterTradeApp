@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.droid.app.skater'
+    namespace 'com.droid.app.skaterTrader'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.droid.app.skater"
+        applicationId "com.droid.app.skaterTrader"
         minSdk 24
         targetSdk 33
         versionCode 1

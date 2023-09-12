@@ -18,8 +18,9 @@
         tools:targetApi="31">
         <activity
             android:name=".activity.RedefinirSenhaActivity"
-            android:parentActivityName=".activity.AcessoActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".activity.AcessoActivity" />
         <activity
             android:name=".activity.DetalhesProdutosActivity"
             android:exported="false"
@@ -42,6 +43,10 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.ActivityMain"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity
+            android:name=".activity.LogoInicialActivity"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>

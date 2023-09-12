@@ -1,4 +1,4 @@
-package com.droid.app.skater.helper;
+package com.droid.app.skaterTrader.helper;
 
 import android.content.Context;
 import android.view.GestureDetector;
