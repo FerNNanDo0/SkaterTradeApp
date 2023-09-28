@@ -6,16 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/purple_500"
-    tools:context=".activity.MeusAnunciosActivity">
+    tools:context="com.droid.app.skaterTrader.activity.MeusAnunciosActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerMeusAnuncio"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginStart="3dp"
+        android:layout_marginEnd="3dp"
+        android:layout_marginBottom="3dp"
         android:background="#EBFFFFFF"
         android:elevation="6dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -29,7 +28,7 @@
         android:layout_height="48dp"
         android:layout_marginEnd="14dp"
         android:layout_marginBottom="20dp"
-        android:contentDescription="TODO"
+        android:contentDescription="@string/todo"
         app:elevation="8dp"
         app:fabSize="mini"
         app:layout_constraintBottom_toBottomOf="parent"

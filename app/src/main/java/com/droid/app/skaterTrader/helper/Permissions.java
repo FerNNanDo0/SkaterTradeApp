@@ -3,7 +3,6 @@ package com.droid.app.skaterTrader.helper;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
-
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -12,7 +11,6 @@ import java.util.List;
 
 public class Permissions {
     static boolean temPermission;
-
     public static boolean validatePermissions(String[] permissions, Activity activity, int requestCode){
         if ( Build.VERSION.SDK_INT >= 23 ){
 

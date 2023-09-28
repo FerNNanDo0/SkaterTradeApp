@@ -7,11 +7,12 @@
     android:layout_margin="1dp"
     android:gravity="center|top"
     android:orientation="vertical"
+    android:background="@color/white"
     android:paddingLeft="5dp"
-    android:paddingTop="2dp"
+    android:paddingTop="10dp"
     android:paddingRight="5dp"
     android:paddingBottom="2dp"
-    tools:context=".activity.DetalhesProdutosActivity">
+    tools:context="com.droid.app.skaterTrader.activity.DetalhesProdutosActivity">
 
     <com.synnapps.carouselview.CarouselView
         android:id="@+id/carouselView"
@@ -19,6 +20,7 @@
         android:layout_height="290dp"
         android:layout_marginBottom="6dp"
         app:fillColor="#FFFFFFFF"
+        android:contentDescription="@string/lista_imgs_carouselView"
         app:pageColor="#00000000"
         app:radius="6dp"
         app:slideInterval="3000"
@@ -81,11 +83,10 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:paddingStart="3dp"
-        android:paddingLeft="3dp"
         android:paddingTop="3dp"
         android:paddingBottom="3dp"
         android:text="@string/descri_o"
+        android:textColor="@color/dark"
         android:textSize="15sp" />
 
     <Button
@@ -99,7 +100,26 @@
         android:paddingEnd="60dp"
         android:text="@string/conversar"
         android:textSize="19sp"
+        android:textColor="@color/white"
         android:textStyle="bold"
         app:rippleColor="@color/rippleColorBtn" />
+
+    <!-- this attribute determines which template is used. The other option is
+     @layout/gnt_medium_template_view
+     @layout/gnt_small_template_view  -->
+    <com.google.android.ads.nativetemplates.TemplateView
+        android:id="@+id/my_template"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/todo"
+        android:layout_gravity="bottom"
+        android:layout_marginTop="15dp"
+        android:visibility="gone"
+        app:gnt_template_type="@layout/gnt_small_template_view"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
+        tools:visibility="visible" />
 
 </LinearLayout>

@@ -4,6 +4,7 @@
     <string name="cadastro">Cadastro</string>
     <string name="btn_cadastrar">Cadastrar</string>
     <string name="btn_logar">Logar</string>
+    <string name="btn_google">Entre com o google</string>
     <string name="redefinirEmailHint">E-mail</string>
     <string name="emailHint">E-mail</string>
     <string name="senhaHint">Senha</string>
@@ -21,13 +22,22 @@
     <string name="menu_redefinir">Redefinir filtro</string>
     <string name="menu_meus_anuncios">Meus Anúncios</string>
     <string name="menu_sair">Sair</string>
+    <string name="menu_suporte">Enviar email ao suporte</string>
+    <string name="menu_compartilhar">Compartilhar App</string>
     <string name="menu_logar_cadastrar">Logar / Cadastrar</string>
     <string name="conversar">Conversar no WhatsApp</string>
     <string name="nome">Nome</string>
     <string name="txtBtnRedefinir">Enviar email de redefinição</string>
     <string name="esqueci_senha"><u>Esqueci minha senha</u></string>
+    <string name="politicasDePrivacidade"><u>Política De Privacidade</u></string>
     <string name="informe_meusAnuncio">Você ainda não adicionou nenhum anúncio.</string>
     <string name="msg_inicial_logo">Feito por skatista para skatistas.</string>
+    <string name="default_notification_channel_id">fcm_default_channel</string>
+    <string name="todo">TODO</string>
+    <string name="lista_imgs_carouselView">listagem de imagens</string>
+    <string name="img_inicial_view">Imagem inicial</string>
+    <string name="entre_com_google_Btn">Entre com o google</string>
+    <string name="selector_acesso">Seletor de cadastro ou login</string>
 
     <string-array name="categorias">
         <item>Roupas</item>
@@ -37,6 +47,7 @@
         <item>Rodas</item>
         <item>Rolamentos</item>
         <item>Shape</item>
+        <item>Skate</item>
         <item>Acessórios</item>
         <item>Outros</item>
     </string-array>

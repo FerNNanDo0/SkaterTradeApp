@@ -1,21 +1,29 @@
 {
   "project_info": {
-    "project_number": "198156392671",
-    "firebase_url": "https://skatertrader-b3993-default-rtdb.firebaseio.com",
-    "project_id": "skatertrader-b3993",
-    "storage_bucket": "skatertrader-b3993.appspot.com"
+    "project_number": "1045728109826",
+    "firebase_url": "https://skatertrade-default-rtdb.firebaseio.com",
+    "project_id": "skatertrade",
+    "storage_bucket": "skatertrade.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:198156392671:android:44e316e2851efe629ef16a",
+        "mobilesdk_app_id": "1:1045728109826:android:0c1dcf614f1d1353d10e1b",
         "android_client_info": {
           "package_name": "com.droid.app.skaterTrader"
         }
       },
       "oauth_client": [
         {
-          "client_id": "198156392671-njt5ddk2jm6k57m1shtp3meceta6jqso.apps.googleusercontent.com",
+          "client_id": "1045728109826-2jnrspaf30d1ngb8tfjfuc60i0m2o3u0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droid.app.skaterTrader",
+            "certificate_hash": "906f7690a9a2415013271f613f2bc36fbf036f03"
+          }
+        },
+        {
+          "client_id": "1045728109826-a7lrg3ht9jvgtsk8314ibk221mpvbk2t.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.droid.app.skaterTrader",
@@ -23,20 +31,28 @@
           }
         },
         {
-          "client_id": "198156392671-71e18lu7l1qt1se21ulb32v5tjfs5qpv.apps.googleusercontent.com",
+          "client_id": "1045728109826-p8fub8ovmq3s8rkkunod8qo9on96htvo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.droid.app.skaterTrader",
+            "certificate_hash": "6de389a67f6aad5229fa995b7cb1eaa697734cc2"
+          }
+        },
+        {
+          "client_id": "1045728109826-bcg8mvh7koq38024621lcskc06harspm.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAfHGuojKqSzU8KJgujOKkqOX_kwnoRKU8"
+          "current_key": "AIzaSyBnNcQQ_vUxHeOv9YRU_7MhKBXfQqMnOc4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "198156392671-71e18lu7l1qt1se21ulb32v5tjfs5qpv.apps.googleusercontent.com",
+              "client_id": "1045728109826-bcg8mvh7koq38024621lcskc06harspm.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

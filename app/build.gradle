@@ -9,10 +9,10 @@ android {
 
     defaultConfig {
         applicationId "com.droid.app.skaterTrader"
-        minSdk 24
+        minSdk 21
         targetSdk 33
-        versionCode 1
-        versionName "1.0"
+        versionCode 4
+        versionName "4.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -20,7 +20,9 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            //shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
         }
     }
     compileOptions {
@@ -47,8 +49,17 @@ dependencies {
     implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.firebase:firebase-storage'
     implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-messaging'
+
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
+
+    // google admob
+    implementation 'com.google.android.gms:play-services-ads:22.4.0'
+    implementation project(':nativetemplate')
+
+    // splashscreen
+    implementation "androidx.core:core-splashscreen:1.0.0"
 
     // mask edit text para moedas
 //    implementation 'com.github.dkzwm:fet-core:0.2.1'

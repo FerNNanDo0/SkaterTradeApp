@@ -16,3 +16,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "App OLX"
 include ':app'
+include ':nativetemplates'
+include ':nativetemplate'

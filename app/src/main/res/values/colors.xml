@@ -6,7 +6,9 @@
     <color name="teal_200">#1FA230</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#000000</color>
+    <color name="dark">#191919</color>
+    <color name="lightBlue">#FBFFFE</color>
     <color name="white2">#FFFFFF</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="white">#FFFFFF</color>
     <color name="rippleColorBtn">#0097A7</color>
 </resources>

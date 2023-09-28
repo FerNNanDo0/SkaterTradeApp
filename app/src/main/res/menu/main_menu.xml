@@ -6,6 +6,15 @@
         <item
             android:id="@+id/anuncios"
             android:title="@string/menu_meus_anuncios" />
+
+        <item
+            android:id="@+id/suport"
+            android:title="@string/menu_suporte" />
+
+        <item
+            android:id="@+id/compartilhar"
+            android:title="@string/menu_compartilhar" />
+
         <item
             android:id="@+id/sair"
             android:title="@string/menu_sair" />

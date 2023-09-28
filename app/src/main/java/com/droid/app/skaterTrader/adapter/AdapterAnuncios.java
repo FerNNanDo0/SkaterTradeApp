@@ -9,23 +9,26 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.droid.app.skaterTrader.R;
+
 import com.droid.app.skaterTrader.model.Anuncio;
+import com.droid.app.skaterTrader.R;
 import com.squareup.picasso.Picasso;
 import java.util.List;
 public class AdapterAnuncios extends RecyclerView.Adapter<AdapterAnuncios.MyViewHolder> {
     List<Anuncio> listAnuncios;
     Context context;
+    View view;
+
     public AdapterAnuncios(List<Anuncio> listAnuncios, Context context) {
         this.context = context;
         this.listAnuncios = listAnuncios;
     }
-
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
+        view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.adapter_anuncio, parent, false);
+
         return new MyViewHolder(view);
     }
 
