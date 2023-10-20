@@ -15,11 +15,11 @@
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="220dp"
+        android:layout_marginTop="200dp"
         android:layout_marginEnd="30dp"
         android:drawableEnd="@drawable/baseline_email_24"
         android:ems="10"
-        android:background="@color/white"
+        android:background="@drawable/bg_edit_text"
         android:gravity="center"
         android:hint="@string/redefinirEmailHint"
         android:inputType="textEmailAddress"
@@ -36,7 +36,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="42dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="40dp"
         android:layout_marginEnd="42dp"
         android:elevation="6dp"
         android:onClick="btnRedefinir"
@@ -47,6 +47,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editRedefinir" />
+
+    <!-- this attribute determines which template is used. The other option is
+     @layout/gnt_medium_template_view
+     @layout/gnt_small_template_view  -->
+    <com.google.android.ads.nativetemplates.TemplateView
+        android:id="@+id/my_template"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="3dp"
+        android:contentDescription="@string/todo"
+        android:visibility="gone"
+        app:gnt_template_type="@layout/gnt_medium_template_view"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button"
+        tools:visibility="visible" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

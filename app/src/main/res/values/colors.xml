@@ -2,13 +2,16 @@
 <resources>
     <color name="purple_200">#63CD17</color>
     <color name="purple_500">#3A8C0E</color>
+    <color name="greenToolBarMap">#8D3A8C0E</color>
     <color name="purple_700">#136500</color>
     <color name="teal_200">#1FA230</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#000000</color>
     <color name="dark">#191919</color>
+    <color name="silver">#7E7E7E</color>
     <color name="lightBlue">#FBFFFE</color>
     <color name="white2">#FFFFFF</color>
     <color name="white">#FFFFFF</color>
+    <color name="red">#FF0000</color>
     <color name="rippleColorBtn">#0097A7</color>
 </resources>

@@ -3,7 +3,9 @@ package com.droid.app.skaterTrader.service;
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -14,37 +16,57 @@ import androidx.core.app.NotificationCompat;
 import com.droid.app.skaterTrader.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.Objects;
+
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
+
+    NotificationCompat.Builder notification;
+
     @Override
     public void onMessageReceived(@NonNull RemoteMessage message) {
         super.onMessageReceived(message);
 
-        if( message != null){
-            String titulo = message.getNotification().getTitle();
-            String corpoMsg = message.getNotification().getBody();
+        String titulo = Objects.requireNonNull(message.getNotification()).getTitle();
+        String corpoMsg = message.getNotification().getBody();
 
-            enviarNotificacao(titulo, corpoMsg);
-        }
+        assert titulo != null;
+        enviarNotificacao(titulo, corpoMsg);
     }
 
     @SuppressLint("UnspecifiedImmutableFlag")
-    private void enviarNotificacao(String titulo, String msg){
+    private void enviarNotificacao(@NonNull String titulo, String msg){
         //Config para notificação
         String canal = getString(R.string.default_notification_channel_id);
         Uri uriSom = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        /*Intent intent = new Intent(this, ActivityMain.class);
-        PendingIntent pendingIntent = PendingIntent
-                .getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);*/
 
-        // criar notificação
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(this, canal)
-                .setContentTitle( titulo )
-                .setContentText( msg )
-                .setSmallIcon( R.drawable.ic_notification_ )
-                .setSound( uriSom )
-                .setAutoCancel(true);
-//                .setContentIntent( pendingIntent );
+        if(titulo.contains("Atualização disponível") || msg.contains("playstore")){
+            final String appPackageName = getPackageName();
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("market://details?id=" + appPackageName));
+
+            PendingIntent pendingIntent = PendingIntent
+                    .getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+
+            // criar notificação
+            notification = new NotificationCompat.Builder(this, canal)
+                    .setContentTitle( titulo )
+                    .setContentText( msg )
+                    .setSmallIcon( R.drawable.ic_notification_ )
+                    .setSound( uriSom )
+                    .setAutoCancel(true)
+                    .setContentIntent( pendingIntent );
+        }else{
+            // criar notificação
+            notification = new NotificationCompat.Builder(this, canal)
+                    .setContentTitle( titulo )
+                    .setContentText( msg )
+                    .setSmallIcon( R.drawable.ic_notification_ )
+                    .setSound( uriSom )
+                    .setAutoCancel(true);
+        }
+
 
         // recuperar notificationManager
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

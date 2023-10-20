@@ -1,13 +1,25 @@
 package com.droid.app.skaterTrader.model;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
+import com.droid.app.skaterTrader.R;
 import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.StorageReference;
+
+import org.jetbrains.annotations.Contract;
 
 import java.util.List;
 public class Anuncio implements Parcelable {
@@ -58,18 +70,22 @@ public class Anuncio implements Parcelable {
     }
 
     public static final Creator<Anuncio> CREATOR = new Creator<Anuncio>() {
+        @NonNull
+        @Contract("_ -> new")
         @Override
         public Anuncio createFromParcel(Parcel in) {
             return new Anuncio(in);
         }
 
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
         @Override
         public Anuncio[] newArray(int size) {
             return new Anuncio[size];
         }
     };
 
-    public void salvarAnuncioNoDB() {
+    public void salvarAnuncioNoDB(Context context) {
         // salvar anuncio privado para o usuario
         DatabaseReference anuncioRef = database.child("meus_anuncios");
         anuncioRef.child(user.getIdUser())
@@ -82,6 +98,31 @@ public class Anuncio implements Parcelable {
                 .child(getCategoria())
                 .child(getIdAnuncio())
                 .setValue(this);
+
+        notification(context);
+    }
+
+    private void notification(@NonNull Context context) {
+        FirebaseMessaging.getInstance().subscribeToTopic("Novo anúncio");
+
+        // criar notificação
+        String canal = context.getString(R.string.default_notification_channel_id);
+        Uri uriSom = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(context, canal)
+                .setContentTitle("Novo anúncio.")
+                .setContentText("Um novo anúncio foi publicado.")
+                .setSmallIcon(R.drawable.ic_notification_)
+                .setSound(uriSom)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+
+        if (ActivityCompat.checkSelfPermission(context,
+                Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        notificationManager.notify(0, notification.build());
     }
 
     public void removerAnuncio(){

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="4dp">
+
+    <ImageView
+        android:id="@+id/imageViewMarkerGreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/marker_green_skate_40" />
+
+    <ImageView
+        android:id="@+id/imageViewMarkerRed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewMarkerGreen"
+        app:srcCompat="@drawable/marker_red_skate_40" />
+
+    <TextView
+        android:id="@+id/textViewInfo1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/text_info_1"
+        android:paddingStart="2dp"
+        android:textColor="@color/dark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageViewMarkerGreen"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewInfo2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/text_info_2"
+        android:paddingStart="2dp"
+        android:textColor="@color/dark"
+        android:layout_marginTop="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageViewMarkerRed"
+        app:layout_constraintTop_toBottomOf="@+id/textViewInfo1" />
+</androidx.constraintlayout.widget.ConstraintLayout>

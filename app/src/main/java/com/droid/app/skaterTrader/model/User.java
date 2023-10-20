@@ -1,6 +1,8 @@
 package com.droid.app.skaterTrader.model;
 
+import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -9,12 +11,16 @@ import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 public class User {
 
     private String nome;
     private String email;
     private String senha;
     private String id;
+    private byte[] foto;
 
     public String getNome() {
         return nome;
@@ -35,6 +41,14 @@ public class User {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public byte[] getFoto() {
+        return foto;
+    }
+
+    public void setFoto(byte[] foto) {
+        this.foto = foto;
     }
 
     public String getIdUser() {
@@ -66,5 +80,51 @@ public class User {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+    public void salvarFotoPerfil(Activity activity){
+        StorageReference storage = FirebaseRef.getStorage();
+        try{
+            StorageReference imgUser = storage.child("imagens")
+                    .child("usuario")
+                    .child(getIdUser())
+                    .child("imagem_perfil");
+
+            // fazer upload da imagem
+            UploadTask uploadTask = imgUser.putBytes(getFoto());
+            uploadTask.addOnSuccessListener( taskSnapshot -> {
+                // Faz download dos Urls das fotos
+                imgUser.getDownloadUrl().addOnCompleteListener( task -> {
+
+                    System.out.println("Link foto " + task.getResult().toString());
+
+                    String urlImgStorage = task.getResult().toString();
+                    upDateImgPerfil(urlImgStorage, activity);
+                });
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    private void upDateImgPerfil(String urlImgStorage, Activity activity){
+        FirebaseUser user = FirebaseRef.getAuth().getCurrentUser();
+        UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder()
+                .setPhotoUri(Uri.parse(urlImgStorage))
+                .build();
+
+        assert user != null;
+        user.updateProfile( profile )
+                .addOnCompleteListener( (@NonNull Task<Void> task) -> {
+                    if(!task.isSuccessful()){
+                        Toast.makeText(activity,
+                                "Erro ao atualizar foto de perfil", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(activity,
+                                "Sucesso ao atualizar foto de perfil", Toast.LENGTH_SHORT).show();
+                        activity.recreate();
+                    }
+                });
+    }
+    public static FirebaseUser user(){
+        return FirebaseRef.getAuth().getCurrentUser();
     }
 }

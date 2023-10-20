@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">SkaterTrade</string>
+    <string name="app_name">Skater Trade</string>
     <string name="login">Login</string>
     <string name="cadastro">Cadastro</string>
     <string name="btn_cadastrar">Cadastrar</string>
-    <string name="btn_logar">Logar</string>
+    <string name="btn_logar">Entrar</string>
     <string name="btn_google">Entre com o google</string>
     <string name="redefinirEmailHint">E-mail</string>
     <string name="emailHint">E-mail</string>
@@ -14,16 +14,21 @@
     <string name="regiao">REGIÃO   </string>
     <string name="categoria">CATEGORIA</string>
     <string name="div">|</string>
-    <string name="telefone">Número do WhatsApp</string>
+    <string name="telefone">Número do WhatsApp.</string>
     <string name="valor_hint">R$900,00</string>
     <string name="t_tulo">Título</string>
-    <string name="descri_o">Descrição</string>
+    <string name="descri_o">Descrição Ex:\nEm boas condições,\nentrego na cidade ou na pista de skate.</string>
     <string name="estado">RS</string>
     <string name="menu_redefinir">Redefinir filtro</string>
     <string name="menu_meus_anuncios">Meus Anúncios</string>
     <string name="menu_sair">Sair</string>
     <string name="menu_suporte">Enviar email ao suporte</string>
     <string name="menu_compartilhar">Compartilhar App</string>
+    <string name="menu_picosRole">Picos pro rolê</string>
+    <string name="mapa_de_picos">Mapa dos pico</string>
+    <string name="text_marker1">Rolê Suave</string>
+    <string name="text_marker2">Rolê Rápido</string>
+    <string name="menu_avaliar">Avaliar o App</string>
     <string name="menu_logar_cadastrar">Logar / Cadastrar</string>
     <string name="conversar">Conversar no WhatsApp</string>
     <string name="nome">Nome</string>
@@ -38,6 +43,18 @@
     <string name="img_inicial_view">Imagem inicial</string>
     <string name="entre_com_google_Btn">Entre com o google</string>
     <string name="selector_acesso">Seletor de cadastro ou login</string>
+    <string name="name_location_marker">Nome do local</string>
+    <string name="focar_no_meu_local">focar no meu local</string>
+    <string name="nome_do_local">Nome do local</string>
+    <string name="info">Info</string>
+    <string name="text_info_1">Rolê Suave, local onde pode andar de skate tranquilo e sem problemas.</string>
+    <string name="text_info_2">Rolê Rápido, local onde não é permitido andar de skate, tome cuidado</string>
+
+    <string name="nav_open">Abrir</string>
+    <string name="nav_close">Fechar</string>
+
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="store">Lojas</string>
 
     <string-array name="categorias">
         <item>Roupas</item>

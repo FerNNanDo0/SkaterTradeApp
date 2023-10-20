@@ -10,9 +10,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.droid.app.skaterTrader.model.Anuncio;
 import com.droid.app.skaterTrader.R;
-import com.squareup.picasso.Picasso;
 import java.util.List;
 public class AdapterAnuncios extends RecyclerView.Adapter<AdapterAnuncios.MyViewHolder> {
     List<Anuncio> listAnuncios;
@@ -40,7 +40,8 @@ public class AdapterAnuncios extends RecyclerView.Adapter<AdapterAnuncios.MyView
 
         // pegar primeira imagem da lista
         String urlCapa = anuncio.getFotos().get(0);
-        Picasso.get().load(urlCapa).into(holder.foto);
+        //Picasso.get().load(urlCapa).into(holder.foto);
+        Glide.with(context).load(urlCapa).into(holder.foto);
 
         holder.progressBarImg.setVisibility(View.GONE);
     }
