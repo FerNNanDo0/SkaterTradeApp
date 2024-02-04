@@ -2,20 +2,23 @@ package com.droid.app.skaterTrader.model;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.droid.app.skaterTrader.activity.ActivityMain;
 import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.Exclude;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 public class User {
-
     private String nome;
     private String email;
     private String senha;
@@ -35,6 +38,7 @@ public class User {
         this.email = email;
     }
 
+    @Exclude
     public String getSenha() {
         return senha;
     }
@@ -98,32 +102,33 @@ public class User {
                     System.out.println("Link foto " + task.getResult().toString());
 
                     String urlImgStorage = task.getResult().toString();
-                    upDateImgPerfil(urlImgStorage, activity);
+
+                    // updatePerfil com novo img
+                    FirebaseUser user = FirebaseRef.getAuth().getCurrentUser();
+                    UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder()
+                            .setPhotoUri(Uri.parse(urlImgStorage))
+                            .build();
+
+                    assert user != null;
+                    user.updateProfile( profile )
+                        .addOnCompleteListener(activity, task1 -> {
+                            if(!task1.isSuccessful()){
+                                Toast.makeText(activity,
+                                        "Erro ao atualizar foto de perfil", Toast.LENGTH_SHORT).show();
+                            }else{
+                                Toast.makeText(activity,
+                                        "Sucesso ao atualizar foto de perfil", Toast.LENGTH_SHORT).show();
+
+                                activity.startActivity(new Intent(activity, ActivityMain.class));
+                            }
+                        });
                 });
             });
         }catch (Exception e){
             e.printStackTrace();
         }
     }
-    private void upDateImgPerfil(String urlImgStorage, Activity activity){
-        FirebaseUser user = FirebaseRef.getAuth().getCurrentUser();
-        UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder()
-                .setPhotoUri(Uri.parse(urlImgStorage))
-                .build();
 
-        assert user != null;
-        user.updateProfile( profile )
-                .addOnCompleteListener( (@NonNull Task<Void> task) -> {
-                    if(!task.isSuccessful()){
-                        Toast.makeText(activity,
-                                "Erro ao atualizar foto de perfil", Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(activity,
-                                "Sucesso ao atualizar foto de perfil", Toast.LENGTH_SHORT).show();
-                        activity.recreate();
-                    }
-                });
-    }
     public static FirebaseUser user(){
         return FirebaseRef.getAuth().getCurrentUser();
     }

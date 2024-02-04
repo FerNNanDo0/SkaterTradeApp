@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
     <application
@@ -22,7 +22,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.skateTrade.starting"
         tools:targetApi="31">
-
 
         <service
             android:name="com.droid.app.skaterTrader.service.MyFirebaseMessagingService"
@@ -51,24 +50,28 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-4810475836852520~4973682622" />
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
 
-
         <activity
             android:name=".activity.MapaPicosSkate"
+            android:exported="false"
             android:parentActivityName=".activity.ActivityMain"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.skateTrade"
-            android:exported="false" />
+            android:theme="@style/Theme.skateTrade">
+        </activity>
         <activity
             android:name=".activity.RedefinirSenhaActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.AcessoActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.skateTrade" />
+        <activity
+            android:name=".activity.CadastrarLojasActivity"
             android:exported="false"
             android:parentActivityName=".activity.AcessoActivity"
             android:screenOrientation="portrait"
@@ -94,10 +97,21 @@
             android:theme="@style/Theme.skateTrade" />
         <activity
             android:name=".activity.AcessoActivity"
-            android:exported="false"
+            android:exported="true"
             android:parentActivityName=".activity.ActivityMain"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.skateTrade" />
+            android:theme="@style/Theme.skateTrade">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="https://skatertrade.web.app/acesso.html"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activity.ActivityMain"
             android:exported="true"
@@ -107,21 +121,17 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <!--
-        <activity
-            android:name=".activity.LogoInicialActivity"
-            android:exported="true"
-            android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="https://skatertrade.web.app"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
-        -->
-
-
     </application>
 
 </manifest>

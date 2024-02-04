@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center|top"
+    tools:context=".activity.CadastrarLojasActivity">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imageLoja"
+                android:layout_width="260dp"
+                android:layout_height="220dp"
+                android:onClick="launchGallery"
+                android:src="@drawable/padrao"
+                android:elevation="10dp"
+                app:civ_border_color="@color/dark"
+                app:civ_border_width="2dp"
+                tools:ignore="UsingOnClickInXml,SpeakableTextPresentCheck" />
+
+            <EditText
+                android:id="@+id/editTextNomeLoja"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="10dp"
+                android:autofillHints=""
+                android:background="@drawable/bg_edit_text"
+                android:drawableEnd="@drawable/baseline_store_24"
+                android:ems="10"
+                android:hint="@string/nome_da_loja_ou_marca"
+                android:inputType="textPersonName|text|textCapWords"
+                android:lines="1"
+                android:maxLength="30"
+                android:padding="10dp"
+                android:elevation="6dp"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/silver" />
+
+            <EditText
+                android:id="@+id/editTextNomeUserLoja"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="4dp"
+                android:autofillHints=""
+                android:background="@drawable/bg_edit_text"
+                android:drawableEnd="@drawable/baseline_person_24"
+                android:ems="10"
+                android:hint="@string/nome"
+                android:inputType="textPersonName|text|textCapWords"
+                android:lines="1"
+                android:maxLength="30"
+                android:padding="10dp"
+                android:elevation="6dp"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/silver" />
+
+
+            <EditText
+                android:id="@+id/editTextCpfLoja"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_edit_text"
+                android:drawableEnd="@drawable/baseline_check_circle_24"
+                android:ems="10"
+                android:hint="@string/cpf"
+                android:inputType="numberSigned"
+                android:maxLength="18"
+                android:padding="10dp"
+                android:elevation="6dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/silver" />
+
+            <EditText
+                android:id="@+id/editTextCepLoja"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_edit_text"
+                android:drawableEnd="@drawable/baseline_location_on_24"
+                android:ems="10"
+                android:hint="@string/cep"
+                android:inputType="numberSigned"
+                android:maxLength="18"
+                android:padding="10dp"
+                android:elevation="6dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/silver" />
+
+            <EditText
+                android:id="@+id/editTextEmailLoja"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_edit_text"
+                android:drawableEnd="@drawable/baseline_email_24"
+                android:ems="10"
+                android:hint="@string/emailHint"
+                android:inputType="textEmailAddress"
+                android:lines="1"
+                android:maxLength="30"
+                android:padding="10dp"
+                android:elevation="6dp"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/silver" />
+
+            <EditText
+                android:id="@+id/editTextPasswordLoja"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_edit_text"
+                android:drawableEnd="@drawable/baseline_lock_person_24"
+                android:ems="10"
+                android:hint="@string/senhaHint"
+                android:inputType="textPassword"
+                android:maxLength="18"
+                android:padding="10dp"
+                android:elevation="6dp"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/silver" />
+
+
+
+            <Button
+                android:id="@+id/buttonCadastrarLoja"
+                style="@style/botaoPadrao"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_btn"
+                android:drawableEnd="@drawable/as_small"
+                android:drawableTint="@color/white"
+                android:elevation="8dp"
+                android:onClick="btnCadastrarLoja"
+                android:paddingStart="85dp"
+                android:text="@string/btn_cadastrar"
+                android:textColor="#FFFFFF"
+                android:textSize="23sp"
+                android:textStyle="bold|italic"
+                app:rippleColor="@color/rippleColorBtn" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

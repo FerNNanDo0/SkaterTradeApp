@@ -13,5 +13,6 @@
     <color name="white2">#FFFFFF</color>
     <color name="white">#FFFFFF</color>
     <color name="red">#FF0000</color>
+    <color name="green">#0DDD15</color>
     <color name="rippleColorBtn">#0097A7</color>
 </resources>

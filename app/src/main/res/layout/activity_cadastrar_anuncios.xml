@@ -8,199 +8,199 @@
     android:orientation="vertical"
     tools:context="com.droid.app.skaterTrader.activity.CadastrarAnunciosActivity">
 
-    <LinearLayout
-        android:id="@+id/linearLayout7"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="14dp"
-        android:background="@drawable/bg_edit_text"
-        android:elevation="6dp"
-        android:orientation="horizontal"
-        android:padding="5dp"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="0dp"
-            android:layout_height="120dp"
-            android:layout_margin="3dp"
-            android:layout_weight="1"
-            android:contentDescription="@string/todo"
-            android:elevation="6dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/padrao_ativo_1" />
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="0dp"
-            android:layout_height="120dp"
-            android:layout_margin="3dp"
-            android:layout_weight="1"
-            android:contentDescription="@string/todo"
-            android:elevation="6dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/padrao_2" />
-
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="0dp"
-            android:layout_height="120dp"
-            android:layout_margin="3dp"
-            android:layout_weight="1"
-            android:contentDescription="@string/todo"
-            android:elevation="6dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/padrao_3" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout6"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="10dp"
-        android:background="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout7">
-
-        <Spinner
-            android:id="@+id/spinnerLeft"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:backgroundTint="@color/black"
-            android:contentDescription="@string/regiao"
-            android:focusable="auto"
+            android:layout_height="wrap_content"
             android:gravity="center"
-            android:overScrollMode="always"
-            android:popupTheme="@style/Theme.skateTrade"
-            android:spinnerMode="dropdown"
-            android:theme="@style/Widget.AppCompat.DropDownItem.Spinner"
-            android:visibility="visible" />
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:orientation="vertical">
 
-        <Spinner
-            android:id="@+id/spinnerRight"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:backgroundTint="@color/black"
-            android:contentDescription="@string/categoria"
-            android:focusable="auto"
-            android:gravity="center"
-            android:overScrollMode="always"
-            android:popupTheme="@style/Theme.skateTrade"
-            android:spinnerMode="dropdown"
-            android:theme="@style/Widget.AppCompat.DropDownItem.Spinner"
-            android:visibility="visible"/>
+            <LinearLayout
+                android:id="@+id/linearLayout7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="14dp"
+                android:background="@drawable/bg_edit_text"
+                android:elevation="6dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
 
-    </LinearLayout>
+                <ImageView
+                    android:id="@+id/imageView1"
+                    android:layout_width="0dp"
+                    android:layout_height="120dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/todo"
+                    android:elevation="6dp"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/padrao_ativo_1" />
 
-    <EditText
-        android:id="@+id/editTextTitulo"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="10dp"
-        android:autofillHints=""
-        android:background="@drawable/bg_edit_text"
-        android:ems="10"
-        android:hint="@string/t_tulo"
-        android:textColor="@color/dark"
-        android:textColorHint="@color/silver"
-        android:inputType="textPersonName|textCapWords"
-        android:maxLength="35"
-        android:padding="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="0dp"
+                    android:layout_height="120dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/todo"
+                    android:elevation="6dp"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/padrao_2" />
 
-    <me.abhinay.input.CurrencyEditText
-        android:id="@+id/editTextValor"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/bg_edit_text"
-        android:ems="10"
-        android:textColor="@color/dark"
-        android:textColorHint="@color/silver"
-        android:hint="@string/valor_hint"
-        android:inputType="numberSigned"
-        android:maxLength="15"
-        android:padding="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTitulo" />
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="0dp"
+                    android:layout_height="120dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/todo"
+                    android:elevation="6dp"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/padrao_3" />
 
-    <EditText
-        android:id="@+id/editTextDescricao"
-        android:layout_width="0dp"
-        android:layout_height="95dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginEnd="16dp"
-        android:autofillHints=""
-        android:background="@drawable/bg_edit_text"
-        android:ems="10"
-        android:gravity="top"
-        android:hint="@string/descri_o"
-        android:inputType="textShortMessage|textAutoCorrect|textMultiLine"
-        android:maxLength="170"
-        android:padding="10dp"
-        android:textColor="@color/dark"
-        android:textColorHint="@color/silver"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextValor" />
+            </LinearLayout>
 
-    <EditText
-        android:id="@+id/editTextNumeroFone"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginEnd="16dp"
-        android:autofillHints=""
-        android:background="@drawable/bg_edit_text"
-        android:ems="10"
-        android:hint="@string/telefone"
-        android:textColor="@color/dark"
-        android:textColorHint="@color/silver"
-        android:inputType="numberSigned"
-        android:maxLength="14"
-        android:padding="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextDescricao" />
+            <LinearLayout
+                android:id="@+id/linearLayout6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/white">
 
-    <Button
-        android:id="@+id/buttonSalvarAnuncio"
-        style="@style/botaoPadrao"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/bg_btn"
-        android:drawableEnd="@drawable/as_small"
-        android:elevation="4dp"
-        android:paddingStart="100dp"
-        android:text="@string/btn_cadastrar_anuncio"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold|italic"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextNumeroFone"
-        app:rippleColor="@color/rippleColorBtn"
-        tools:ignore="RtlSymmetry" />
+                <Spinner
+                    android:id="@+id/spinnerLeft"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/black"
+                    android:contentDescription="@string/regiao"
+                    android:focusable="auto"
+                    android:gravity="center"
+                    android:overScrollMode="always"
+                    android:popupTheme="@style/Theme.skateTrade"
+                    android:spinnerMode="dropdown"
+                    android:theme="@style/Widget.AppCompat.DropDownItem.Spinner"
+                    android:visibility="visible" />
+
+                <Spinner
+                    android:id="@+id/spinnerRight"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/black"
+                    android:contentDescription="@string/categoria"
+                    android:focusable="auto"
+                    android:gravity="center"
+                    android:overScrollMode="always"
+                    android:popupTheme="@style/Theme.skateTrade"
+                    android:spinnerMode="dropdown"
+                    android:theme="@style/Widget.AppCompat.DropDownItem.Spinner"
+                    android:visibility="visible" />
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/editTextTitulo"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="16dp"
+                android:autofillHints=""
+                android:background="@drawable/bg_edit_text"
+                android:ems="10"
+                android:hint="@string/t_tulo"
+                android:inputType="textPersonName|textCapWords"
+                android:maxLength="35"
+                android:padding="10dp"
+                android:textColor="@color/dark"
+                android:textColorHint="@color/silver" />
+
+            <me.abhinay.input.CurrencyEditText
+                android:id="@+id/editTextValor"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_edit_text"
+                android:ems="10"
+                android:hint="@string/valor_hint"
+                android:inputType="numberSigned"
+                android:maxLength="15"
+                android:padding="10dp"
+                android:textColor="@color/dark"
+                android:textColorHint="@color/silver" />
+
+            <EditText
+                android:id="@+id/editTextDescricao"
+                android:layout_width="match_parent"
+                android:layout_height="95dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="16dp"
+                android:autofillHints=""
+                android:background="@drawable/bg_edit_text"
+                android:ems="10"
+                android:gravity="top"
+                android:hint="@string/descri_o"
+                android:inputType="textShortMessage|textAutoCorrect|textMultiLine"
+                android:maxLength="170"
+                android:padding="10dp"
+                android:textColor="@color/dark"
+                android:textColorHint="@color/silver" />
+
+            <EditText
+                android:id="@+id/editTextNumeroFone"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="16dp"
+                android:autofillHints=""
+                android:background="@drawable/bg_edit_text"
+                android:ems="10"
+                android:hint="@string/telefone"
+                android:inputType="numberSigned"
+                android:maxLength="14"
+                android:padding="10dp"
+                android:textColor="@color/dark"
+                android:textColorHint="@color/silver" />
+
+            <Button
+                android:id="@+id/buttonSalvarAnuncio"
+                style="@style/botaoPadrao"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_btn"
+                android:drawableEnd="@drawable/as_small"
+                android:elevation="4dp"
+                android:paddingStart="100dp"
+                android:text="@string/btn_cadastrar_anuncio"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold|italic"
+                app:rippleColor="@color/rippleColorBtn"
+                tools:ignore="RtlSymmetry" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

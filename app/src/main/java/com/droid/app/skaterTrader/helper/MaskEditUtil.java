@@ -1,5 +1,6 @@
 package com.droid.app.skaterTrader.helper;
 
+import android.graphics.Color;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
@@ -32,6 +33,10 @@ public abstract class MaskEditUtil {
 
             @Override
             public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+                if(count == 0){
+                    ediTxt.setTextColor(Color.BLACK);
+                }
+
                 final String str = MaskEditUtil.unmask(s.toString());
                 String mascara = "";
                 if (isUpdating) {

@@ -31,7 +31,7 @@
     <string name="menu_avaliar">Avaliar o App</string>
     <string name="menu_logar_cadastrar">Logar / Cadastrar</string>
     <string name="conversar">Conversar no WhatsApp</string>
-    <string name="nome">Nome</string>
+    <string name="nome">Seu nome</string>
     <string name="txtBtnRedefinir">Enviar email de redefinição</string>
     <string name="esqueci_senha"><u>Esqueci minha senha</u></string>
     <string name="politicasDePrivacidade"><u>Política De Privacidade</u></string>
@@ -55,6 +55,10 @@
 
     <string name="nav_header_desc">Navigation header</string>
     <string name="store">Lojas</string>
+    <string name="cadastre_sua_loja">Cadastre sua Loja</string>
+    <string name="cpf">CPF ou CNPJ</string>
+    <string name="nome_da_loja_ou_marca">Nome da loja ou marca</string>
+    <string name="cep">Cep</string>
 
     <string-array name="categorias">
         <item>Roupas</item>
