@@ -34,4 +34,11 @@
         <item name="android:radius">20dp</item>
         <item name="rippleColor">@color/rippleColorBtn</item>
     </style>
+
+
+    <style name="btnRippleColor" parent="@style/Theme.AppCompat.Light">
+        <item name="circleRadius">20dp</item>
+        <item name="android:radius">20dp</item>
+        <item name="rippleColor">@color/rippleColorBtn</item>
+    </style>
 </resources>

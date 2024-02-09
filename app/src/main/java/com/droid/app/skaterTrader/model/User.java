@@ -103,32 +103,14 @@ public class User {
 
                     String urlImgStorage = task.getResult().toString();
 
-                    // updatePerfil com novo img
-                    FirebaseUser user = FirebaseRef.getAuth().getCurrentUser();
-                    UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder()
-                            .setPhotoUri(Uri.parse(urlImgStorage))
-                            .build();
-
-                    assert user != null;
-                    user.updateProfile( profile )
-                        .addOnCompleteListener(activity, task1 -> {
-                            if(!task1.isSuccessful()){
-                                Toast.makeText(activity,
-                                        "Erro ao atualizar foto de perfil", Toast.LENGTH_SHORT).show();
-                            }else{
-                                Toast.makeText(activity,
-                                        "Sucesso ao atualizar foto de perfil", Toast.LENGTH_SHORT).show();
-
-                                activity.startActivity(new Intent(activity, ActivityMain.class));
-                            }
-                        });
+                    // update img perfil
+                    FirebaseRef.upDateImgPerfil(activity, urlImgStorage);
                 });
             });
         }catch (Exception e){
             e.printStackTrace();
         }
     }
-
     public static FirebaseUser user(){
         return FirebaseRef.getAuth().getCurrentUser();
     }

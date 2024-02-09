@@ -55,10 +55,18 @@
 
     <string name="nav_header_desc">Navigation header</string>
     <string name="store">Lojas</string>
+    <string name="meusProd">Meus produtos</string>
+    <string name="meusDados">Meus Dados</string>
     <string name="cadastre_sua_loja">Cadastre sua Loja</string>
     <string name="cpf">CPF ou CNPJ</string>
+    <string name="phone">Telefone ou celular</string>
     <string name="nome_da_loja_ou_marca">Nome da loja ou marca</string>
     <string name="cep">Cep</string>
+    <string name="descriptionEditImg">trocar imagem</string>
+    <string name="txt_email_android_exemplo">android.skaterTrade@android.com</string>
+    <string name="hint_nome_responsalvelLoja">Nome do responsavel pela loja</string>
+    <string name="hint_telefone_loja">"Telefone da loja "</string>
+    <string name="btn_txt_atualizar_dados">Atualizar Dados</string>
 
     <string-array name="categorias">
         <item>Roupas</item>

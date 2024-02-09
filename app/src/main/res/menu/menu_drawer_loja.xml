@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_meusDados"
+            android:icon="@drawable/baseline_manage_accounts_24"
+            android:title="@string/meusDados" />
+
+        <item
+            android:id="@+id/nav_produtos"
+            android:icon="@drawable/baseline_store_24"
+            android:title="@string/meusProd" />
+
+        <item
+            android:id="@+id/picosRole"
+            android:title="@string/menu_picosRole"
+            android:icon="@drawable/baseline_map_24"/>
+
+    </group>
+
+    <item android:menuCategory="secondary"
+        tools:ignore="MenuTitle">
+        <menu>
+
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_shareApp"
+                    android:icon="@drawable/baseline_share_24"
+                    android:title="@string/menu_compartilhar" />
+
+                <item
+                    android:id="@+id/avaliar"
+                    android:title="@string/menu_avaliar"
+                    android:icon="@drawable/baseline_star_24"/>
+
+                <item
+                    android:id="@+id/nav_info"
+                    android:icon="@drawable/baseline_info_24"
+                    android:title="Informações" />
+
+                <item
+                    android:id="@+id/sair"
+                    android:icon="@drawable/baseline_logout_24"
+                    android:title="@string/menu_sair" />
+
+            </group>
+
+        </menu>
+    </item>
+
+
+</menu>

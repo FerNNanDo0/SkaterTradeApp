@@ -3,6 +3,9 @@ package com.droid.app.skaterTrader.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.Activity;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
@@ -73,6 +76,10 @@ public class MapaPicosSkate extends AppCompatActivity
 
         //config toolbar
         assert getSupportActionBar() != null;
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getColor(R.color.purple_500)));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setElevation(0);
+
         getSupportActionBar().setTitle(R.string.mapa_de_picos);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -310,18 +317,23 @@ public class MapaPicosSkate extends AppCompatActivity
             codeL = 1;
         }
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_info, menu);
         return super.onCreateOptionsMenu(menu);
     }
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if(item.getItemId() == R.id.item_info){
             infoMarkerStatusPico();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return super.onSupportNavigateUp();
     }
 }

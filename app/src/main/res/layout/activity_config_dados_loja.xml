@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.ConfigDadosLojaActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center|top"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:orientation="vertical">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imageView4"
+            android:layout_width="195dp"
+            android:layout_height="195dp"
+            android:layout_marginTop="25dp"
+            android:elevation="6dp"
+            android:src="@drawable/padrao"
+            app:civ_border_color="@color/white"
+            app:civ_border_width="1dp" />
+
+        <EditText
+            android:id="@+id/editNomeLoja"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="15dp"
+            android:ems="10"
+            android:gravity="center"
+            android:hint="@string/nome_da_loja_ou_marca"
+            android:inputType="textPersonName"
+            android:textColor="@color/dark"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/editName"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="5dp"
+            android:ems="10"
+            android:gravity="center"
+            android:hint="@string/hint_nome_responsalvelLoja"
+            android:inputType="textPersonName"
+            android:textColor="@color/dark"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/editNumero"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="5dp"
+            android:ems="10"
+            android:gravity="center"
+            android:hint="@string/hint_telefone_loja"
+            android:inputType="textPersonName"
+            android:textColor="@color/dark"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:text="@string/btn_txt_atualizar_dados" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:padding="8dp"
     android:gravity="center|top"
     tools:context=".activity.CadastrarLojasActivity">
 
@@ -18,17 +18,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="vertical" >
+            android:padding="8dp"
+            android:orientation="vertical">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imageLoja"
-                android:layout_width="260dp"
-                android:layout_height="220dp"
+                android:layout_width="220dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="5dp"
+                android:elevation="10dp"
                 android:onClick="launchGallery"
                 android:src="@drawable/padrao"
-                android:elevation="10dp"
-                app:civ_border_color="@color/dark"
-                app:civ_border_width="2dp"
+                app:civ_border_color="@color/white"
+                app:civ_border_width="1dp"
                 tools:ignore="UsingOnClickInXml,SpeakableTextPresentCheck" />
 
             <EditText
@@ -87,16 +89,16 @@
                 android:textColorHint="@color/silver" />
 
             <EditText
-                android:id="@+id/editTextCepLoja"
+                android:id="@+id/editTextTelefoneLoja"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginTop="4dp"
                 android:background="@drawable/bg_edit_text"
-                android:drawableEnd="@drawable/baseline_location_on_24"
+                android:drawableEnd="@drawable/baseline_check_circle_24"
                 android:ems="10"
-                android:hint="@string/cep"
+                android:hint="@string/phone"
                 android:inputType="numberSigned"
-                android:maxLength="18"
+                android:maxLength="14"
                 android:padding="10dp"
                 android:elevation="6dp"
                 android:textColor="@color/black"
@@ -138,6 +140,15 @@
                 android:textColorHint="@color/silver" />
 
 
+            <ProgressBar
+                android:id="@+id/progressBarLoja"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elevation="6dp"
+                android:progressTint="#7400A5"
+                android:layout_marginTop="5dp"
+                android:visibility="gone"
+                tools:visibility="visible" />
 
             <Button
                 android:id="@+id/buttonCadastrarLoja"
@@ -145,7 +156,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_btn"
                 android:drawableEnd="@drawable/as_small"

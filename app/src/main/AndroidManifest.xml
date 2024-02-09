@@ -57,13 +57,22 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
 
+
+        <activity
+            android:name=".activity.ConfigDadosLojaActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.skateTrade"/>
+        <activity
+            android:name=".activity.ActivityMainLoja"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.skateTrade" />
         <activity
             android:name=".activity.MapaPicosSkate"
             android:exported="false"
-            android:parentActivityName=".activity.ActivityMain"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.skateTrade">
-        </activity>
+            android:theme="@style/Theme.skateTrade" />
         <activity
             android:name=".activity.RedefinirSenhaActivity"
             android:exported="false"
@@ -92,7 +101,6 @@
         <activity
             android:name=".activity.MeusAnunciosActivity"
             android:exported="false"
-            android:parentActivityName=".activity.ActivityMain"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.skateTrade" />
         <activity
@@ -100,18 +108,7 @@
             android:exported="true"
             android:parentActivityName=".activity.ActivityMain"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.skateTrade">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="https://skatertrade.web.app/acesso.html"
-                    android:scheme="https" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.skateTrade"/>
         <activity
             android:name=".activity.ActivityMain"
             android:exported="true"
@@ -121,17 +118,18 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="https://skatertrade.web.app"
-                    android:scheme="https" />
-            </intent-filter>
         </activity>
+
+        <!--            <intent-filter>-->
+        <!--                <action android:name="android.intent.action.VIEW" />-->
+
+        <!--                <category android:name="android.intent.category.DEFAULT" />-->
+        <!--                <category android:name="android.intent.category.BROWSABLE" />-->
+
+        <!--                <data-->
+        <!--                    android:host="https://skatertrade.web.app/acesso.html"-->
+        <!--                    android:scheme="https" />-->
+        <!--            </intent-filter>-->
     </application>
 
 </manifest>
