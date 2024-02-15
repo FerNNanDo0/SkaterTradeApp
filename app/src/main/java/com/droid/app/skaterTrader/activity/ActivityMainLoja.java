@@ -17,24 +17,23 @@ import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.droid.app.skaterTrader.R;
+import com.droid.app.skaterTrader.databinding.ActivityMainLojaBinding;
 import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
+import com.droid.app.skaterTrader.helper.ConfigDadosImgBitmap;
+import com.droid.app.skaterTrader.helper.Gallery;
 import com.droid.app.skaterTrader.helper.Permissions;
 import com.droid.app.skaterTrader.helper.RotacionarImgs;
 import com.droid.app.skaterTrader.model.Loja;
 import com.droid.app.skaterTrader.model.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -47,10 +46,9 @@ public class ActivityMainLoja extends AppCompatActivity
     NavigationView navigationView;
     CircleImageView circleImageViewUser;
     ImageButton btnEditImgLogo;
-    TextView nameUser, emailUser;
+    TextView nameLoja, emailUser;
     Uri img;
     String email;
-    String nomeLoja;
     final int MY_REQUEST_CODE = 188;
     byte[] dadosImg;
     Loja loja;
@@ -60,16 +58,23 @@ public class ActivityMainLoja extends AppCompatActivity
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
 
+    ActivityMainLojaBinding binding;
+
     @Override
-    protected void onResume() {
-        super.onResume();
-        getNameUserDb();
+    protected void onStart() {
+        super.onStart();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.droid.app.skaterTrader.R.layout.activity_main_loja);
+        //setContentView(com.droid.app.skaterTrader.R.layout.activity_main_loja);
+
+        binding = ActivityMainLojaBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        // WakeLook
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // validar permissions
         Permissions.validatePermissions(permissions, this, 1);
@@ -82,8 +87,11 @@ public class ActivityMainLoja extends AppCompatActivity
     }
 
     private void iniciarComponentes(){
-        drawer = findViewById(R.id.drawerLoja);
-        navigationView = findViewById(R.id.nav_viewLoja);
+//        drawer = findViewById(R.id.drawerLoja);
+//        navigationView = findViewById(R.id.nav_viewLoja);
+        drawer = binding.drawerLoja;
+        navigationView = binding.navViewLoja;
+
         actionBarDrawerToggle = new
                 ActionBarDrawerToggle(this, drawer, R.string.nav_open, R.string.nav_close);
         drawer.addDrawerListener(actionBarDrawerToggle);
@@ -93,7 +101,6 @@ public class ActivityMainLoja extends AppCompatActivity
 
         // obter ref e dados da loja
         loja = new Loja();
-        getNameUserDb();
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -144,18 +151,17 @@ public class ActivityMainLoja extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
-
         // definir Informações de perfil do usuario
         if(User.UserLogado() && User.user() != null){
 
             img = User.user().getPhotoUrl();
             email = User.user().getEmail();
 
-            nameUser = findViewById(R.id.nameUser);
+            nameLoja = findViewById(R.id.nameUser);
             emailUser = findViewById(R.id.emailUser);
-
             circleImageViewUser = findViewById(R.id.imageUser);
             btnEditImgLogo = findViewById(R.id.btnEditImgLogo);
+
             if(circleImageViewUser != null){
                 circleImageViewUser.setOnClickListener(this);
                 btnEditImgLogo.setOnClickListener(this);
@@ -171,7 +177,7 @@ public class ActivityMainLoja extends AppCompatActivity
                 }
 
                 emailUser.setText(email);
-                System.out.printf(">>>> Email: %s", email);
+                loja.getNameLojaDb(nameLoja);
 
             }catch (Exception e){
                 circleImageViewUser.setImageResource(R.drawable.logo_inicial_1);
@@ -214,24 +220,9 @@ public class ActivityMainLoja extends AppCompatActivity
     public void onClick(@NonNull View v) {
         int idItem = v.getId();
         if (idItem == R.id.imageUser || idItem == R.id.btnEditImgLogo){
-            launchGallery();
+            Gallery.open(this, 0);
         }
     }
-
-    @NonNull
-    private byte[] recuperarDadosIMG(@NonNull Bitmap imgBitmap) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imgBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-
-        return baos.toByteArray();
-    }
-
-    private void launchGallery(){
-        Intent i = new Intent(
-                Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI );
-        startActivityIfNeeded(i, 0);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -265,38 +256,20 @@ public class ActivityMainLoja extends AppCompatActivity
             Bitmap imgBitmapRotate = RotacionarImgs.rotacionarIMG(imgBitmap, imgSelected, this);
             if(imgBitmapRotate != null){
                 //reuperar dados da img para o firebase
-                dadosImg = recuperarDadosIMG(imgBitmapRotate);
+                dadosImg = ConfigDadosImgBitmap.recuperarDadosIMG(imgBitmapRotate);
 
             }else{
                 //reuperar dados da img para o firebase
-                dadosImg = recuperarDadosIMG(imgBitmap);
+                dadosImg = ConfigDadosImgBitmap.recuperarDadosIMG(imgBitmap);
             }
 
             // salvar img do usuario
             Loja loja = new Loja();
-            loja.salvarImgLogoLoja(dadosImg, ActivityMainLoja.this);
+            loja.salvarImgLogoLoja(dadosImg);
             Glide.with(this).load(imgSelected).into(circleImageViewUser);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void getNameUserDb(){
-        loja = new Loja();
-        //obter dados no Firebase
-        DatabaseReference database = FirebaseRef.getDatabase();
-        DatabaseReference lojaRef = database.child("lojas").child(loja.getIdLoja());
-
-        lojaRef.get().addOnCompleteListener(task -> {
-            if(task.isSuccessful()){
-                Loja loja = task.getResult().getValue(Loja.class);
-                if(loja != null) {
-                    nomeLoja = loja.getNomeLoja();
-                    if(nameUser != null)
-                        nameUser.setText(nomeLoja);
-                }
-            }
-        });
     }
 }

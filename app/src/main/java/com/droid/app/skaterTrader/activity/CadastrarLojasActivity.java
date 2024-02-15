@@ -24,7 +24,10 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.droid.app.skaterTrader.R;
+import com.droid.app.skaterTrader.databinding.ActivityCadastrarLojasBinding;
 import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
+import com.droid.app.skaterTrader.helper.ConfigDadosImgBitmap;
+import com.droid.app.skaterTrader.helper.Gallery;
 import com.droid.app.skaterTrader.helper.MaskEditUtil;
 import com.droid.app.skaterTrader.helper.MaskaraEditTextCpfCNPJ;
 import com.droid.app.skaterTrader.helper.Permissions;
@@ -74,10 +77,14 @@ public class CadastrarLojasActivity extends AppCompatActivity {
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
 
+    ActivityCadastrarLojasBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cadastrar_lojas);
+        //setContentView(R.layout.activity_cadastrar_lojas);
+
+        binding = ActivityCadastrarLojasBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         // validar permissions
         Permissions.validatePermissions(permissions, this, 1);
@@ -90,21 +97,21 @@ public class CadastrarLojasActivity extends AppCompatActivity {
     }
 
     private void iniciarComponentes() {
-        btnCadastrarLoja = findViewById(R.id.buttonCadastrarLoja);
-        editCpfOrCnpj = findViewById(R.id.editTextCpfLoja);
+        btnCadastrarLoja = binding.buttonCadastrarLoja;//findViewById(R.id.buttonCadastrarLoja);
+        editCpfOrCnpj = binding.editTextCpfLoja;//findViewById(R.id.editTextCpfLoja);
         editCpfOrCnpj.addTextChangedListener(MaskaraEditTextCpfCNPJ.insert(editCpfOrCnpj));
 
-        editNomeLoja = findViewById(R.id.editTextNomeLoja);
-        editNomeUser = findViewById(R.id.editTextNomeUserLoja);
-        editEmail = findViewById(R.id.editTextEmailLoja);
-        editSenha = findViewById(R.id.editTextPasswordLoja);
+        editNomeLoja = binding.editTextNomeLoja;//findViewById(R.id.editTextNomeLoja);
+        editNomeUser = binding.editTextNomeUserLoja;//findViewById(R.id.editTextNomeUserLoja);
+        editEmail = binding.editTextEmailLoja;//findViewById(R.id.editTextEmailLoja);
+        editSenha = binding.editTextPasswordLoja;//findViewById(R.id.editTextPasswordLoja);
 
-        editNumero = findViewById(R.id.editTextTelefoneLoja);
+        editNumero = binding.editTextTelefoneLoja;//findViewById(R.id.editTextTelefoneLoja);
         editNumero.addTextChangedListener(MaskEditUtil.mask(editNumero,MaskEditUtil.FORMAT_FONE));
 
-        progressBarLoja = findViewById(R.id.progressBarLoja);
+        progressBarLoja = binding.progressBarLoja;//findViewById(R.id.progressBarLoja);
 
-        imageLoja = findViewById(R.id.imageLoja);
+        imageLoja = binding.imageLoja;//findViewById(R.id.imageLoja);
 
         // referencia da loja
         loja = new Loja();
@@ -313,25 +320,20 @@ public class CadastrarLojasActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if( task.isSuccessful() ){
 
-                        loja.salvarImgLogoLoja(dadosImg, this);
-                        loja.atulizarTipoDeUser();
-
                         // enviar email de comfirmação
                         if( FirebaseRef.getAuth().getCurrentUser() != null){
                             FirebaseRef.getAuth().getCurrentUser().sendEmailVerification()
                                     .addOnCompleteListener(task1 -> {
                                         if(task1.isSuccessful()){
+
+                                            loja.salvarDados(this, dadosImg);
+
                                             Toast.makeText(this,
                                                     "Um email de confirmação foi enviado para seu email.",
                                                     Toast.LENGTH_LONG).show();
                                         }
                                     });
                         }
-
-                        loja.salvarDados();
-
-                        finish();
-                        startActivity(new Intent(this, ActivityMainLoja.class));
 
                     }else{
                         progressBarLoja.setVisibility( View.GONE );
@@ -371,15 +373,7 @@ public class CadastrarLojasActivity extends AppCompatActivity {
         Toast.makeText(CadastrarLojasActivity.this, msg, Toast.LENGTH_LONG).show();
     }
     public void launchGallery(View view){
-        try{
-            Intent i = new Intent(
-                    Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-            );
-            startActivityIfNeeded(i, 1);
-            // startActivityForResult(i, requestCode);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        Gallery.open(this, 0);
     }
     @SuppressLint("UseCompatLoadingForDrawables")
     private void recuperaImagemDaGaleria(Intent data ){
@@ -399,14 +393,14 @@ public class CadastrarLojasActivity extends AppCompatActivity {
                 if(imgBitmapRotate != null){
                     //reuperar dados da img para o firebase
                     imageLoja.setImageBitmap(imgBitmapRotate);
-                    dadosImg = recuperarDadosIMG(imgBitmapRotate);
+                    dadosImg = ConfigDadosImgBitmap.recuperarDadosIMG(imgBitmapRotate);
 
                     listaFotoLogo.add(dadosImg);
 
                 }else{
                     //reuperar dados da img para o firebase
                     imageLoja.setImageBitmap(imgBitmap);
-                    dadosImg = recuperarDadosIMG(imgBitmap);
+                    dadosImg = ConfigDadosImgBitmap.recuperarDadosIMG(imgBitmap);
 
                     listaFotoLogo.add(dadosImg);
                 }
@@ -415,15 +409,6 @@ public class CadastrarLojasActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
-    //reuperar dados da img para o firebase
-    @NonNull
-    private byte[] recuperarDadosIMG(@NonNull Bitmap imgBitmap) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imgBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        return baos.toByteArray();
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

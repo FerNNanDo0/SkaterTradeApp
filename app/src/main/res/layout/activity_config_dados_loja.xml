@@ -4,72 +4,139 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
     tools:context=".activity.ConfigDadosLojaActivity">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center|top"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:orientation="vertical">
+        android:gravity="center">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/imageView4"
-            android:layout_width="195dp"
-            android:layout_height="195dp"
-            android:layout_marginTop="25dp"
-            android:elevation="6dp"
-            android:src="@drawable/padrao"
-            app:civ_border_color="@color/white"
-            app:civ_border_width="1dp" />
-
-        <EditText
-            android:id="@+id/editNomeLoja"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="15dp"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="@string/nome_da_loja_ou_marca"
-            android:inputType="textPersonName"
-            android:textColor="@color/dark"
-            android:textSize="18sp" />
-
-        <EditText
-            android:id="@+id/editName"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="5dp"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="@string/hint_nome_responsalvelLoja"
-            android:inputType="textPersonName"
-            android:textColor="@color/dark"
-            android:textSize="18sp" />
-
-        <EditText
-            android:id="@+id/editNumero"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="5dp"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="@string/hint_telefone_loja"
-            android:inputType="textPersonName"
-            android:textColor="@color/dark"
-            android:textSize="18sp" />
-
-        <Button
-            android:id="@+id/button2"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:text="@string/btn_txt_atualizar_dados" />
+            android:gravity="center"
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imageLogo"
+                android:layout_width="195dp"
+                android:layout_height="195dp"
+                android:layout_marginTop="30dp"
+                android:elevation="4dp"
+                android:src="@drawable/padrao"
+                app:civ_border_color="@color/white"
+                app:civ_border_width="1dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingEnd="20dp"
+                android:paddingStart="20dp"
+                android:elevation="4dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/editNomeLoja"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:hint="@string/nome_da_loja_ou_marca"
+                    android:background="@drawable/bg_edit_text"
+                    android:inputType="textPersonName|textCapWords"
+                    android:textColor="@color/dark2"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/editName"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/bg_edit_text"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:hint="@string/hint_nome_responsalvelLoja"
+                    android:inputType="textPersonName|textCapWords"
+                    android:textColor="@color/dark2"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/editNumero"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/bg_edit_text"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:hint="@string/hint_telefone_loja"
+                    android:maxLength="14"
+                    android:inputType="number"
+                    android:textColor="@color/dark2"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/editCpfOrCnpj"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/bg_edit_text"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:maxLength="18"
+                    android:hint="CPF ou CNPJ"
+                    android:inputType="number"
+                    android:textColor="@color/dark2"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/editEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="5dp"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:hint="E-mail da loja"
+                    android:background="@drawable/bg_edit_text"
+                    android:inputType="textWebEmailAddress"
+                    android:textColor="@color/dark2"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progressBarConfigLoja"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elevation="6dp"
+                android:progressTint="#7400A5"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <Button
+                android:id="@+id/btn_update"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:background="@drawable/bg_btn"
+                android:drawableEnd="@drawable/as_small"
+                android:drawableTint="@color/white"
+                android:elevation="5dp"
+                android:paddingStart="60dp"
+                android:text="@string/btn_txt_atualizar_dados"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:rippleColor="@color/rippleColorBtn" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

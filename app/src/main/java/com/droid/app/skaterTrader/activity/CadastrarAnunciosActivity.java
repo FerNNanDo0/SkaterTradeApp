@@ -23,7 +23,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.droid.app.skaterTrader.databinding.ActivityCadastrarAnunciosBinding;
 import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
+import com.droid.app.skaterTrader.helper.ConfigDadosImgBitmap;
+import com.droid.app.skaterTrader.helper.Gallery;
 import com.droid.app.skaterTrader.helper.RotacionarImgs;
 import com.droid.app.skaterTrader.model.Anuncio;
 import com.droid.app.skaterTrader.R;
@@ -50,6 +54,8 @@ public class CadastrarAnunciosActivity extends AppCompatActivity
     StorageReference storage;
     ImageView imageView1, imageView2, imageView3;
 
+    ActivityCadastrarAnunciosBinding binding;
+
 //    ActivityResultLauncher<Intent> galeria_StartActivityForResult;
 
     byte[] dadosImg;
@@ -62,7 +68,10 @@ public class CadastrarAnunciosActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cadastrar_anuncios);
+        //setContentView(R.layout.activity_cadastrar_anuncios);
+
+        binding = ActivityCadastrarAnunciosBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         assert getSupportActionBar() != null;
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getColor(R.color.purple_500)));
@@ -74,38 +83,38 @@ public class CadastrarAnunciosActivity extends AppCompatActivity
     }
     private void configIniciais(){
      // config editTexts
-        editNumero = findViewById(R.id.editTextNumeroFone);
+        editNumero = binding.editTextNumeroFone;//findViewById(R.id.editTextNumeroFone);
         editNumero.addTextChangedListener(MaskEditUtil.mask(editNumero,MaskEditUtil.FORMAT_FONE));
-        editValor = findViewById(R.id.editTextValor);
+        editValor = binding.editTextValor;//findViewById(R.id.editTextValor);
         editValor.setCurrency("$");
         editValor.setDecimals(true);
         //Make sure that Decimals is set as false if a custom Separator is used
         editValor.setSeparator(".");
 
-        editTitulo = findViewById(R.id.editTextTitulo);
+        editTitulo = binding.editTextTitulo;//findViewById(R.id.editTextTitulo);
         editTitulo.setFocusable(true);
         editTitulo.requestFocus();
-        editDescricao = findViewById(R.id.editTextDescricao);
+        editDescricao = binding.editTextDescricao;//findViewById(R.id.editTextDescricao);
      // config imageViews
-        imageView1 = findViewById(R.id.imageView1);
+        imageView1 = binding.imageView1;//findViewById(R.id.imageView1);
         imageView1.setOnClickListener(this);
-        imageView2 = findViewById(R.id.imageView2);
+        imageView2 = binding.imageView2;//findViewById(R.id.imageView2);
         imageView2.setOnClickListener(this);
-        imageView3 = findViewById(R.id.imageView3);
+        imageView3 = binding.imageView3;//findViewById(R.id.imageView3);
         imageView3.setOnClickListener(this);
 
         imageView2.setClickable(false);
         imageView3.setClickable(false);
 
      // config button
-        btnSalvar = findViewById(R.id.buttonSalvarAnuncio);
+        btnSalvar = binding.buttonSalvarAnuncio;//findViewById(R.id.buttonSalvarAnuncio);
         btnSalvar.setOnClickListener(this);
      // config spinners
-        spinnerEstado = findViewById(R.id.spinnerLeft);
+        spinnerEstado = binding.spinnerLeft;//findViewById(R.id.spinnerLeft);
         spinnerEstado.getBackground()
                 .setColorFilter(Color.parseColor("#3A8C0E"), PorterDuff.Mode.SRC_ATOP);
 
-        spinnerCategoria = findViewById(R.id.spinnerRight);
+        spinnerCategoria = binding.spinnerRight;//findViewById(R.id.spinnerRight);
         spinnerCategoria.getBackground()
                 .setColorFilter(Color.parseColor("#3A8C0E"), PorterDuff.Mode.SRC_ATOP);
 
@@ -283,9 +292,7 @@ public class CadastrarAnunciosActivity extends AppCompatActivity
         alertDialog.show();
     }
     private void launchGallery(int requestCode){
-        Intent i = new Intent(
-                Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI );
-        startActivityIfNeeded(i, requestCode);
+        Gallery.open(this, requestCode);
         // startActivityForResult(i, requestCode);
     }
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -306,12 +313,12 @@ public class CadastrarAnunciosActivity extends AppCompatActivity
                 Bitmap imgBitmapRotate = RotacionarImgs.rotacionarIMG(imgBitmapCortada, imgSelected, this);
                 if(imgBitmapRotate != null){
                     //reuperar dados da img para o firebase
-                    dadosImg = recuperarDadosIMG(imgBitmapRotate);
+                    dadosImg = ConfigDadosImgBitmap.recuperarDadosIMG(imgBitmapRotate);
 
                     imagemComplet = imgBitmapRotate;
                 }else{
                     //reuperar dados da img para o firebase
-                    dadosImg = recuperarDadosIMG(imgBitmapCortada);
+                    dadosImg = ConfigDadosImgBitmap.recuperarDadosIMG(imgBitmapCortada);
 
                     imagemComplet = imgBitmapCortada;
                 }
@@ -349,15 +356,6 @@ public class CadastrarAnunciosActivity extends AppCompatActivity
                     "Erro ao recuperar imagem, tente outra imagem ou tire outra foto",
                     Toast.LENGTH_SHORT).show();
         }
-    }
-
-    //reuperar dados da img para o firebase
-    @NonNull
-    private byte[] recuperarDadosIMG(@NonNull Bitmap imgBitmap) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imgBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-
-        return baos.toByteArray();
     }
 
     @Override

@@ -40,12 +40,14 @@ public class FirebaseRef {
 
         assert user != null;
         user.updateProfile( profile )
-            .addOnCompleteListener(activity, task1 -> {
+            .addOnCompleteListener(task1 -> {
                 if(!task1.isSuccessful()){
                     Toast.makeText(activity,
                             "Erro ao atualizar foto de perfil", Toast.LENGTH_SHORT).show();
                 }else{
-                    activity.startActivity(activity.getIntent());
+                    if(activity != null){
+                        activity.startActivity(activity.getIntent());
+                    }
                 }
             });
     }

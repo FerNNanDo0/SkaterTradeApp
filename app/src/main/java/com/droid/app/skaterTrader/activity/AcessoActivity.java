@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.EditText;
@@ -46,6 +47,7 @@ public class AcessoActivity extends AppCompatActivity
     ProgressBar progressBar;
     User user;
     Intent activity2;
+    LinearLayout linearLayout3;
 
     @Override
     public void onBackPressed() {
@@ -100,6 +102,8 @@ public class AcessoActivity extends AppCompatActivity
         textViewRedefinir = findViewById(R.id.textViewRedefinir);
         textViewPoliticasPrivacidade =  findViewById(R.id.textViewPoliticas);
         textViewPoliticasPrivacidade.setVisibility(View.VISIBLE);
+
+        linearLayout3 = findViewById(R.id.linearLayout3);
 
 //        reff do user
         user = new User();
@@ -254,6 +258,7 @@ public class AcessoActivity extends AppCompatActivity
                         btnGoogle.setVisibility(View.INVISIBLE);
                         btnLoja.setVisibility(View.INVISIBLE);
                         progressBar.setVisibility(View.VISIBLE);
+                        linearLayout3.setVisibility(View.GONE);
 
                         cadastrarUser( user.getEmail(), user.getSenha() );
                     }else{
@@ -265,6 +270,7 @@ public class AcessoActivity extends AppCompatActivity
                     btnGoogle.setVisibility(View.INVISIBLE);
                     textViewRedefinir.setVisibility(View.GONE);
                     progressBar.setVisibility(View.VISIBLE);
+                    linearLayout3.setVisibility(View.GONE);
 
                     logarUser( user.getEmail(), user.getSenha() );
                 }

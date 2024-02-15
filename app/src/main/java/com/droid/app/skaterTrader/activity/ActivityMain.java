@@ -44,6 +44,8 @@ import com.bumptech.glide.Glide;
 import com.droid.app.skaterTrader.R;
 import com.droid.app.skaterTrader.adapter.AdapterAnuncios;
 import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
+import com.droid.app.skaterTrader.helper.ConfigDadosImgBitmap;
+import com.droid.app.skaterTrader.helper.Gallery;
 import com.droid.app.skaterTrader.helper.Permissions;
 import com.droid.app.skaterTrader.helper.RotacionarImgs;
 import com.droid.app.skaterTrader.model.Anuncio;
@@ -306,17 +308,9 @@ public class ActivityMain extends AppCompatActivity
         return true;
     }
     private void launchGallery(){
-        Intent i = new Intent(
-                Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI );
-        startActivityIfNeeded(i, 0);
+        Gallery.open(this, 0);
     }
-    @NonNull
-    private byte[] recuperarDadosIMG(@NonNull Bitmap imgBitmap) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imgBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 
-        return baos.toByteArray();
-    }
     private void definirImagemPerfi(@Nullable Uri imgSelected){
         try {
             // transformar em bitMap
@@ -329,11 +323,11 @@ public class ActivityMain extends AppCompatActivity
             Bitmap imgBitmapRotate = RotacionarImgs.rotacionarIMG(imgBitmap, imgSelected, this);
             if(imgBitmapRotate != null){
                 //reuperar dados da img para o firebase
-                dadosImg = recuperarDadosIMG(imgBitmapRotate);
+                dadosImg = ConfigDadosImgBitmap.recuperarDadosIMG(imgBitmapRotate);
 
             }else{
                 //reuperar dados da img para o firebase
-                dadosImg = recuperarDadosIMG(imgBitmap);
+                dadosImg = ConfigDadosImgBitmap.recuperarDadosIMG(imgBitmap);
             }
 
             // salvar img do usuario
