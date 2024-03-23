@@ -3,14 +3,13 @@ package com.droid.app.skaterTrader.activity;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
 import android.widget.LinearLayout;
@@ -19,24 +18,27 @@ import android.widget.Switch;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
+
+import com.droid.app.skaterTrader.databinding.AcessoActivityBinding;
+import com.droid.app.skaterTrader.firebase.CadastrarUsers;
+import com.droid.app.skaterTrader.firebase.LoginUsers;
+import com.droid.app.skaterTrader.helper.FecharTecladoSys;
+import com.droid.app.skaterTrader.helper.IntentActionView;
 import com.droid.app.skaterTrader.model.User;
 import com.droid.app.skaterTrader.R;
+import com.droid.app.skaterTrader.viewModel.ViewModelFirebase;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthInvalidUserException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
 public class AcessoActivity extends AppCompatActivity
         implements View.OnClickListener {
     Button btnAcesso, btnGoogle, btnLoja;
@@ -48,171 +50,144 @@ public class AcessoActivity extends AppCompatActivity
     User user;
     Intent activity2;
     LinearLayout linearLayout3;
+    AcessoActivityBinding binding;
+    ViewModelFirebase viewModelFirebase;
+
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+    public boolean onSupportNavigateUp() {
         startActivity( new Intent(getApplicationContext(), ActivityMain.class));
         finish();
+        return super.onSupportNavigateUp();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.acesso_activity);
+        //setContentView(R.layout.acesso_activity);
+        binding = AcessoActivityBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        assert getSupportActionBar() != null;
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getColor(R.color.purple_500)));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Login");
+        //configurar ActionBar
+        configActionBar();
 
-        initAtributos();
+        // iciar conponentes da tela
+        startComponents();
 
-        btnAcesso.setPadding(95, 0, 0, 0);
+        // config Switch
         switchAcess.setOnClickListener(v -> {
             if (switchAcess.isChecked()) {
-                btnAcesso.setText(R.string.btn_cadastrar);
-                btnAcesso.setPadding(80, 0, 0, 0);
-                editTextNome.setVisibility(View.VISIBLE);
-                textViewRedefinir.setVisibility(View.GONE);
-                btnLoja.setVisibility(View.VISIBLE);
-                getSupportActionBar().setTitle("Cadastrar");
+                configSwitch(R.string.cadastrar,80, View.VISIBLE, View.GONE, R.string.cadastrar );
+
             } else {
-                btnAcesso.setText(R.string.btn_logar);
-                btnAcesso.setPadding(95, 0, 0, 0);
-                editTextNome.setVisibility(View.GONE);
-                btnLoja.setVisibility(View.GONE);
-                textViewRedefinir.setVisibility(View.VISIBLE);
-                getSupportActionBar().setTitle("Login");
+                configSwitch(R.string.btn_logar, 95, View.GONE, View.VISIBLE, R.string.login);
+
             }
         });
+
         btnAcesso.setOnClickListener(this);
         btnGoogle.setOnClickListener(this);
     }
-    private void initAtributos(){
-        btnLoja = findViewById(R.id.buttonLojas);
+    private void startComponents(){
+        btnLoja = binding.buttonLojas;//findViewById(R.id.buttonLojas);
         btnLoja.setVisibility(View.GONE);
-        btnAcesso = findViewById(R.id.btnAcessar);
-        btnGoogle= findViewById(R.id.btnGoogle);
-        switchAcess = findViewById(R.id.switch1);
-        editTextEmail = findViewById(R.id.editEmail);
-        editTextSenha = findViewById(R.id.editTextPassword);
-        editTextNome = findViewById(R.id.editNome);
-        progressBar = findViewById(R.id.progressBar);
-        textViewRedefinir = findViewById(R.id.textViewRedefinir);
-        textViewPoliticasPrivacidade =  findViewById(R.id.textViewPoliticas);
+        btnAcesso = binding.btnAcessar;//findViewById(R.id.btnAcessar);
+        btnAcesso.setPadding(95, 0, 0, 0);
+        btnGoogle = binding.btnGoogle;//findViewById(R.id.btnGoogle);
+        switchAcess = binding.switch1;//findViewById(R.id.switch1);
+        editTextEmail = binding.editEmail;//findViewById(R.id.editEmail);
+        editTextSenha = binding.editTextPassword;//findViewById(R.id.editTextPassword);
+        editTextNome = binding.editNome;//findViewById(R.id.editNome);
+        progressBar = binding.progressBar;//findViewById(R.id.progressBar);
+        textViewRedefinir = binding.textViewRedefinir;//findViewById(R.id.textViewRedefinir);
+        textViewPoliticasPrivacidade = binding.textViewPoliticas;//findViewById(R.id.textViewPoliticas);
         textViewPoliticasPrivacidade.setVisibility(View.VISIBLE);
 
-        linearLayout3 = findViewById(R.id.linearLayout3);
+        linearLayout3 = binding.linearLayout3;//findViewById(R.id.linearLayout3);
 
 //        reff do user
         user = new User();
 
         // ref activity 2
         activity2 = new Intent(this, ActivityMain.class);
+
+        //instance ViewModelFirebase
+        viewModelFirebase = new ViewModelProvider(this).get(ViewModelFirebase.class);
     }
+
+    private void configActionBar(){
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getColor(R.color.purple_500)));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Login");
+    }
+
     private void cadastrarUser(String email, String senha){
-        FirebaseRef.getAuth().createUserWithEmailAndPassword( email,senha )
-            .addOnCompleteListener(task -> {
-                if( task.isSuccessful() ){
 
-                    //atualizar nome
-                    user.atulizarNome(this);
+        // observe msg Toast email de comfirm
+        viewModelFirebase.getLiveDataShowToast().observe(this,
+                this::exibirToast
+        );
 
-                    // enviar email de comfirmação
-                    if( FirebaseRef.getAuth().getCurrentUser() != null){
-                        FirebaseRef.getAuth().getCurrentUser().sendEmailVerification()
-                            .addOnCompleteListener( task1 -> {
-                                if(task1.isSuccessful()){
-                                    Toast.makeText(AcessoActivity.this,
-                                            "Um email de confirmação foi enviado para seu email.",
-                                            Toast.LENGTH_LONG).show();
-                                }
-                            });
-                    }
-                    startActivity(new Intent(getIntent()));
-
-                    /*if (activity2 != null){
+        // observe cadastro
+        viewModelFirebase.getResultCadastro().observe(this,
+                bol -> {
+                    if(bol){
+                        //atualizar nome
+                        user.atulizarNome(this);
                         startActivity(activity2);
-                        finish();
-                    }*/
-                }else{
-                    String execao;
-                    progressBar.setVisibility( View.GONE );
-                    btnAcesso.setVisibility(View.VISIBLE);
-                    btnGoogle.setVisibility(View.VISIBLE);
-                    btnLoja.setVisibility(View.VISIBLE);
-
-                    try{
-                        throw Objects.requireNonNull(task.getException());
-
-                    } catch (FirebaseAuthWeakPasswordException passwordException){
-                        execao = "Digite uma senha mais forte!";
-
-                    } catch (FirebaseAuthInvalidCredentialsException invalidCredentials){
-                        execao = "Digite um e-mail válido!";
-
-                    } catch (FirebaseAuthUserCollisionException collision){
-                        execao = "Uma conta com esse E-mail já foi cadastrada no sistema!";
-                        Toast.makeText(this, "Faça o login", Toast.LENGTH_LONG).show();
-                    } catch (Exception e){
-                        execao = "Erro ao cadastrar usuario: "+ e.getMessage() ;
-                        e.printStackTrace();
                     }
-                    Toast.makeText(AcessoActivity.this, "Erro: "+execao,
-                            Toast.LENGTH_SHORT).show();
                 }
-            });
+        );
+
+        // observe Erro de cadastro
+        viewModelFirebase.getErroCadastro().observe(this,
+                erro -> {
+                    exibirToast("ERRO: "+erro);
+                    configBtnAndProgressUI(View.VISIBLE, View.GONE, View.VISIBLE);
+                }
+        );
+
+        // Cadastrar User
+        CadastrarUsers cadastrarUsers = new CadastrarUsers(viewModelFirebase, "USER");
+        cadastrarUsers.cadastrarUser(email, senha);
     }
     private void logarUser(String email, String senha){
-        btnAcesso.setEnabled(false);
-        btnGoogle.setEnabled(false);
-        btnLoja.setEnabled(false);
-        FirebaseRef.getAuth().signInWithEmailAndPassword(email,senha)
-                .addOnCompleteListener( task -> {
-                    if ( task.isSuccessful() ){
+        // config btns da ui
+        configdBtns(false);
 
-                        if (activity2 != null){
-                            startActivity(activity2);
-                            finish();
-                        }
-                    }else{
-                        btnAcesso.setVisibility(View.VISIBLE);
-                        btnGoogle.setVisibility(View.VISIBLE);
+        viewModelFirebase.getResultLogin().observe(this,
+            bol -> {
+                if(bol.equals("L")){ // LOJA
+                    startActivity(new Intent(this, ActivityMainLoja.class));
+                    finish();
 
-                        btnAcesso.setEnabled(true);
-                        btnGoogle.setEnabled(true);
-                        btnLoja.setEnabled(true);
-
-                        textViewRedefinir.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility( View.GONE );
-
-                        String execao;
-                        try {
-                            throw Objects.requireNonNull(task.getException());
-
-                        }catch (FirebaseAuthInvalidCredentialsException e){
-                            execao = "E-mail ou senha não correspondem a um usuário cadastrado!";
-
-                        }catch (FirebaseAuthInvalidUserException e){
-                            execao = "Usuario não está cadastrado.";
-
-                        }catch ( Exception e ){
-                            execao = "Usuario não está cadastrado."+ e.getMessage();
-                            e.printStackTrace();
-                        }
-
-                        exibirToast(execao);
+                }else{// USER
+                    if (activity2 != null){
+                        startActivity(activity2);
+                        finish();
                     }
-                });
-    }
-    // closed keyBoard
-    private void closedKeyBoard(){
-        View view = getWindow().getCurrentFocus();
-        if(view != null){
-            InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            manager.hideSoftInputFromWindow( view.getWindowToken(),0);
-        }
+                }
+            }
+        );
+
+        viewModelFirebase.getErroLogin().observe(this,
+            erro -> {
+                // config visibility views da ui
+                textViewRedefinir.setVisibility(View.VISIBLE);
+                configBtnAndProgressUI( View.VISIBLE, View.GONE, View.VISIBLE );
+
+                // config btns da ui
+                configdBtns(true);
+
+                exibirToast(erro);
+            }
+        );
+
+        // logar User
+        LoginUsers loginUsers = new LoginUsers(viewModelFirebase);
+        loginUsers.logar(email, senha);
+
     }
 
     //exibir msgs para o usuario
@@ -245,7 +220,7 @@ public class AcessoActivity extends AppCompatActivity
                 user.setSenha(senha);
 
                 // ocultar teclado
-                closedKeyBoard();
+                FecharTecladoSys.closedKeyBoard(this);
 
                 // Verificar o estado do switch
                 if ( switchAcess.isChecked() ){  // cadastro
@@ -254,34 +229,30 @@ public class AcessoActivity extends AppCompatActivity
                     if(!nome.isEmpty()){
                         user.setNome(nome);
 
-                        btnAcesso.setVisibility(View.INVISIBLE);
-                        btnGoogle.setVisibility(View.INVISIBLE);
-                        btnLoja.setVisibility(View.INVISIBLE);
-                        progressBar.setVisibility(View.VISIBLE);
-                        linearLayout3.setVisibility(View.GONE);
-
+                        // config visibility das view da ui
+                        configBtnAndProgressUI(View.INVISIBLE, View.VISIBLE, View.GONE);
+                        // cadastrar users
                         cadastrarUser( user.getEmail(), user.getSenha() );
-                    }else{
-                        Toast.makeText(AcessoActivity.this, "Informe seu nome",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }else{  // loguin
-                    btnAcesso.setVisibility(View.INVISIBLE);
-                    btnGoogle.setVisibility(View.INVISIBLE);
-                    textViewRedefinir.setVisibility(View.GONE);
-                    progressBar.setVisibility(View.VISIBLE);
-                    linearLayout3.setVisibility(View.GONE);
 
+                    }else{
+                        exibirToast("Informe seu nome");
+                    }
+
+                }else{  // loguin
+
+                    // config visibility das view da ui
+                    textViewRedefinir.setVisibility(View.GONE);
+                    configBtnAndProgressUI(View.INVISIBLE, View.VISIBLE, View.GONE);
+
+                    // logar users
                     logarUser( user.getEmail(), user.getSenha() );
                 }
 
             }else{
-                Toast.makeText(AcessoActivity.this, "Para a maior segurança informe uma Senha com no mínimo 10 caracters.",
-                        Toast.LENGTH_LONG).show();
+                exibirToast("Para a maior segurança informe uma Senha com no mínimo 10 caracters.");
             }
         }else{
-            Toast.makeText(AcessoActivity.this, "Informe um e-mail",
-                    Toast.LENGTH_LONG).show();
+            exibirToast("Informe um e-mail");
         }
     }
     public void logarComGoogle(){
@@ -332,14 +303,11 @@ public class AcessoActivity extends AppCompatActivity
                 assert response.getError() != null;
                 if (response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
 
-                    Toast.makeText(this,
-                            "Problemas com acesso a internet", Toast.LENGTH_LONG).show();
+                    exibirToast("Problemas com acesso a internet");
                     return;
                 }
                 if (response.getError().getErrorCode() == ErrorCodes.PROVIDER_ERROR) {
-
-                    Toast.makeText(this,
-                            "Erro: "+response.getError(), Toast.LENGTH_LONG).show();
+                    exibirToast("Erro: "+response.getError());
                 }
 
             }
@@ -353,23 +321,34 @@ public class AcessoActivity extends AppCompatActivity
 
     // politicas de privacidade
     public void politicasPrivacidade(View view){
-        browseTo();
+        IntentActionView.browseTo(this);
     }
-    private void browseTo(){
-        try {
 
-            String url = "https://skatertrade.web.app/política-de-privacidade.html";
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            startActivity(i);
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
 
     public void cadastrarLojas(View view){
         startActivity(new Intent(this, CadastrarLojasActivity.class));
     }
 
+    private void configBtnAndProgressUI(int btnConfig, int progressConfig, int layConfig){
+        progressBar.setVisibility( progressConfig );
+        btnAcesso.setVisibility(btnConfig);
+        btnGoogle.setVisibility(btnConfig);
+        //btnLoja.setVisibility(btnConfig);
+        linearLayout3.setVisibility(layConfig);
+    }
+
+    private void configdBtns(boolean bol){
+        btnAcesso.setEnabled(bol);
+        btnGoogle.setEnabled(bol);
+        //btnLoja.setEnabled(bol);
+    }
+
+    private void configSwitch(int txt, int pd, int visib1, int visib2, int title ){
+        btnAcesso.setText(txt);
+        btnAcesso.setPadding(pd, 0, 0, 0);
+        editTextNome.setVisibility(visib1);
+        //btnLoja.setVisibility(visib1);
+        textViewRedefinir.setVisibility(visib2);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(title);
+    }
 }

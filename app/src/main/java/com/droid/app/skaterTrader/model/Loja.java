@@ -1,8 +1,6 @@
 package com.droid.app.skaterTrader.model;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -10,9 +8,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 
-import com.droid.app.skaterTrader.activity.ActivityMainLoja;
+import com.droid.app.skaterTrader.firebase.UserFirebase;
 import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.droid.app.skaterTrader.viewModel.ViewModelConfigDadosLoja;
+import com.droid.app.skaterTrader.viewModel.ViewModelFirebase;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -23,10 +22,10 @@ import com.google.firebase.storage.UploadTask;
 import java.util.HashMap;
 import java.util.Map;
 public class Loja {
-    boolean bool;
     Activity activity;
     StorageReference storage, imgAnuncio;
     DatabaseReference database, lojaRef;
+
     private String nomeLoja;
     private String nomeUser;
     private String cpfOrCnpj;
@@ -36,7 +35,17 @@ public class Loja {
     private String id;
     private ModelCnpj endereço;
     private String telefone;
-    private final String tipoUser = "L";
+    private String token;
+    ViewModelConfigDadosLoja viewModelConfig;
+    ViewModelFirebase viewModelFirebase;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public String getTelefone() {
         return telefone;
@@ -98,6 +107,17 @@ public class Loja {
         this.urlLogo = urlLogo;
     }
 
+    public Loja(ViewModelConfigDadosLoja viewModel) {
+        this.viewModelConfig = viewModel;
+    }
+
+    public Loja(ViewModelFirebase viewModel) {
+        this.viewModelFirebase = viewModel;
+    }
+
+    public Loja() {
+
+    }
 
     // gerar ID para o usuario
     public String getIdLoja() {
@@ -107,28 +127,33 @@ public class Loja {
         return id;
     }
 
-    public static boolean UserLogado(){
-        return FirebaseRef.getAuth().getCurrentUser() != null;
-    }
-
-    public void salvarDados(Activity activityC, byte[] dadosImg) {
-        this.activity = activityC;
+    public void salvarDados( byte[] dadosImg) {
         //salvar dados no Firebase
         database = FirebaseRef.getDatabase();
         lojaRef = database.child("lojas").child(getIdLoja());
 
         atulizarTipoDeUser();
-        lojaRef.setValue(this).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
+
+        lojaRef.setValue(this)
+            .addOnCompleteListener(task -> {
                 if(task.isSuccessful()){
                     salvarImgLogoLoja(dadosImg);
 
-                    activity.startActivity(new Intent(activity, ActivityMainLoja.class));
-                    activity.finish();
+                    // gerar um id para consulta
+                    String idConsulta = lojaRef.push().getKey();
+
+                    // definir e salvar dados para consultas
+                    Consulta consulta = new Consulta();
+                    consulta.setIdConsulta(idConsulta);
+                    consulta.setNomeLoja(getNomeLoja());
+                    consulta.setTelefone(getTelefone());
+                    consulta.setCpfOrCnpj(getCpfOrCnpj());
+                    consulta.salvar();
+
+                    viewModelFirebase.setCadastrado(true);
                 }
-            }
         });
+
     }
 
     // salvar imagens no storage
@@ -143,14 +168,12 @@ public class Loja {
 
             // fazer upload da imagem
             UploadTask uploadTask = imgAnuncio.putBytes(img);
-            uploadTask.addOnSuccessListener( taskSnapshot -> {
-                fazerDownloadUrlFoto();
-            });
+            uploadTask.addOnSuccessListener( taskSnapshot -> fazerDownloadUrlFoto());
+
         }catch (Exception e){
             e.printStackTrace();
         }
     }
-
     public void fazerDownloadUrlFoto(){
         // Faz download da Url da foto
         imgAnuncio.getDownloadUrl().addOnCompleteListener( task -> {
@@ -162,12 +185,12 @@ public class Loja {
 
             // update img perfil
             FirebaseRef.upDateImgPerfil(null, urlImgStorage);
-            atualizarDadosDB(null, null);
+            atualizarDadosDB();
         });
     }
 
     // atualizar dados no DB
-    public void atualizarDadosDB(ProgressBar progress, Button btn){
+    public void atualizarDadosDB(){
         database = FirebaseRef.getDatabase();
         lojaRef = database.child("lojas").child(getIdLoja());
 
@@ -186,18 +209,22 @@ public class Loja {
         }
 
         lojaRef.updateChildren(updateDB).addOnCompleteListener(task -> {
-            if(task.isSuccessful() && progress != null && btn != null){
+
+            viewModelConfig.setBol(task.isSuccessful());
+
+            /*if(task.isSuccessful() && progress != null && btn != null){
                 progress.setVisibility(View.GONE);
                 btn.setVisibility(View.GONE);
-            }
+            }*/
         });
     }
 
     // salvar tipo de user
     public void atulizarTipoDeUser(){
         try {
-            if(UserLogado()){
+            if(UserFirebase.UserLogado()){
                 FirebaseUser user = FirebaseRef.getAuth().getCurrentUser();
+                String tipoUser = "L";
                 UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder()
                         .setDisplayName(tipoUser)
                         .build();
@@ -215,7 +242,6 @@ public class Loja {
             e.printStackTrace();
         }
     }
-
     public void getNameLojaDb(TextView editNameLoja){
         //obter dados no Firebase
         DatabaseReference database = FirebaseRef.getDatabase();

@@ -1,12 +1,9 @@
 package com.droid.app.skaterTrader.activity;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -19,16 +16,13 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,22 +37,21 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.droid.app.skaterTrader.R;
 import com.droid.app.skaterTrader.adapter.AdapterAnuncios;
+import com.droid.app.skaterTrader.firebase.NotificationAnuncio;
 import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
+import com.droid.app.skaterTrader.helper.ClickRecyclerView;
 import com.droid.app.skaterTrader.helper.ConfigDadosImgBitmap;
 import com.droid.app.skaterTrader.helper.Gallery;
+import com.droid.app.skaterTrader.helper.IntentActionView;
 import com.droid.app.skaterTrader.helper.Permissions;
 import com.droid.app.skaterTrader.helper.RotacionarImgs;
 import com.droid.app.skaterTrader.model.Anuncio;
 import com.droid.app.skaterTrader.model.User;
-import com.droid.app.skaterTrader.viewModel.ViewModelAnuncio;
+import com.droid.app.skaterTrader.service.InitSdkAdmob;
+import com.droid.app.skaterTrader.viewModel.ViewModelAnuncios;
 import com.google.android.ads.nativetemplates.TemplateView;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdLoader;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.nativead.NativeAd;
-import com.google.android.gms.ads.nativead.NativeAdOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
@@ -71,14 +64,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import dmax.dialog.SpotsDialog;
+
 @SuppressLint("NotifyDataSetChanged")
 public class ActivityMain extends AppCompatActivity
         implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
@@ -92,13 +86,13 @@ public class ActivityMain extends AppCompatActivity
     TemplateView template;
     Anuncio anuncio;
     byte[] dadosImg;
-    ViewModelAnuncio viewModel;
+    ViewModelAnuncios viewModel;
     String filtro = "";
     String estadosSelected = "";
     String categoriaSelected = "";
     MenuItem menuRedefinir;
     ClickRecyclerView clickRecyclerView;
-    ValueEventListener valueEventListener, valueEventListener1, valueEventListener2;
+    ValueEventListener valueEventListener1, valueEventListener2;
     Button btn_regiao, btn_categoria;
     String[] permissions = new String[]{
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -111,7 +105,6 @@ public class ActivityMain extends AppCompatActivity
     NavigationView navigationView;
     CircleImageView circleImageViewUser;
     ImageButton btnEditImgLogo;
-    //ActivityMainBinding activityMainBinding;
     TextView nameUser, emailUser;
     int codeImg = 0;
     Uri img;
@@ -119,17 +112,9 @@ public class ActivityMain extends AppCompatActivity
     String email;
     final int MY_REQUEST_CODE = 188;
 
-    // acao de btn voltar do sistema-android
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
-        recuperarAnuncios();
         if(alertDialog != null && anuncioList.size() > 0 ){
             alertDialog.dismiss();
             alertDialog.cancel();
@@ -139,7 +124,7 @@ public class ActivityMain extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
-        anunciosRef.removeEventListener(valueEventListener);
+        //anunciosRef.removeEventListener(valueEventListener);
         if (valueEventListener1 != null) {
             anunciosFiltroRef.removeEventListener(valueEventListener1);
         }
@@ -151,6 +136,7 @@ public class ActivityMain extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        this.Ad = InitSdkAdmob.getAd();
         if (Ad != null) {
             Ad.destroy();
             template.setVisibility(View.GONE);
@@ -169,31 +155,7 @@ public class ActivityMain extends AppCompatActivity
             if ( appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                     && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE) ) {
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Atualização disponível!");
-                builder.setMessage("Uma nova versão para esse app está disponível no Google Play.");
-                builder.setCancelable(false);
-                builder.setPositiveButton("Atualizar", (dialog, which) -> {
-
-                    try {
-                        appUpdateManager.startUpdateFlowForResult(
-                                appUpdateInfo,
-                                AppUpdateType.IMMEDIATE,
-                                this,
-                                MY_REQUEST_CODE
-                        );
-                    } catch (IntentSender.SendIntentException e) {
-                        iniciarAppPlayStore();
-                        finish();
-                        throw new RuntimeException(e);
-                    }
-
-                    dialog.dismiss();
-                });
-                builder.setNegativeButton("Cancelar", (dialog, which) -> finish());
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                alertAtulizacao(appUpdateManager, appUpdateInfo);
             }
         });
 
@@ -208,26 +170,50 @@ public class ActivityMain extends AppCompatActivity
             alertDialog.cancel();
         }
     }
+
+    private void alertAtulizacao(AppUpdateManager appUpdateManager, AppUpdateInfo appUpdateInfo){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Atualização disponível!");
+        builder.setMessage("Uma nova versão para esse app está disponível no Google Play.");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Atualizar", (dialog, which) -> {
+
+            try {
+                appUpdateManager.startUpdateFlowForResult(
+                        appUpdateInfo,
+                        AppUpdateType.IMMEDIATE,
+                        this,
+                        MY_REQUEST_CODE
+                );
+            } catch (IntentSender.SendIntentException e) {
+                iniciarAppPlayStore();
+                finish();
+                throw new RuntimeException(e);
+            }
+
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("Cancelar", (dialog, which) -> finish());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    //////// ======= \\\\\\\
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SplashScreen.installSplashScreen(this);
-
         setContentView(R.layout.layout_main);
-//        activityMainBinding = ActivityMainBinding.inflate(getLayoutInflater());
-//        setContentView(activityMainBinding.getRoot());
+//        binding = ActivityMainBinding.inflate(getLayoutInflater());
+//        setContentView(binding.getRoot());
 
         // WakeLook
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        // init SDK Ads
-        MobileAds.initialize(this, initializationStatus -> {
-        });
-
         // config da toolBar
-        assert getSupportActionBar() != null;
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getColor(R.color.purple_500)));
-        getSupportActionBar().setElevation(0);
+        configActionBar();
 
         // iniciar componentes da tela
         iniciarComponentes();
@@ -237,7 +223,7 @@ public class ActivityMain extends AppCompatActivity
 
             String tipoUser = User.user().getDisplayName();
 
-            if(tipoUser.equals("L")){
+            if(tipoUser != null && tipoUser.equals("L")){
                 startActivity(new Intent(this, ActivityMainLoja.class));
                 finish();
             }else{
@@ -245,26 +231,45 @@ public class ActivityMain extends AppCompatActivity
                 Permissions.validatePermissions(permissions, this, 1);
 
                 // navigation Drawer // config menu drawer
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                drawer = findViewById(R.id.drawer);
-                navigationView = findViewById(R.id.nav_view);
-                actionBarDrawerToggle = new
-                        ActionBarDrawerToggle(this, drawer, R.string.nav_open, R.string.nav_close);
-                drawer.addDrawerListener(actionBarDrawerToggle);
-
-                navigationView.setNavigationItemSelectedListener(this);
-                actionBarDrawerToggle.syncState();
+                configNavigationDrawer();
             }
         }
         // permissão de notificação
-        askNotificationPermission();
+        new NotificationAnuncio().askNotificationPermission(this);
 
         // configurar recyclerView
         configRecycler();
 
-        // sdk adMob
-        initSdkAdmob();
+        // buscar anuncios do db
+        recuperarAnuncios();
+
+        // init SDK Ads
+        MobileAds.initialize(this, initializationStatus -> {
+        });
+
+        // Init sdk adMob
+        template = findViewById(R.id.my_template);
+        InitSdkAdmob.initSdkAdmob(this, template);
     }
+
+    private void configActionBar(){
+        // config da toolBar
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getColor(R.color.purple_500)));
+        getSupportActionBar().setElevation(0);
+    }
+    private void configNavigationDrawer(){
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        drawer = findViewById(R.id.drawer);
+        navigationView = findViewById(R.id.nav_view);
+        actionBarDrawerToggle = new
+                ActionBarDrawerToggle(this, drawer, R.string.nav_open, R.string.nav_close);
+        drawer.addDrawerListener(actionBarDrawerToggle);
+
+        navigationView.setNavigationItemSelectedListener(this);
+        actionBarDrawerToggle.syncState();
+    }
+
     // click do navigationDrawer
     @SuppressLint("NonConstantResourceId")
     @Override
@@ -279,13 +284,7 @@ public class ActivityMain extends AppCompatActivity
                 break;
 
             case R.id.nav_shareApp:
-                String urlApp = "https://play.google.com/store/apps/details?id=com.droid.app.skaterTrader";
-                Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, urlApp);
-                sendIntent.setType("text/plain");
-
-                Intent shareIntent = Intent.createChooser(sendIntent, "Compartilhar App");
-                startActivity(shareIntent);
+                IntentActionView.sharedApp(this);
                 break;
 
             case R.id.avaliar:
@@ -293,7 +292,7 @@ public class ActivityMain extends AppCompatActivity
                 break;
 
             case R.id.nav_info:
-                Toast.makeText(this, "Informações em breve estará diponível", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, InfoActivity.class));
                 break;
 
             case R.id.sair:
@@ -361,71 +360,7 @@ public class ActivityMain extends AppCompatActivity
             }
         }
     }
-    //admob
-    private void initSdkAdmob() {
-        // ca-app-pub-4810475836852520/5974368133 -> id anuncio nativo
-        // ca-app-pub-3940256099942544/2247696110 -> teste
-        final AdLoader adLoader = new AdLoader.Builder(this, "ca-app-pub-4810475836852520/5974368133")
-                .forNativeAd(nativeAd -> {
-                    Ad = nativeAd;
 
-                    // Show the ad.
-                    template = findViewById(R.id.my_template);
-                    template.setVisibility(View.VISIBLE);
-                    template.setNativeAd(nativeAd);
-                })
-                .withAdListener(new AdListener() {
-                    @Override
-                    public void onAdClosed() {
-                        super.onAdClosed();
-                        template.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onAdLoaded() {
-                        // metodo chamado quando o anúncio é carregado
-                    }
-
-                    @Override
-                    public void onAdOpened() {
-                        // metodo chamado quando o anúncio éaberto
-                    }
-
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError adError) {
-                        // usar ess metodo para alterar a interface ou apenas registrar a falha
-                    }
-                })
-                .withNativeAdOptions(new NativeAdOptions.Builder()
-                        // Methods in the NativeAdOptions.Builder class can be
-                        // used here to specify individual options settings.
-                        .build())
-                .build();
-        // Este método envia uma solicitação para um único anúncio.
-        adLoader.loadAd(new AdRequest.Builder().build());
-
-        // Este método envia uma solicitação para vários anúncios (até cinco):
-//        adLoader.loadAds(new AdRequest.Builder().build(), 3);
-    }
-    private void askNotificationPermission() {
-        // This is only necessary for API level >= 33 (TIRAMISU)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-                // FCM SDK (and your app) can post notifications.
-                Log.i("success", "O usúario deu permissão para notificação");
-            } else {
-                // Directly ask for the permission
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-            }
-        }
-    }
-    // Declare the launcher at the top of your Activity/Fragment:
-    private final ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                // FCM SDK (and your app) can post notifications.
-                // Inform user that that your app will not show notifications.
-            });
     private void iniciarComponentes() {
         databaseRef = FirebaseRef.getDatabase();
         anuncio = new Anuncio();
@@ -438,7 +373,6 @@ public class ActivityMain extends AppCompatActivity
     private void configRecycler() {
         recyclerViewMain.setLayoutManager( new LinearLayoutManager(this));
         recyclerViewMain.setHasFixedSize(true);
-        observerViewModel();
     }
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -513,14 +447,7 @@ public class ActivityMain extends AppCompatActivity
                 break;
 
             case R.id.suport:
-                Uri email = Uri.parse("mailto:agenciamagnus2023@gmail.com");
-                Intent intent = new Intent(Intent.ACTION_SENDTO);
-                intent.setData(email); // only email apps should handle this
-                intent.putExtra(Intent.EXTRA_EMAIL, "Suporte SkaterTrade");
-                intent.putExtra(Intent.EXTRA_SUBJECT, "Suporte SkaterTrade");
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(intent);
-                }
+                sendEmailSupport();
                 break;
 
             case R.id.anuncios:
@@ -533,6 +460,18 @@ public class ActivityMain extends AppCompatActivity
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void sendEmailSupport(){
+        Uri email = Uri.parse("mailto:agenciamagnus2023@gmail.com");
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(email); // only email apps should handle this
+        intent.putExtra(Intent.EXTRA_EMAIL, "Suporte SkaterTrade");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Suporte SkaterTrade");
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
     private void iniciarAppPlayStore() {
         // getPackageName() from Context or Activity object
         final String appPackageName = getPackageName();
@@ -595,6 +534,8 @@ public class ActivityMain extends AppCompatActivity
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+    // add viewModel
     private void recuperarAnunnciosPorEstado(String estado) {
         estadosSelected = estado;
         anunciosFiltroRef = databaseRef.child("anuncios").child(estado);
@@ -620,9 +561,7 @@ public class ActivityMain extends AppCompatActivity
                         }
                     }
                 }
-//                Collections.reverse(anuncioList);
-//                adapterAnuncios.notifyDataSetChanged();
-//                alertDialog.dismiss();
+
 
                 // set ViewModel 1
                 viewModel.setListModel(anuncioList);
@@ -642,6 +581,7 @@ public class ActivityMain extends AppCompatActivity
             }
         });
     }
+    // add viewModel
     public void recuperarAnunnciosPorCategoria(String categoria) {
         categoriaSelected = categoria;
         anunciosFiltroRef = databaseRef.child("anuncios");
@@ -673,9 +613,6 @@ public class ActivityMain extends AppCompatActivity
                         }
                     }
                 }
-//                Collections.reverse( anuncioList );
-//                adapterAnuncios.notifyDataSetChanged();
-//                alertDialog.dismiss();
 
                 // set ViewModel
                 viewModel.setListModel(anuncioList);
@@ -691,69 +628,51 @@ public class ActivityMain extends AppCompatActivity
             }
         });
     }
-    private void recuperarAnuncios() {
-        if(anuncioList.size() == 0){
-            alertDialogCustom("Buscando Anúncios disponíveis");
-        }
-        anunciosRef = databaseRef.child("anuncios");
-        valueEventListener = anunciosRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                // recuperar os dados
-                anuncioList.clear();
-                for( DataSnapshot estados : snapshot.getChildren() ){
-                    for(DataSnapshot categorias : estados.getChildren()){
-                        for(DataSnapshot anuncios : categorias.getChildren()){
 
-                            Anuncio anuncio = anuncios.getValue(Anuncio.class);
-                            anuncioList.add( anuncio );
-                        }
-                    }
+
+    private void recuperarAnuncios() {
+        // --------> init ViewModel
+        viewModel = new ViewModelProvider(this).get(ViewModelAnuncios.class);
+        observerViewModel();
+
+        viewModel.recuperarAnuncios();
+    }
+    private void observerViewModel() {
+
+        // model recuperar anuncios
+        viewModel.getList().observe(ActivityMain.this,
+            anuncios -> {
+
+                if(anuncios != null){
+                    
+
+                    adapterAnuncios = new AdapterAnuncios(anuncios,this);
+                    recyclerViewMain.setAdapter( adapterAnuncios );
+                    adapterAnuncios.notifyDataSetChanged();
+                    alertDialog.dismiss();
+
+                    clickRecyclerView = new ClickRecyclerView(recyclerViewMain,anuncios,adapterAnuncios,this);
+                    clickRecyclerView.clickExibirRecyclerView();
                 }
 
-//                Collections.reverse( anuncios );
-//                adapterAnuncios.notifyDataSetChanged();
-//                alertDialog.dismiss();
-
-                // set ViewModel
-                viewModel.setListModel(anuncioList);
 
                 if(menuRedefinir != null){
                     menuRedefinir.setVisible(false);
+
+                    estadosSelected = "";
+                    categoriaSelected = "";
+                    // defnir nome btn
+                    btn_regiao.setText(R.string.regiao);
                 }
 
-                estadosSelected = "";
-                categoriaSelected = "";
-                // defnir nome btn
-                btn_regiao.setText(R.string.regiao);
+
 
                 alertDialog.dismiss();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
-    }
-    private void observerViewModel() {
-        // -------- ViewModel
-        viewModel = new ViewModelProvider(this).get(ViewModelAnuncio.class);
-        // model recuperar anuncios
-        viewModel.getList().observe(ActivityMain.this, anuncios -> {
+        );
 
-            if(anuncios != null){
-                Collections.reverse( anuncios );
-
-                adapterAnuncios = new AdapterAnuncios(anuncios,this);
-                recyclerViewMain.setAdapter( adapterAnuncios );
-                adapterAnuncios.notifyDataSetChanged();
-                alertDialog.dismiss();
-
-                clickRecyclerView = new ClickRecyclerView(recyclerViewMain,anuncios,adapterAnuncios,this);
-                clickRecyclerView.clickExibirRecyclerView();
-            }
-        });
+        viewModel.getShowMsg().observe(this, this::alertDialogCustom );
     }
     @SuppressLint("InflateParams")
     public void filtrarEstados() {

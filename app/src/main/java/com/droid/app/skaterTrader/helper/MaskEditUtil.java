@@ -5,9 +5,11 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
-public abstract class MaskEditUtil {
+import androidx.annotation.NonNull;
 
-    public static final String FORMAT_CPF = "###.###.###-##";
+import org.jetbrains.annotations.Contract;
+
+public abstract class MaskEditUtil {
     public static final String FORMAT_FONE = "(##)#####-####";
     public static final String FORMAT_CEP = "#####-###";
     public static final String FORMAT_DATE = "##/##/####";
@@ -20,6 +22,8 @@ public abstract class MaskEditUtil {
      * @param mask
      * @return
      */
+    @NonNull
+    @Contract("_, _ -> new")
     public static TextWatcher mask(final EditText ediTxt, final String mask) {
         return new TextWatcher() {
             boolean isUpdating;
@@ -39,6 +43,7 @@ public abstract class MaskEditUtil {
 
                 final String str = MaskEditUtil.unmask(s.toString());
                 String mascara = "";
+
                 if (isUpdating) {
                     old = str;
                     isUpdating = false;
@@ -64,7 +69,15 @@ public abstract class MaskEditUtil {
         };
     }
 
+    @NonNull
     public static String unmask(final String s) {
-        return s.replaceAll("[.]", "").replaceAll("[-]", "").replaceAll("[/]", "").replaceAll("[(]", "").replaceAll("[ ]","").replaceAll("[:]", "").replaceAll("[)]", "");
+        return s.replaceAll("\\D*", "");
+        /*return s.replaceAll("[.]", "")
+                .replaceAll("[-]", "")
+                .replaceAll("[/]", "")
+                .replaceAll("[(]", "")
+                .replaceAll("[ ]","")
+                .replaceAll("[:]", "")
+                .replaceAll("[)]", "");*/
     }
 }

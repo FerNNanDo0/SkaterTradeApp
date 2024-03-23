@@ -7,94 +7,7 @@
     android:id="@+id/drawer"
     android:background="@color/white">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/white"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/linearLayout5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/purple_500"
-            android:gravity="center"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <Button
-                android:id="@+id/regiao"
-                style="?attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/regiao"
-                android:textColor="@color/white"
-                app:rippleColor="@color/rippleColorBtn" />
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:paddingBottom="3dp"
-                android:text="@string/div"
-                android:textColor="#E3E3E3"
-                android:textSize="32sp" />
-
-            <Button
-                android:id="@+id/categoria"
-                style="?attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/categoria"
-                android:textColor="@color/white"
-                app:rippleColor="@color/rippleColorBtn" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linearLayout4"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@color/white"
-            android:orientation="vertical"
-            android:paddingTop="1dp"
-            app:layout_constraintBottom_toTopOf="@+id/my_template"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout5">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewMain"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/white"
-                android:elevation="6dp" />
-
-        </LinearLayout>
-
-        <!-- this attribute determines which template is used. The other option is
-         @layout/gnt_medium_template_view
-         @layout/gnt_small_template_view  -->
-        <com.google.android.ads.nativetemplates.TemplateView
-            android:id="@+id/my_template"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/todo"
-            android:layout_marginLeft="7dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginRight="7dp"
-            android:visibility="gone"
-            app:gnt_template_type="@layout/gnt_small_template_view"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:visibility="visible" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <include layout="@layout/activity_main"/>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
@@ -102,12 +15,12 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:addStatesFromChildren="false"
-        android:background="@color/white"
+        android:background="@color/nav_viewColor"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
         app:itemIconTint="@color/black"
         app:itemRippleColor="@color/purple_500"
-        app:itemShapeFillColor="@color/white"
+        app:itemShapeFillColor="@color/itemShapeColor"
         app:itemTextColor="@color/black"
         app:menu="@menu/menu_drawer" />
 

@@ -3,9 +3,10 @@ package com.droid.app.skaterTrader.activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -15,8 +16,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,17 +26,17 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.droid.app.skaterTrader.databinding.ActivityCadastrarAnunciosBinding;
-import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
 import com.droid.app.skaterTrader.helper.ConfigDadosImgBitmap;
+import com.droid.app.skaterTrader.helper.FecharTecladoSys;
 import com.droid.app.skaterTrader.helper.Gallery;
 import com.droid.app.skaterTrader.helper.RotacionarImgs;
 import com.droid.app.skaterTrader.model.Anuncio;
 import com.droid.app.skaterTrader.R;
 import com.droid.app.skaterTrader.helper.MaskEditUtil;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import java.io.ByteArrayOutputStream;
+import com.droid.app.skaterTrader.viewModel.ViewModelCadastroAnuncio;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,24 +47,25 @@ import me.abhinay.input.CurrencyEditText;
 public class CadastrarAnunciosActivity extends AppCompatActivity
         implements View.OnClickListener {
     CurrencyEditText editValor;
-    EditText editNumero;
-    EditText editTitulo,editDescricao;
+    Anuncio anuncioSelected;
+    EditText editNumero, editTitulo, editDescricao, editCidade;
+    String cidade, titulo, valor, phone ,desc ,estado, categoria;
     Spinner spinnerEstado,spinnerCategoria;
     Button btnSalvar;
     Bitmap imagemComplet;
     AlertDialog alertDialog;
-    StorageReference storage;
     ImageView imageView1, imageView2, imageView3;
-
     ActivityCadastrarAnunciosBinding binding;
+    ViewModelCadastroAnuncio viewModel;
+
+    List<String> listEstados = new ArrayList<>(32);
+    List<String> listCategorias = new ArrayList<>(11);
 
 //    ActivityResultLauncher<Intent> galeria_StartActivityForResult;
 
     byte[] dadosImg;
     List<byte[]> listaFotosRecuperadas = new ArrayList<>(3);
     List<String> listUrlFotos = new ArrayList<>(3);
-    List<String> listEstados = new ArrayList<>();
-    List<String> listCategorias = new ArrayList<>();
     Anuncio anuncio;
 
     @Override
@@ -73,14 +76,127 @@ public class CadastrarAnunciosActivity extends AppCompatActivity
         binding = ActivityCadastrarAnunciosBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // iniciar atributos e configurações
+        configActionBar();
+        configIniciais();
+
+        // iniciar viewModel
+        viewModel = new ViewModelProvider(this).get(ViewModelCadastroAnuncio.class);
+
+        // Recuperar anúncio para editar e atualizar
+        configEditarAnuncio();
+
+        configDadosSpinner();
+    }
+
+    private void alertExcluir(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Excluir anúncio!");
+        builder.setMessage("Tem certeza que deseja excluir esse anúncio?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Sim", (dialog, which) -> {
+            anuncioSelected.removerAnuncio();
+            finish();
+            //adapterAnuncios.notifyDataSetChanged();
+            dialog.dismiss();
+        });
+        builder.setNegativeButton("Não", (dialog, which) -> dialog.dismiss());
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if(anuncioSelected != null){
+            getMenuInflater().inflate(R.menu.menu_excluir_anuncio, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.excluir_anuncio){
+            alertExcluir();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void configEditarAnuncio(){
+        anuncioSelected = getIntent().getParcelableExtra("anuncioSelected");
+        if(anuncioSelected != null){
+
+            // mudar nome do button e definir evento de click
+            btnSalvar.setText(getString(R.string.btn_atualizar_anuncio));
+            // atulizar anuncio
+            btnSalvar.setOnClickListener(v -> {
+                btnEditarAnuncio();
+            });
+
+            // definir dados do anuncio
+            editCidade.setText(anuncioSelected.getCidade());
+            editTitulo.setText(anuncioSelected.getTitulo());
+            editValor.setText(anuncioSelected.getValor());
+            editDescricao.setText(anuncioSelected.getDesc());
+            editNumero.setText(anuncioSelected.getPhone());
+
+            // observe viewModel
+            viewModel.getByteDadosImg().observe(this,
+                byteDadosImg -> {
+                    listaFotosRecuperadas.add(byteDadosImg);
+                }
+            );
+
+            // definir img anuncio
+            // config image 1
+            String urlImage1 = anuncioSelected.getFotos().get(0);
+            definirImageEditAnuncio(urlImage1, imageView1);
+
+            // config image 2
+            String urlImage2 = anuncioSelected.getFotos().get(1);
+            definirImageEditAnuncio(urlImage2, imageView2);
+
+            // config image 3
+            String urlImage3 = anuncioSelected.getFotos().get(2);
+            definirImageEditAnuncio(urlImage3, imageView3);
+
+        }else{
+            btnSalvar.setOnClickListener(this);
+        }
+    }
+
+    private void definirImageEditAnuncio(String url, ImageView imageView) {
+        Glide.with(this).load(url).into(imageView);
+        downloadImage(url);
+    }
+
+    private void downloadImage(String url) {
+        viewModel.downloadImage(url);
+    }
+
+    // methodo para editar anuncio
+    private void btnEditarAnuncio(){
+        getDadosEditText();
+
+        boolean verif = verificarCampos(cidade,titulo,valor,phone,desc,estado,categoria);
+        // System.out.println("Verificado? => "+verif);
+
+        if(verif){
+            //configurar anuncio
+            if( !valor.contains("R") ){
+                valor = "R"+valor;
+            }
+            editValor.setText(valor);
+            configAnuncio("editar");
+        }
+    }
+
+    private void configActionBar(){
         assert getSupportActionBar() != null;
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getColor(R.color.purple_500)));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Cadastrar anúncio");
-
-        // iniciar atributos e configurações
-        configIniciais();
+        getSupportActionBar().setTitle(getString(R.string.cadastrar_anuncio_titleActionBar));
     }
+
     private void configIniciais(){
      // config editTexts
         editNumero = binding.editTextNumeroFone;//findViewById(R.id.editTextNumeroFone);
@@ -91,10 +207,13 @@ public class CadastrarAnunciosActivity extends AppCompatActivity
         //Make sure that Decimals is set as false if a custom Separator is used
         editValor.setSeparator(".");
 
+        editCidade = binding.editTextCidade;
+        editCidade.setFocusable(true);
+        editCidade.requestFocus();
+
         editTitulo = binding.editTextTitulo;//findViewById(R.id.editTextTitulo);
-        editTitulo.setFocusable(true);
-        editTitulo.requestFocus();
         editDescricao = binding.editTextDescricao;//findViewById(R.id.editTextDescricao);
+
      // config imageViews
         imageView1 = binding.imageView1;//findViewById(R.id.imageView1);
         imageView1.setOnClickListener(this);
@@ -108,7 +227,8 @@ public class CadastrarAnunciosActivity extends AppCompatActivity
 
      // config button
         btnSalvar = binding.buttonSalvarAnuncio;//findViewById(R.id.buttonSalvarAnuncio);
-        btnSalvar.setOnClickListener(this);
+
+
      // config spinners
         spinnerEstado = binding.spinnerLeft;//findViewById(R.id.spinnerLeft);
         spinnerEstado.getBackground()
@@ -117,13 +237,10 @@ public class CadastrarAnunciosActivity extends AppCompatActivity
         spinnerCategoria = binding.spinnerRight;//findViewById(R.id.spinnerRight);
         spinnerCategoria.getBackground()
                 .setColorFilter(Color.parseColor("#3A8C0E"), PorterDuff.Mode.SRC_ATOP);
-
-        dadosSpinner();
-
-     // iniciar referencias do firebase
-        storage = FirebaseRef.getStorage();
     }
-    private void dadosSpinner(){
+
+    private void configDadosSpinner(){
+
         String[] estados = getResources().getStringArray(R.array.estados);
         listEstados.add(0, "Estados");
         listEstados.addAll(Arrays.asList(estados));
@@ -133,57 +250,32 @@ public class CadastrarAnunciosActivity extends AppCompatActivity
         listCategorias.addAll(Arrays.asList(categorias));
 
 
+        // config spinner para editar anuncio
+        if(anuncioSelected != null){
+            listEstados.remove( anuncioSelected.getEstado() );
+            listCategorias.remove( anuncioSelected.getCategoria() );
+
+            listEstados.set(0, anuncioSelected.getEstado());
+            listCategorias.set(0, anuncioSelected.getCategoria());
+        }
+
+
         ArrayAdapter<String> adapter1 = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_item ,listEstados
         );
         ArrayAdapter<String> adapter2 = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_item ,listCategorias
         );
+
         adapter1.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
         adapter2.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
 
         spinnerEstado.setAdapter(adapter1);
         spinnerCategoria.setAdapter(adapter2);
     }
-    private boolean
-    verificarCampos(@NonNull String titulo, String valor, String phone, String desc, String estado, String categoria){
-        boolean verif = false;
-        valor = valor.replace("$","");
-        if( !titulo.isEmpty()){
-            if( !valor.isEmpty() && !valor.equals("0")){
-                if(phone.length() == 14){
-                    if( !desc.isEmpty()){
-                        if( !estado.equals("Estados")){
-                            if( !categoria.equals("Categorias")){
-                                if (listaFotosRecuperadas.size() != 0){
-                                    closedKeyBoard();
-                                    verif = true;
 
-                                }else{
-                                    exibirMsgErro("Escolha ao menos uma imagem");
-                                }
-                            }else{
-                                exibirMsgErro("Escolha uma categoria");
-                            }
-                        }else{
-                            exibirMsgErro("Escolha um estado");
-                        }
-                    }else{
-                        exibirMsgErro("Preencha uma descrição");
-                    }
-                }else{
-                    exibirMsgErro("Preencha um número de celular válido");
-                }
-            }else{
-                exibirMsgErro("Preencha um valor R$");
-            }
-        }else{
-            exibirMsgErro("Preencha um título");
-        }
-        return verif;
-    }
     // Menssagens de erro toast
-    private void exibirMsgErro(String menssagem){
+    private void exibirMsgToast(String menssagem){
         Toast.makeText(this,
                 menssagem, Toast.LENGTH_SHORT).show();
     }
@@ -209,29 +301,87 @@ public class CadastrarAnunciosActivity extends AppCompatActivity
 
 //            click button salvar anuncios
             case R.id.buttonSalvarAnuncio:
-                String titulo = editTitulo.getText().toString();
-                String valor = Objects.requireNonNull(editValor.getText()).toString();
-                String phone = editNumero.getText().toString();
-                String desc = editDescricao.getText().toString();
-                String estado = spinnerEstado.getSelectedItem().toString();
-                String categoria = spinnerCategoria.getSelectedItem().toString();
-
-                boolean verif = verificarCampos(titulo,valor,phone,desc,estado,categoria);
-                // System.out.println("Verificado? => "+verif);
-                if(verif){
-                    //salvar no banco de dados
-                    valor = "R"+valor;
-                    editValor.setText(valor);
-                    configAnuncio(titulo,valor,phone,desc,estado,categoria);
-                }
+                btnSalvarAnuncio();
                 break;
         }
     }
-    // configurar anuncio
-    public void configAnuncio(
-            String titulo, String valor, String phone, String desc, String estado, String categoria
+
+    private void getDadosEditText(){
+        cidade = editCidade.getText().toString();
+        titulo = editTitulo.getText().toString();
+        valor = Objects.requireNonNull(editValor.getText()).toString();
+        phone = editNumero.getText().toString();
+        desc = editDescricao.getText().toString();
+        estado = spinnerEstado.getSelectedItem().toString();
+        categoria = spinnerCategoria.getSelectedItem().toString();
+    }
+
+    // click Button salvarAnuncios
+    private void btnSalvarAnuncio(){
+        getDadosEditText();
+
+        boolean verif = verificarCampos(cidade,titulo,valor,phone,desc,estado,categoria);
+        // System.out.println("Verificado? => "+verif);
+
+        if(verif){
+            //configurar anuncio
+            valor = "R"+valor;
+            editValor.setText(valor);
+            configAnuncio("salvar");
+        }
+    }
+
+    private boolean
+    verificarCampos(@NonNull String cidade, String titulo, String valor,
+                    String phone, String desc, String estado, String categoria
     ) {
+        boolean verif = false;
+        valor = valor.replace("$","");
+
+        if( !cidade.isEmpty() ){
+            if( !titulo.isEmpty()){
+                if( !valor.isEmpty() ){
+                    if(phone.length() == 14){
+                        if( !desc.isEmpty()){
+                            if( !estado.equals("Estados")){
+                                if( !categoria.equals("Categorias")){
+                                    if (listaFotosRecuperadas.size() != 0){
+                                        FecharTecladoSys.closedKeyBoard(this);
+                                        verif = true;
+
+                                    }else{
+                                        exibirMsgToast("Escolha ao menos uma imagem");
+                                    }
+                                }else{
+                                    exibirMsgToast("Escolha uma categoria");
+                                }
+                            }else{
+                                exibirMsgToast("Escolha um estado");
+                            }
+                        }else{
+                            exibirMsgToast("Preencha uma descrição");
+                        }
+                    }else{
+                        exibirMsgToast("Preencha um número de celular válido");
+                    }
+                }else{
+                    exibirMsgToast("Preencha um valor R$");
+                }
+            }else{
+                exibirMsgToast("Preencha um título");
+            }
+        }else{
+            exibirMsgToast("Preencha uma cidade");
+        }
+
+        return verif;
+    }
+
+    // configurar anuncio
+    public void configAnuncio(@NonNull String modo) {
+
         anuncio = new Anuncio();
+        anuncio.setCidade(cidade);
         anuncio.setTitulo(titulo);
         anuncio.setValor(valor);
         anuncio.setPhone(phone);
@@ -239,54 +389,47 @@ public class CadastrarAnunciosActivity extends AppCompatActivity
         anuncio.setEstado(estado);
         anuncio.setCategoria(categoria);
 
-        int totalFotos = listaFotosRecuperadas.size();
 
-        alertDialog();
-
-        for (int i = 0; i < totalFotos; i++) {
-//            String urlImg = listaFotosRecuperadas.get(i);
-            byte[] urlImg = listaFotosRecuperadas.get(i);
-            salvarImgsAnuncio(anuncio, urlImg, totalFotos, i);
+        if(modo.equals("salvar")){ // criar e salvar
+            anuncio.gerarId();
+            alertDialog("Salvando Anúncio...");
+            viewModelObserveSalvarOuEditar();
+        }else{// editar e atualizar
+            anuncio.setIdAnuncio(anuncioSelected.getIdAnuncio());
+            alertDialog("Atualizando Anúncio...");
+            viewModelObserveSalvarOuEditar();
         }
     }
-    // salvar imagens no storage
-    public void salvarImgsAnuncio(@NonNull Anuncio anuncio, byte[] urlImg, int totalFotos, int index) {
-        StorageReference imgAnuncio = storage.child("imagens")
-                .child("anuncios")
-                .child(anuncio.getIdAnuncio())
-                .child("imagem" + index);
 
-        // fazer upload da imagem
-        UploadTask uploadTask = imgAnuncio.putBytes(urlImg);
-        //UploadTask uploadTask = imgAnuncio.putFile(Uri.parse(urlImg));
+    // para salvar o anuncio
+    private void viewModelObserveSalvarOuEditar(){
+        // Observe url de img
+        viewModel.getUrlImgStorage().observe(this,
+                url -> {
+                    int totalFotos = listaFotosRecuperadas.size();
 
-        uploadTask.addOnSuccessListener( taskSnapshot -> {
-                    // Faz download dos Urls das fotos
-                    imgAnuncio.getDownloadUrl().addOnCompleteListener( task -> {
+                    listUrlFotos.add(url);
 
-                        System.out.println("Link foto " + task.getResult().toString());
+                    if (totalFotos == listUrlFotos.size()) {
+                        anuncio.setFotos(listUrlFotos);
+                        anuncio.salvarAnuncioNoDB(this);
+                        alertDialog.dismiss();
 
-                        String urlImgStorage = task.getResult().toString();
-                        listUrlFotos.add(urlImgStorage);
+                        startActivity( new Intent(getApplicationContext(), ActivityMain.class));
+                        finish();
+                    }
+                }
+        );
 
-                        if (totalFotos == listUrlFotos.size()) {
-                            anuncio.setFotos(listUrlFotos);
-                            anuncio.salvarAnuncioNoDB(this);
-                            alertDialog.dismiss();
 
-                            startActivity( new Intent(getApplicationContext(), ActivityMain.class));
-                            finish();
-                        }
-
-//                Toast.makeText(context, "Sucesso ao fazer download!", Toast.LENGTH_SHORT).show();
-                    });
-                })
-                .addOnFailureListener(erroUpload -> exibirMsgErro("Falha ao fazer upload!"));
+        // chamar o method que salva img
+        viewModel.salvarImgAnuncioStorage(anuncio, listaFotosRecuperadas);
     }
-    public void alertDialog() {
+
+    public void alertDialog(String txt) {
         alertDialog = new SpotsDialog.Builder()
                 .setContext(this)
-                .setMessage("Salvando Anúncio...")
+                .setMessage(txt)
                 .setCancelable(false)
                 .build();
         alertDialog.show();
@@ -295,7 +438,7 @@ public class CadastrarAnunciosActivity extends AppCompatActivity
         Gallery.open(this, requestCode);
         // startActivityForResult(i, requestCode);
     }
-    @SuppressLint("UseCompatLoadingForDrawables")
+
     private void recuperaImagemDaGaleria(Intent data, int codeImageView){
         try {
             if(data != null){
@@ -303,24 +446,39 @@ public class CadastrarAnunciosActivity extends AppCompatActivity
                 Uri imgSelected = data.getData();
                 Bitmap imgBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imgSelected);
 
+
                 // cortar imagem
-                /*Bitmap imgBitmapEdit = Bitmap.createBitmap(
+                    /*Bitmap imgBitmapEdit = Bitmap.createBitmap(
                         imgBitmap.copy(imgBitmap.getConfig(), false),
                         0, imgBitmap.getHeight()/4, imgBitmap.getWidth(), imgBitmap.getWidth());*/
-                Bitmap imgBitmapCortada = Bitmap.createScaledBitmap(imgBitmap,860, 860, true);
+                Bitmap imgBitmapCortada = cortarImg(imgBitmap);
 
-                // rotacionar a img que foi cortada
-                Bitmap imgBitmapRotate = RotacionarImgs.rotacionarIMG(imgBitmapCortada, imgSelected, this);
-                if(imgBitmapRotate != null){
+
+                //verificar o tamanho da imagem -> largra e altura
+                if(imgBitmapCortada != null){// definir img cortada
+
+                    // rotacionar a img
+                    Bitmap imgBitmapRotate = RotacionarImgs.rotacionarIMG(imgBitmapCortada, imgSelected, this);
+
+                    if(imgBitmapRotate != null){
+                        //reuperar dados da img para o firebase
+                        dadosImg = ConfigDadosImgBitmap.recuperarDadosIMG(imgBitmapRotate);
+
+                        System.out.println(">>> dadosImg >>> "+dadosImg);
+
+                        imagemComplet = imgBitmapRotate;
+                    }
+
+
+                }else{ // definir img sem corte
+
+                    // rotacionar a img
+                    Bitmap imgBitmapRotate = RotacionarImgs.rotacionarIMG(imgBitmap, imgSelected, this);
+
                     //reuperar dados da img para o firebase
                     dadosImg = ConfigDadosImgBitmap.recuperarDadosIMG(imgBitmapRotate);
 
                     imagemComplet = imgBitmapRotate;
-                }else{
-                    //reuperar dados da img para o firebase
-                    dadosImg = ConfigDadosImgBitmap.recuperarDadosIMG(imgBitmapCortada);
-
-                    imagemComplet = imgBitmapCortada;
                 }
 
                 // add no maximo 3 itens
@@ -330,31 +488,70 @@ public class CadastrarAnunciosActivity extends AppCompatActivity
 
                 // configura img na tela se houver uma img
                 // define imagem no ImageView
-                if(codeImageView == 1){
-
-                    imageView1.setImageBitmap( imagemComplet );
-                    imageView2.setClickable(true);
-                    imageView2.setImageDrawable(getDrawable(R.drawable.padrao_ativo_2));
-                    listaFotosRecuperadas.set(0, dadosImg);
-
-                } else if (codeImageView == 2) {
-
-                    imageView2.setImageBitmap( imagemComplet );
-                    imageView3.setClickable(true);
-                    imageView3.setImageDrawable(getDrawable(R.drawable.padrao_ativo_3));
-                    listaFotosRecuperadas.set(1, dadosImg);
-
-                } else if (codeImageView == 3) {
-
-                    imageView3.setImageBitmap( imagemComplet );
-                    listaFotosRecuperadas.set(2, dadosImg);
-                }
+                definirImg(codeImageView);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this,
-                    "Erro ao recuperar imagem, tente outra imagem ou tire outra foto",
-                    Toast.LENGTH_SHORT).show();
+            exibirMsgToast("Erro ao recuperar imagem, tente outra imagem ou tire outra foto");
+        }
+    }
+
+    private Bitmap cortarImg(@NonNull Bitmap imgBitmap){
+        Bitmap imgBitmapCortada = null;
+        boolean bol = false;
+        int altura = 900;
+        int largura = 900;
+
+        if(imgBitmap.getWidth() > largura && imgBitmap.getHeight() > altura ){
+            imgBitmapCortada = Bitmap.createScaledBitmap(
+                    imgBitmap,
+                    largura,
+                    altura,
+                    bol
+            );
+        }else{
+
+            if(imgBitmap.getWidth() > largura){// cortar a largura
+                imgBitmapCortada = Bitmap.createScaledBitmap(
+                        imgBitmap,
+                        largura,
+                        imgBitmap.getHeight(),
+                        bol
+                );
+            }
+            if(imgBitmap.getHeight() > altura){ // cortar a altura
+                imgBitmapCortada = Bitmap.createScaledBitmap(
+                        imgBitmap,
+                        imgBitmap.getWidth(),
+                        altura,
+                        bol
+                );
+            }
+
+        }
+        return imgBitmapCortada;
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private void definirImg(int codeImageView){
+        if(codeImageView == 1){
+
+            imageView1.setImageBitmap( imagemComplet );
+            imageView2.setClickable(true);
+            imageView2.setImageDrawable(getDrawable(R.drawable.padrao_ativo_2));
+            listaFotosRecuperadas.set(0, dadosImg);
+
+        } else if (codeImageView == 2) {
+
+            imageView2.setImageBitmap( imagemComplet );
+            imageView3.setClickable(true);
+            imageView3.setImageDrawable(getDrawable(R.drawable.padrao_ativo_3));
+            listaFotosRecuperadas.set(1, dadosImg);
+
+        } else if (codeImageView == 3) {
+
+            imageView3.setImageBitmap( imagemComplet );
+            listaFotosRecuperadas.set(2, dadosImg);
         }
     }
 
@@ -383,26 +580,4 @@ public class CadastrarAnunciosActivity extends AppCompatActivity
         AlertDialog alert = builder.create();
         alert.show();
     }
-
-    private void closedKeyBoard(){
-        View view = getWindow().getCurrentFocus();
-        if(view != null){
-            InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            manager.hideSoftInputFromWindow( view.getWindowToken(),0);
-        }
-    }
-    // ActivityResul da GALERIA
-    /*private void galeria_getStartActivityForResult() {
-        galeria_StartActivityForResult = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-            @Override
-            public void onActivityResult(ActivityResult result) {
-                recuperaImagemDaGaleria(result.getData());
-            }
-        });
-        galeria_StartActivityForResult.launch( new Intent(
-                 Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI )
-         );
-    }*/
 }

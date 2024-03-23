@@ -2,20 +2,17 @@ package com.droid.app.skaterTrader.activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,16 +22,14 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.droid.app.skaterTrader.R;
 import com.droid.app.skaterTrader.databinding.ActivityConfigDadosLojaBinding;
-import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
 import com.droid.app.skaterTrader.helper.ConfigDadosImgBitmap;
 import com.droid.app.skaterTrader.helper.Gallery;
 import com.droid.app.skaterTrader.helper.MaskEditUtil;
-import com.droid.app.skaterTrader.helper.MaskaraEditTextCpfCNPJ;
+import com.droid.app.skaterTrader.helper.MaskEditCpfCNPJ;
 import com.droid.app.skaterTrader.helper.RotacionarImgs;
 import com.droid.app.skaterTrader.model.Loja;
 import com.droid.app.skaterTrader.model.User;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.droid.app.skaterTrader.viewModel.ViewModelConfigDadosLoja;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
@@ -51,11 +46,13 @@ public class ConfigDadosLojaActivity extends AppCompatActivity
     Button btnAtualizar;
     ProgressBar progressBar;
     byte[] dadosImg;
-    Loja loja, loja_db;
+    Loja loja;
     ValueEventListener eventListener;
-    DatabaseReference lojaRef, database;
+    DatabaseReference lojaRef;
 
     String oldNomeL,oldNomeU, oldPhone, nomeL, nomeU, phone;
+
+    ViewModelConfigDadosLoja viewModel;
 
     @Override
     protected void onStart() {
@@ -78,9 +75,10 @@ public class ConfigDadosLojaActivity extends AppCompatActivity
 
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Configurações de perfil");
+        getSupportActionBar().setTitle("Dados do perfil");
 
         iniciarComponentes();
+
     }
 
     private void iniciarComponentes(){
@@ -98,7 +96,7 @@ public class ConfigDadosLojaActivity extends AppCompatActivity
 
         cpfOrCnpj = binding.editCpfOrCnpj;
         cpfOrCnpj.setFocusableInTouchMode(false);
-        cpfOrCnpj.addTextChangedListener(MaskaraEditTextCpfCNPJ.insert(cpfOrCnpj));
+        cpfOrCnpj.addTextChangedListener(MaskEditCpfCNPJ.insert(cpfOrCnpj));
 
         btnAtualizar = binding.btnUpdate;
         btnAtualizar.setOnClickListener(this);
@@ -110,7 +108,10 @@ public class ConfigDadosLojaActivity extends AppCompatActivity
         email = binding.editEmail;
         email.setFocusableInTouchMode(false);
 
-        loja = new Loja();
+        // init viewModel
+        viewModel = new ViewModelProvider(this).get(ViewModelConfigDadosLoja.class);
+
+        loja = new Loja(viewModel);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -157,7 +158,18 @@ public class ConfigDadosLojaActivity extends AppCompatActivity
                         telefone.setCursorVisible(false);
                     }
 
-                    loja.atualizarDadosDB(progressBar, btnAtualizar);
+                    // add observe viewModel aqui
+                    viewModel.getBol().observe(this,
+                        bol -> {
+                            if(bol){
+                                progressBar.setVisibility(View.GONE);
+                                btnAtualizar.setVisibility(View.GONE);
+                            }
+                        }
+                    );
+
+                    // chama method atulizar dados db
+                    viewModel.atualizarDadosDB(loja);
 
                 }else{
                     sendMsgToast("Informe o Número de celular ou whatsApp da loja");
@@ -202,15 +214,17 @@ public class ConfigDadosLojaActivity extends AppCompatActivity
             if(imgBitmapRotate != null){
                 //reuperar dados da img para o firebase
                 dadosImg = ConfigDadosImgBitmap.recuperarDadosIMG(imgBitmapRotate);
+                imgLojoLoja.setImageBitmap(imgBitmapRotate);
 
             }else{
                 //reuperar dados da img para o firebase
                 dadosImg = ConfigDadosImgBitmap.recuperarDadosIMG(imgBitmap);
+                imgLojoLoja.setImageBitmap(imgBitmap);
             }
 
             // salvar img do usuario
-            Loja loja = new Loja();
-            loja.salvarImgLogoLoja(dadosImg);
+            viewModel.salvarImgLogoLoja(dadosImg);
+
             Glide.with(this).load(imgSelected).into(imgLojoLoja);
 
         } catch (IOException e) {
@@ -218,40 +232,41 @@ public class ConfigDadosLojaActivity extends AppCompatActivity
         }
     }
 
+
+    //add viewmodel
     public void getDadosDb() {
-        //obter dados no Firebase
-        database = FirebaseRef.getDatabase();
-        lojaRef = database.child("lojas").child(loja.getIdLoja());
-        eventListener = lojaRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()){
-                    loja_db = snapshot.getValue(Loja.class);
 
-                    if(loja_db != null) {
+        // Observe viewModel
+        viewModel.getDadosLoja().observe(this,
+            loja -> {
+                progressBar.setVisibility(View.GONE);
+                if(loja != null) {
 
-                        Glide.with(getApplicationContext())
-                                .load(User.user().getPhotoUrl()).into(imgLojoLoja);
+                    Glide.with(getApplicationContext())
+                            .load(User.user().getPhotoUrl()).into(imgLojoLoja);
 
-                        nomeLoja.setText(loja_db.getNomeLoja());
-                        nomeUser.setText(loja_db.getNomeUser());
-                        telefone.setText(loja_db.getTelefone());
-                        cpfOrCnpj.setText(loja_db.getCpfOrCnpj());
-                        email.setText(loja_db.getEmail());
+                    nomeLoja.setText(loja.getNomeLoja());
+                    nomeUser.setText(loja.getNomeUser());
+                    telefone.setText(loja.getTelefone());
+                    cpfOrCnpj.setText(loja.getCpfOrCnpj());
+                    email.setText(loja.getEmail());
 
-                        // get old dados
-                        oldNomeL = nomeLoja.getText().toString();
-                        oldNomeU = nomeUser.getText().toString();
-                        oldPhone = telefone.getText().toString();
-                    }
+                    // get old dados
+                    oldNomeL = nomeLoja.getText().toString();
+                    oldNomeU = nomeUser.getText().toString();
+                    oldPhone = telefone.getText().toString();
                 }
             }
+        );
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+        // Observe Error
+        viewModel.getError().observe(this,
+            error -> progressBar.setVisibility(View.GONE)
+        );
 
-            }
-        });
+
+        //get Dados db
+        viewModel.getDadosDB(progressBar);
     }
 
     private void getText(){
@@ -265,6 +280,7 @@ public class ConfigDadosLojaActivity extends AppCompatActivity
         finish();
         return super.onSupportNavigateUp();
     }
+
     @Override
     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 

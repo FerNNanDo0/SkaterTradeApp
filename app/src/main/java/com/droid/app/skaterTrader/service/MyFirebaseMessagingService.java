@@ -9,11 +9,14 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.droid.app.skaterTrader.R;
+import com.droid.app.skaterTrader.model.Loja;
+import com.droid.app.skaterTrader.model.User;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -84,6 +87,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
+        // refencia de loja e User
+        Loja loja = new Loja();
+        User user = new User();
+
+        // definir token para lojas e usuários
+        loja.setToken(token);
+        user.setToken(token);
+
+        Log.i("TOKEN >", token );
     }
 
 }

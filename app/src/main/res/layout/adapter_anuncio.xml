@@ -1,43 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="8dp"
     android:layout_marginTop="6dp"
     android:layout_marginRight="8dp"
+    android:background="@drawable/bg_adapter_card_layout"
     android:elevation="6dp"
-    android:background="@color/white"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    app:cardCornerRadius="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="140dp"
-        android:background="@color/white"
+        android:layout_height="match_parent"
+        android:background="@color/colorShapeSolid"
         android:orientation="horizontal"
         android:padding="6dp">
 
 
         <ImageView
             android:id="@+id/imageAnuncio"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:scaleType="centerCrop"
+            android:layout_width="125dp"
+            android:layout_height="120dp"
+            android:adjustViewBounds="true"
+            android:background="@color/colorShapeSolid"
             android:contentDescription="@string/todo"
-            android:background="@color/white"
+            android:scaleType="centerCrop"
+            app:circularflow_defaultRadius="10dp"
+            app:circularflow_radiusInDP="10"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintCircleRadius="10dp"
             app:layout_constraintEnd_toStartOf="@+id/linearLayout2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/padrao" />
+            app:srcCompat="@drawable/padrao"
+            tools:circularflow_defaultRadius="10dp"
+            tools:circularflow_radiusInDP="10"
+            tools:layout_constraintCircleRadius="10dp" />
 
         <ProgressBar
             android:id="@+id/progressBarImg"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/imageAnuncio"
             app:layout_constraintEnd_toEndOf="@+id/imageAnuncio"
             app:layout_constraintStart_toStartOf="@+id/imageAnuncio"
@@ -46,9 +55,9 @@
         <LinearLayout
             android:id="@+id/linearLayout2"
             android:layout_width="240dp"
-            android:layout_height="0dp"
+            android:layout_height="120dp"
+            android:background="@color/colorShapeSolid"
             android:orientation="vertical"
-            android:background="@color/white"
             android:paddingStart="10dp"
             android:paddingTop="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -57,7 +66,7 @@
 
             <TextView
                 android:id="@+id/titulo"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/titulo"
                 android:textColor="@color/black"
@@ -66,12 +75,23 @@
 
             <TextView
                 android:id="@+id/valor"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="10dp"
                 android:text="@string/valor"
                 android:textColor="@color/purple_700"
                 android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/estado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:padding="2dp"
+                android:text="@string/estado"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:drawableStartCompat="@drawable/location_on_24" />
         </LinearLayout>
 
 

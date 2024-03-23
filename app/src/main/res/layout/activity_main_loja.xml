@@ -16,12 +16,12 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:addStatesFromChildren="false"
-        android:background="@color/white"
+        android:background="@color/nav_viewColor"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
         app:itemIconTint="@color/black"
         app:itemRippleColor="@color/purple_500"
-        app:itemShapeFillColor="@color/white"
+        app:itemShapeFillColor="@color/itemShapeColor"
         app:itemTextColor="@color/black"
         app:menu="@menu/menu_drawer_loja" />
 

@@ -23,10 +23,10 @@ public class RotacionarImgs {
                     ExifInterface.ORIENTATION_NORMAL);
             switch (orientation) {
                 case ExifInterface.ORIENTATION_ROTATE_270:
-                    rotate = 270;
+                    rotate = 270-180;
                     break;
                 case ExifInterface.ORIENTATION_ROTATE_180:
-                    rotate = 180;
+                    rotate = 180/2;
                     break;
                 case ExifInterface.ORIENTATION_ROTATE_90:
                     rotate = 90;

@@ -2,13 +2,14 @@
     <string name="app_name">Skater Trade</string>
     <string name="login">Login</string>
     <string name="cadastro">Cadastro</string>
-    <string name="btn_cadastrar">Cadastrar</string>
+    <string name="cadastrar">Cadastrar</string>
     <string name="btn_logar">Entrar</string>
     <string name="btn_google">Entre com o google</string>
     <string name="redefinirEmailHint">E-mail</string>
     <string name="emailHint">E-mail</string>
     <string name="senhaHint">Senha</string>
     <string name="btn_cadastrar_anuncio">SALVAR ANÚNCIO</string>
+    <string name="btn_atualizar_anuncio">ATUALIZAR ANÚNCIO</string>
     <string name="valor">Valor</string>
     <string name="titulo">Título</string>
     <string name="regiao">REGIÃO   </string>
@@ -17,7 +18,7 @@
     <string name="telefone">Número do WhatsApp.</string>
     <string name="valor_hint">R$900,00</string>
     <string name="t_tulo">Título</string>
-    <string name="descri_o">Descrição Ex:\nEm boas condições,\nentrego na cidade ou na pista de skate.</string>
+    <string name="descri_o">Descrição Ex:\nEm boas condições,\nentrego na pista de skate.</string>
     <string name="estado">RS</string>
     <string name="menu_redefinir">Redefinir filtro</string>
     <string name="menu_meus_anuncios">Meus Anúncios</string>
@@ -67,6 +68,31 @@
     <string name="hint_nome_responsalvelLoja">Nome do responsavel pela loja</string>
     <string name="hint_telefone_loja">"Telefone da loja "</string>
     <string name="btn_txt_atualizar_dados">Atualizar Dados</string>
+    <string name="informa_es">Informações</string>
+
+    <string name="txt_recursos_app">Segue abaixo alguns recursos do App</string>
+
+    <string name="title_infoApp">Sobre este App</string>
+    <string name="txt_0_Info">O SkaterTrade é um aplicativo inovador desenvolvido por skatista especialmente para a comunidade de skatistas apaixonados por esse esporte radical. Ele oferece uma plataforma única que permite aos skatistas comprar, vender e negociar peças de skate de forma fácil e conveniente. Com uma interface intuitiva e recursos robustos, o SkaterTrade se torna o ponto de encontro virtual perfeito para os entusiastas do skate.</string>
+
+    <string name="title_txt_1"><b>1 - Listagem de Produtos</b></string>
+    <string name="txt_1_Info">Os usuários podem criar anúncios detalhados para listar as peças de skate que desejam vender. Eles podem incluir fotos, descrições, preços e informações de contato.</string>
+
+    <string name="title_txt_2"><b>2 - Pesquisa Avançada</b></string>
+    <string name="txt_2_Info">Os compradores podem realizar pesquisas avançadas por categoria de produtos e localização para encontrar exatamente o que estão procurando.</string>
+
+    <string name="title_txt_3"><b>3 - Perfil de Usuário</b></string>
+    <string name="txt_3_Info">Cada usuário possui um perfil pessoal onde podem exibir seus produtos à venda e informações de contato.</string>
+
+    <string name="title_txt_4"><b>4 - Segurança e Privacidade</b></string>
+    <string name="txt_4_Info">O SkaterTrade prioriza a segurança dos usuários e seus dados pessoais são protegidos por medidas de segurança robustas.</string>
+
+    <string name="txt_5_Info"> <b>O SkaterTrade</b> \né mais do que apenas um aplicativo de compra e venda; é uma comunidade vibrante de skatistas que compartilham sua paixão pelo esporte e pelo estilo de vida. Com sua ampla gama de recursos e foco na segurança e facilidade de uso, o SkaterTrade se torna a escolha número um para skatistas em busca de peças de skate de qualidade e boas negociações. Se você é um skatista ávido, não perca a oportunidade de fazer parte desta comunidade exclusiva. Baixe o SkaterTrade hoje e comece a negociar suas peças de skate favoritas!</string>
+    <string name="cadastrar_anuncio_titleActionBar">Cadastrar anúncio</string>
+    <string name="editar_anuncio_titleActionBar">Editar anúncio</string>
+    <string name="edit_hint_cidade">Cidade</string>
+    <string name="excluir_an_ncio_menu">Excluir Anúncio</string>
+
 
     <string-array name="categorias">
         <item>Roupas</item>

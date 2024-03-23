@@ -3,10 +3,10 @@ package com.droid.app.skaterTrader.activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -23,52 +23,39 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.droid.app.skaterTrader.R;
 import com.droid.app.skaterTrader.databinding.ActivityCadastrarLojasBinding;
+import com.droid.app.skaterTrader.firebase.CadastrarUsers;
 import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
 import com.droid.app.skaterTrader.helper.ConfigDadosImgBitmap;
 import com.droid.app.skaterTrader.helper.Gallery;
 import com.droid.app.skaterTrader.helper.MaskEditUtil;
-import com.droid.app.skaterTrader.helper.MaskaraEditTextCpfCNPJ;
+import com.droid.app.skaterTrader.helper.MaskEditCpfCNPJ;
 import com.droid.app.skaterTrader.helper.Permissions;
 import com.droid.app.skaterTrader.helper.RotacionarImgs;
+import com.droid.app.skaterTrader.model.Consulta;
 import com.droid.app.skaterTrader.model.Loja;
-import com.droid.app.skaterTrader.model.ModelCnpj;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.droid.app.skaterTrader.viewModel.ViewModelRequestCNPJ;
+import com.droid.app.skaterTrader.viewModel.ViewModelFirebase;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONObject;
-import org.json.JSONException;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import br.com.caelum.stella.ValidationMessage;
 import br.com.caelum.stella.validation.CPFValidator;
 import de.hdodenhof.circleimageview.CircleImageView;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 
 public class CadastrarLojasActivity extends AppCompatActivity {
-
     EditText editNomeLoja, editNomeUser, editCpfOrCnpj, editEmail, editSenha, editNumero;
     Button btnCadastrarLoja;
     CircleImageView imageLoja;
-    //ViewModelCNPJ viewModelCNPJ;
-    Request request;
-    OkHttpClient client;
-
-    String emailLoja, senhaLoja;
+    String emailLoja, senhaLoja, nomeLoja, nomeUser, cpfOuCnpj, telefone;
     Loja loja;
     ProgressBar progressBarLoja;
     byte[] dadosImg;
-    ModelCnpj cnpjModel;
     List<byte[]> listaFotoLogo = new ArrayList<>(1);
 
     String[] permissions = new String[]{
@@ -77,14 +64,22 @@ public class CadastrarLojasActivity extends AppCompatActivity {
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
 
+    List<Consulta> listConsulta = new ArrayList<>();
+
     ActivityCadastrarLojasBinding binding;
+    final String TYPE = "LOJA";
+
+    ViewModelRequestCNPJ viewModelCNPJ;
+    ViewModelFirebase viewModelFirebase;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_cadastrar_lojas);
-
         binding = ActivityCadastrarLojasBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // iniciar ViewModel e buscar dados para consultas
+        getDadosConsultas();
 
         // validar permissions
         Permissions.validatePermissions(permissions, this, 1);
@@ -93,13 +88,13 @@ public class CadastrarLojasActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Cadastrar loja");
 
-        iniciarComponentes();
+        startComponents();
     }
 
-    private void iniciarComponentes() {
+    private void startComponents() {
         btnCadastrarLoja = binding.buttonCadastrarLoja;//findViewById(R.id.buttonCadastrarLoja);
         editCpfOrCnpj = binding.editTextCpfLoja;//findViewById(R.id.editTextCpfLoja);
-        editCpfOrCnpj.addTextChangedListener(MaskaraEditTextCpfCNPJ.insert(editCpfOrCnpj));
+        editCpfOrCnpj.addTextChangedListener(MaskEditCpfCNPJ.insert(editCpfOrCnpj));
 
         editNomeLoja = binding.editTextNomeLoja;//findViewById(R.id.editTextNomeLoja);
         editNomeUser = binding.editTextNomeUserLoja;//findViewById(R.id.editTextNomeUserLoja);
@@ -116,8 +111,8 @@ public class CadastrarLojasActivity extends AppCompatActivity {
         // referencia da loja
         loja = new Loja();
 
-        // iniciar client
-        client = new OkHttpClient().newBuilder().build();
+        // intancia do View Model
+        viewModelCNPJ = new ViewModelProvider(this).get(ViewModelRequestCNPJ.class);
     }
 
     // btn Cadastro da loja
@@ -127,12 +122,7 @@ public class CadastrarLojasActivity extends AppCompatActivity {
 
     // validar campos
     private void validarCampos() {
-        emailLoja = editEmail.getText().toString();
-        senhaLoja = editSenha.getText().toString();
-        String nomeLoja = editNomeLoja.getText().toString();
-        String nomeUser = editNomeUser.getText().toString();
-        String cpfOuCnpj = editCpfOrCnpj.getText().toString();
-        String telefone = editNumero.getText().toString();
+        getDadosEditTexts();
 
         // fazer validação
         if( !nomeLoja.isEmpty() ) {
@@ -145,52 +135,22 @@ public class CadastrarLojasActivity extends AppCompatActivity {
 
                                     // ocultar teclado do sistema
                                     closedKeyBoard();
-                                    btnCadastrarLoja.setEnabled(false);
+                                    configBtnAndProgress(false,View.VISIBLE);
 
-                                    if(cpfOuCnpj.length() > 14) { // se > 14 então é CNPJ
 
-                                        progressBarLoja.setVisibility( View.VISIBLE );
-
-                                        // definir dados da loja e ecadastrar
-                                        loja.setNomeLoja(nomeLoja);
-                                        loja.setNomeUser(nomeUser);
-                                        loja.setTelefone(telefone);
-                                        loja.setEmail(emailLoja);
-                                        loja.setSenha(senhaLoja);
-                                        validateCNPJ(cpfOuCnpj);
-
-                                    }else{ // se não é CPF
-
-                                        // verificar CPF Válido
-                                        boolean valido = verificarCPF(cpfOuCnpj);
-                                        if(valido) { // CPF Válido
-
-                                            progressBarLoja.setVisibility( View.VISIBLE );
-
-                                            // definir dados da loja e ecadastrar
-                                            loja.setNomeLoja(nomeLoja);
-                                            loja.setNomeUser(nomeUser);
-                                            loja.setCpfOrCnpj(cpfOuCnpj);
-                                            loja.setTelefone(telefone);
-                                            loja.setEmail(emailLoja);
-                                            loja.setSenha(senhaLoja);
-                                            cadastrarLoja();
-
-                                        }else{ // CPF Inválido
-
-                                            btnCadastrarLoja.setEnabled(true);
-                                            exibirToast("CPF Inválido");
-                                            editCpfOrCnpj.setTextColor(Color.RED);
-                                            editCpfOrCnpj.requestFocus();
-                                        }
+                                    //verificar dados na lista de consulta de lojas
+                                    if( listConsulta.size() > 0){
+                                        verificarDadosListConsulta();
+                                    }else{
+                                        //Iniciar validação de dados antes do cadastro
+                                        validarCPFeCNPJ();
                                     }
 
                                 }else{
                                     exibirToast("Escolha uma imagem como \"logo\" para sua loja");
                                 }
                             }else{
-                                exibirToast(
-                                        "Para a maior segurança informe uma Senha com no mínimo 10 caracters.");
+                                exibirToast("Para a maior segurança informe uma Senha com no mínimo 10 caracters.");
                             }
                         }else{
                             exibirToast("Informe um E-mail válido para sua loja!");
@@ -209,9 +169,146 @@ public class CadastrarLojasActivity extends AppCompatActivity {
         }
     }
 
-    private boolean verificarCPF(String cpfOuCnpj) {
+    private void getDadosEditTexts(){
+        emailLoja = editEmail.getText().toString();
+        senhaLoja = editSenha.getText().toString();
+        nomeLoja = editNomeLoja.getText().toString();
+        nomeUser = editNomeUser.getText().toString();
+        cpfOuCnpj = editCpfOrCnpj.getText().toString();
+        telefone = editNumero.getText().toString();
+    }
+
+    private void verificarDadosListConsulta(){
+        for(Consulta consult : listConsulta){
+            if( consult.getNomeLoja().equals(nomeLoja) ){
+
+                configBtnAndProgress(true, View.GONE);
+                configEditText(editNomeLoja);
+                exibirToast("Esse nome já foi cadastrados no sistema!");
+
+            }else{
+                if( consult.getTelefone().equals(telefone) ){
+
+                    configBtnAndProgress(true, View.GONE);
+                    configEditText(editNumero);
+                    exibirToast("Esse número de telefone já foi cadastrados no sistema!");
+
+                }else{
+                    if( consult.getCpfOrCnpj().equals(cpfOuCnpj) ){
+
+                        configBtnAndProgress(true, View.GONE);
+                        configEditText(editCpfOrCnpj);
+
+                        if(cpfOuCnpj.length() > 14) { // se > 14 então é CNPJ
+                            exibirToast("Esse CNPJ já foi cadastrados no sistema!");
+                        }else{
+                            exibirToast("Esse CPF já foi cadastrados no sistema!");
+                        }
+                    }else{
+                        //Iniciar validação de dados antes do cadastro
+                        validarCPFeCNPJ();
+                    }
+                }
+            }
+        }
+    }
+    private void getDadosConsultas() {
+
+        DatabaseReference database = FirebaseRef.getDatabase();
+        DatabaseReference consultasRef = database.child("consultas");
+        consultasRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                for(DataSnapshot snap : snapshot.getChildren()){
+                    Consulta consulta = snap.getValue(Consulta.class);
+
+                    //add dados de lista
+                    listConsulta.add(consulta);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void validarCPFeCNPJ(){
+        if(cpfOuCnpj.length() > 14) { // se > 14 então é CNPJ
+
+            // definir dados da loja e ecadastrar
+            loja.setNomeLoja(nomeLoja);
+            loja.setNomeUser(nomeUser);
+            loja.setTelefone(telefone);
+            loja.setEmail(emailLoja);
+            loja.setSenha(senhaLoja);
+
+            // requisição de dados do CNPJ
+            /*new VerificarCNPJ( cpfOuCnpj , new ResultCnpj() {
+                @Override
+                public void onRequestDadosCnpj(ModelCnpj modelCnpj) {
+                    loja.setCpfOrCnpj(cpfOuCnpj);
+                    loja.setModelCnpj(modelCnpj);
+                    cadastrarLoja();
+                }
+
+                @Override
+                public void onErroRequestCnpj(String erro) {
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(() ->
+                        erroRequestCnpj(erro)
+                    );
+                }
+            });*/
+
+            //observe dos dados do cnpj
+            viewModelCNPJ.getLiveDataRequestDadosCnpj().observe(this,
+                modelCnpj -> {
+                    loja.setCpfOrCnpj(cpfOuCnpj);
+                    loja.setModelCnpj(modelCnpj);
+                    //cadastrarLoja();
+                    firebaseCadastrarLoja();
+                });
+
+            //observe de erros
+            viewModelCNPJ.getLiveDataErroRequestCnpj().observe(this,
+                    this::erroRequestCnpj
+                );
+
+            // obter dados
+            viewModelCNPJ.getDadosCNPJ(cpfOuCnpj);
+
+
+        }else{ // se não é CPF
+
+            // verificar CPF Válido
+            boolean valido = verificarCPF(cpfOuCnpj);
+            if(valido) { // CPF Válido
+
+                // definir dados da loja e ecadastrar
+                loja.setNomeLoja(nomeLoja);
+                loja.setNomeUser(nomeUser);
+                loja.setCpfOrCnpj(cpfOuCnpj);
+                loja.setTelefone(telefone);
+                loja.setEmail(emailLoja);
+                loja.setSenha(senhaLoja);
+                //cadastrarLoja();
+                firebaseCadastrarLoja();
+
+            }else{ // CPF Inválido
+
+                configBtnAndProgress(true, View.GONE);
+                exibirToast("CPF Inválido");
+                configEditText(editCpfOrCnpj);
+            }
+        }
+    }
+    private boolean verificarCPF(String cpf) {
         CPFValidator cpfValidator = new CPFValidator();
-        List<ValidationMessage> erros = cpfValidator.invalidMessagesFor(cpfOuCnpj);
+        List<ValidationMessage> erros = cpfValidator.invalidMessagesFor(cpf);
         if(erros.size() > 0){
             System.out.println(erros);
             return false;
@@ -219,156 +316,60 @@ public class CadastrarLojasActivity extends AppCompatActivity {
         return true;
     }
 
-    private void validateCNPJ(String cpfOuCnpj) {
-        //remover caracters especiais
-        String newCpfOuCnpj = removerCharacters(cpfOuCnpj);
-        String TOKEN = "f7fc0266-e337-4158-b957-4f01b9e8bfbc-b6aa315b-2629-41c2-9f00-ce227deb61a3";
+    // inicia o ViewModelCNPJ
+    private void erroRequestCnpj(@NonNull String erro){
 
-        String url = "https://api.cnpja.com/office/"+newCpfOuCnpj+"?simples=true&simplesHistory=true";
-        request = new Request.Builder()
-                .url(url).method("GET", null)
-                .addHeader("Authorization", TOKEN).build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+        switch (erro){
+            case "ERRO 1":
                 exibirToast("Houve uma falha na comunicação ao tentar verificar o CNPJ, tente mais tarde!");
-                editCpfOrCnpj.requestFocus();
-                editCpfOrCnpj.setTextColor(Color.RED);
-                btnCadastrarLoja.setEnabled(true);
-            }
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull okhttp3.Response response) throws IOException {
+                configEditText(editCpfOrCnpj);
+                configBtnAndProgress(true, View.GONE);
+                break;
 
-                if(response.body() != null){
-                    String body = response.body().string();
+            case "ERRO 2":
+                exibirToast("CNPJ Inválido");
+                configEditText(editCpfOrCnpj);
+                configBtnAndProgress(true, View.GONE);
+                break;
 
-                    try {
-                        JSONObject jsonObject = new JSONObject(body);
-
-                        // verificar se CNPJ e valido e se ha codigo de erro
-                        if(jsonObject.has("code")){
-
-                            System.out.println(">> "+jsonObject.getString("code"));
-                            exibirToast("CNPJ Inválido");
-                            editCpfOrCnpj.requestFocus();
-                            editCpfOrCnpj.setTextColor(Color.RED);
-                            btnCadastrarLoja.setEnabled(true);
-                        }else{
-                            System.out.println(">> "+jsonObject);
-                            setDadosConsultaCNPJ(jsonObject,cpfOuCnpj);
-                        }
-
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                }else{
-                    exibirToast("CNPJ Inválido");
-                    editCpfOrCnpj.requestFocus();
-                    editCpfOrCnpj.setTextColor(Color.RED);
-                }
-            }
-        });
-    }
-    private void setDadosConsultaCNPJ(@NonNull JSONObject jsonObject, String cnpj) {
-        cnpjModel = new ModelCnpj();
-        try {
-
-            // recupera o endereço
-            String address = jsonObject.getString("address");
-            JSONObject jsonAdress = new JSONObject(address);
-            String cidade = jsonAdress.getString("city");
-            String estado = jsonAdress.getString("state");
-            String rua = jsonAdress.getString("street");
-            String numero = jsonAdress.getString("number");
-            String cep = jsonAdress.getString("zip");
-
-            // recupera o pais
-            String country = jsonAdress.getString("country");
-            JSONObject jsonCoutry = new JSONObject(country);
-            String pais = jsonCoutry.getString("name");
-
-            /// recupera info da empresa
-            String company = jsonObject.getString("company");
-            JSONObject jsonCompany = new JSONObject(company);
-            String companyBody = jsonCompany.getString("name");
-
-            // definir dados do cnpj
-            cnpjModel.setCidade(cidade);
-            cnpjModel.setEstado(estado);
-            cnpjModel.setRua(rua);
-            cnpjModel.setNumero(numero);
-            cnpjModel.setCep(cep);
-            cnpjModel.setPais(pais);
-            cnpjModel.setCompanyBody(companyBody);
-            loja.setCpfOrCnpj(cnpj);
-            loja.setModelCnpj(cnpjModel);
-            cadastrarLoja();
-
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
+            case "ERRO 3":
+                configBtnAndProgress(true, View.GONE);
+                break;
         }
     }
 
-
     // salvar no firebase
-    public void cadastrarLoja() {
+    private void firebaseCadastrarLoja(){
+        //instance ViewModelFirebase
+        viewModelFirebase = new ViewModelProvider(this).get(ViewModelFirebase.class);
 
-        //cadastrar no Firebase
-        FirebaseRef.getAuth().createUserWithEmailAndPassword(emailLoja, senhaLoja)
-                .addOnCompleteListener(task -> {
-                    if( task.isSuccessful() ){
+        // observe msg Toast email de comfirm
+        viewModelFirebase.getLiveDataShowToast().observe(this,
+                this::exibirToast
+        );
 
-                        // enviar email de comfirmação
-                        if( FirebaseRef.getAuth().getCurrentUser() != null){
-                            FirebaseRef.getAuth().getCurrentUser().sendEmailVerification()
-                                    .addOnCompleteListener(task1 -> {
-                                        if(task1.isSuccessful()){
+        // observe cadastro
+        viewModelFirebase.getResultCadastro().observe(this,
+            bol -> {
+                if(bol){
+                    startActivity(new Intent( this, ActivityMainLoja.class));
+                }
+            }
+        );
 
-                                            loja.salvarDados(this, dadosImg);
+        // observe Erro de cadastro
+        viewModelFirebase.getErroCadastro().observe(this,
+            erro -> {
+                exibirToast("ERRO: "+erro);
+                configBtnAndProgress(true,View.GONE);
+            }
+        );
 
-                                            Toast.makeText(this,
-                                                    "Um email de confirmação foi enviado para seu email.",
-                                                    Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                        }
-
-                    }else{
-                        progressBarLoja.setVisibility( View.GONE );
-                        btnCadastrarLoja.setEnabled(true);
-
-                        String execao;
-                        try{
-                            throw Objects.requireNonNull(task.getException());
-
-                        } catch (FirebaseAuthWeakPasswordException passwordException){
-                            execao = "Digite uma senha mais forte!";
-
-                        } catch (FirebaseAuthInvalidCredentialsException invalidCredentials){
-                            execao = "Digite um e-mail válido!";
-
-                        } catch (FirebaseAuthUserCollisionException collision){
-                            execao = "Uma conta com esse E-mail já foi cadastrada no sistema!";
-
-                        } catch (Exception e){
-                            execao = "Erro ao cadastrar usuario: "+ e.getMessage() ;
-                            e.printStackTrace();
-                        }
-                        Toast.makeText(this, "Erro: "+execao,
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
+        // Cadastrar LOJA
+        CadastrarUsers cadastrarUsers = new CadastrarUsers(viewModelFirebase, dadosImg, TYPE);
+        cadastrarUsers.cadastrarUser(emailLoja, senhaLoja );
     }
 
-    @NonNull
-    private String removerCharacters(@NonNull String str) {
-        String newStr = str.replace(".","");
-        newStr = newStr.replace("/", "");
-        newStr = newStr.replace("-", "");
-        return newStr;
-    }
     private void exibirToast(@NonNull String msg) {
         Toast.makeText(CadastrarLojasActivity.this, msg, Toast.LENGTH_LONG).show();
     }
@@ -442,5 +443,15 @@ public class CadastrarLojasActivity extends AppCompatActivity {
             InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             manager.hideSoftInputFromWindow( view.getWindowToken(),0);
         }
+    }
+
+    private void configBtnAndProgress(boolean bol, int param){
+        btnCadastrarLoja.setEnabled(bol);
+        progressBarLoja.setVisibility(param);
+    }
+
+    private void configEditText(@NonNull EditText editText ){
+        editText.setTextColor(Color.RED);
+        editText.requestFocus();
     }
 }

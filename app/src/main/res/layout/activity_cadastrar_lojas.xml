@@ -164,7 +164,7 @@
                 android:elevation="8dp"
                 android:onClick="btnCadastrarLoja"
                 android:paddingStart="85dp"
-                android:text="@string/btn_cadastrar"
+                android:text="@string/cadastrar"
                 android:textColor="#FFFFFF"
                 android:textSize="23sp"
                 android:textStyle="bold|italic"

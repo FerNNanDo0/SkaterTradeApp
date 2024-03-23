@@ -37,7 +37,9 @@ public class Permissions {
             //solitar permissao
             ActivityCompat.requestPermissions( activity, neewPerssion, requestCode );
 
-            Informe.salvarCode("0", activity.getApplicationContext());
+            // informe de alert para exibir uma unica vez
+            Informe.salvarCodePermission("0", activity.getApplicationContext());
+            Informe.salvarCodeStatusPico("0", activity.getApplicationContext());
         }
         return true;
     }

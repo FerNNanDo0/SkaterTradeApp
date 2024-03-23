@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.droid.app.skaterTrader.R;
@@ -28,10 +27,12 @@ import com.droid.app.skaterTrader.databinding.ActivityMainLojaBinding;
 import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
 import com.droid.app.skaterTrader.helper.ConfigDadosImgBitmap;
 import com.droid.app.skaterTrader.helper.Gallery;
+import com.droid.app.skaterTrader.helper.IntentActionView;
 import com.droid.app.skaterTrader.helper.Permissions;
 import com.droid.app.skaterTrader.helper.RotacionarImgs;
 import com.droid.app.skaterTrader.model.Loja;
 import com.droid.app.skaterTrader.model.User;
+import com.droid.app.skaterTrader.viewModel.ViewModelConfigDadosLoja;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.IOException;
@@ -63,6 +64,8 @@ public class ActivityMainLoja extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
+        img = User.user().getPhotoUrl();
+        email = User.user().getEmail();
     }
 
     @Override
@@ -120,13 +123,7 @@ public class ActivityMainLoja extends AppCompatActivity
                 break;
 
             case R.id.nav_shareApp:
-                String urlApp = "https://play.google.com/store/apps/details?id=com.droid.app.skaterTrader";
-                Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, urlApp);
-                sendIntent.setType("text/plain");
-
-                Intent shareIntent = Intent.createChooser(sendIntent, "Compartilhar App");
-                startActivity(shareIntent);
+                IntentActionView.sharedApp(this);
                 break;
 
             case R.id.avaliar:
@@ -134,7 +131,7 @@ public class ActivityMainLoja extends AppCompatActivity
                 break;
 
             case R.id.nav_info:
-                Toast.makeText(this, "Informações em breve estará diponível", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, InfoActivity.class));
                 break;
 
             case R.id.sair:
@@ -152,7 +149,7 @@ public class ActivityMainLoja extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         // definir Informações de perfil do usuario
-        if(User.UserLogado() && User.user() != null){
+        if(User.UserLogado()){
 
             img = User.user().getPhotoUrl();
             email = User.user().getEmail();
@@ -171,16 +168,12 @@ public class ActivityMainLoja extends AppCompatActivity
 
                 if(img != null) {
                     Glide.with(this).load(img).into(circleImageViewUser);
-                }else{
-                    //String caminhoFoto = "android.resource://"+getPackageName()+"/"+R.drawable.logo_inicial_1;
-                    circleImageViewUser.setImageResource(R.drawable.logo_inicial_1);
                 }
 
                 emailUser.setText(email);
                 loja.getNameLojaDb(nameLoja);
 
             }catch (Exception e){
-                circleImageViewUser.setImageResource(R.drawable.logo_inicial_1);
                 e.printStackTrace();
             }
 
@@ -252,7 +245,7 @@ public class ActivityMainLoja extends AppCompatActivity
             // cortar imagem
             //Bitmap imgBitmapCortada = Bitmap.createScaledBitmap(imgBitmap, 720, 720, true);
 
-            // rotacionar a img que foi cortada
+            // rotacionar a img
             Bitmap imgBitmapRotate = RotacionarImgs.rotacionarIMG(imgBitmap, imgSelected, this);
             if(imgBitmapRotate != null){
                 //reuperar dados da img para o firebase
@@ -264,8 +257,9 @@ public class ActivityMainLoja extends AppCompatActivity
             }
 
             // salvar img do usuario
-            Loja loja = new Loja();
-            loja.salvarImgLogoLoja(dadosImg);
+            //Loja loja = new Loja();
+            new ViewModelConfigDadosLoja().salvarImgLogoLoja(dadosImg);
+            //loja.salvarImgLogoLoja(dadosImg);
             Glide.with(this).load(imgSelected).into(circleImageViewUser);
 
         } catch (IOException e) {

@@ -3,8 +3,8 @@ package com.droid.app.skaterTrader.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
-import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
@@ -17,8 +17,11 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
 import com.droid.app.skaterTrader.R;
+import com.droid.app.skaterTrader.databinding.ActivityMapaPicosSkateBinding;
 import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
+import com.droid.app.skaterTrader.helper.Informe;
 import com.droid.app.skaterTrader.model.MarkerPico;
+import com.droid.app.skaterTrader.viewModel.ViewModelMapaPicos;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -49,14 +52,11 @@ public class MapaPicosSkate extends AppCompatActivity
     Marker markerPico, markerMeuLocal;
     EditText EditTitulo;
     LatLng myLocation;
-    DatabaseReference database;
-    DatabaseReference picoRef;
-    ValueEventListener valueEventListener;
     int codeL = 0;
-
     int drawableMarker;
-
     RadioButton radioButton1, radioButton2;
+
+    ActivityMapaPicosSkateBinding binding;
     @Override
     protected void onStart() {
         super.onStart();
@@ -64,23 +64,14 @@ public class MapaPicosSkate extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        picoRef.removeEventListener(valueEventListener);
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mapa_picos_skate);
+        //setContentView(R.layout.activity_mapa_picos_skate);
+        binding = ActivityMapaPicosSkateBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         //config toolbar
-        assert getSupportActionBar() != null;
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getColor(R.color.purple_500)));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setElevation(0);
-
-        getSupportActionBar().setTitle(R.string.mapa_de_picos);
+        configActionBar();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -89,8 +80,20 @@ public class MapaPicosSkate extends AppCompatActivity
             mapFragment.getMapAsync(this);
         }
 
-        // ref do db
-        database = FirebaseRef.getDatabase();
+        // mostrar uma vez só o imforme de status
+        if(Informe.recuperarCodeStatusPico(this).equals("0")){
+            infoMarkerStatusPico();
+        }
+
+    }
+
+    private void configActionBar(){
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getColor(R.color.purple_500)));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setElevation(0);
+
+        getSupportActionBar().setTitle(R.string.mapa_de_picos);
     }
 
     @Override
@@ -153,6 +156,8 @@ public class MapaPicosSkate extends AppCompatActivity
         });
         mDialog.show();
     }
+
+    // btn floating
     public void focusMyLocation(View view) {
         if ( myLocation != null ){
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
@@ -166,9 +171,13 @@ public class MapaPicosSkate extends AppCompatActivity
         builder.setTitle("Info: Status do marcador");
         builder.setCancelable(true);
         builder.setView(viewInfoMarker);
-        builder.setNegativeButton("Entendi", (dialog, wish) -> dialog.cancel());
+        builder.setNegativeButton("Entendi", (dialog, wish) ->
+            dialog.cancel()
+        );
         AlertDialog dialog = builder.create();
         dialog.show();
+
+        Informe.salvarCodeStatusPico("1",this);
     }
     private void salvarPicoNoDB(@NonNull LatLng latLng, String nome, String corMarker) {
         MarkerPico markerPico = new MarkerPico();
@@ -179,50 +188,52 @@ public class MapaPicosSkate extends AppCompatActivity
         markerPico.salvar();
     }
     private void recuperarPontosDePico() {
-        picoRef = database.child("picos");
-        valueEventListener = picoRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//              System.out.println("nome pico: "+markerPico.getNome()+" LatLong: "+markerPico.getLatLng());
-                for(DataSnapshot snap : snapshot.getChildren()){
-                    MarkerPico markerPico1 = snap.getValue(MarkerPico.class);
+        // init viewModel
+        ViewModelMapaPicos viewModel = new ViewModelProvider(this).get(ViewModelMapaPicos.class);
 
-                    if(markerPico1 != null){
+        // Observe snapShot
+        viewModel.getSnapShot().observe(this,
+                this::showMarkersOfDB
+        );
 
-                        String nome = markerPico1.getNome();
-                        String corMarker = markerPico1.getCorMarker();
-                        LatLng latLng = new LatLng(markerPico1.getLatitude(), markerPico1.getLongitude());
-
-                        if(corMarker.equals("green")){
-                            markerPico = mMap.addMarker(
-                                    new MarkerOptions()
-                                            .position(latLng)
-                                            .title(nome)
-                                            //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_green_skate_40))
-                            );
-                        }else if(corMarker.equals("red")){
-                            markerPico = mMap.addMarker(
-                                    new MarkerOptions()
-                                            .position(latLng)
-                                            .title(nome)
-                                            //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_red_skate_40))
-                            );
-                        }
-
-
-                    }
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        // recurar picos
+        viewModel.recuperarPontosDePico();
     }
+
+    private void showMarkersOfDB(@NonNull DataSnapshot snapshot){
+        for(DataSnapshot snap : snapshot.getChildren()){
+            MarkerPico markerPico1 = snap.getValue(MarkerPico.class);
+
+            if(markerPico1 != null){
+
+                String nome = markerPico1.getNome();
+                String corMarker = markerPico1.getCorMarker();
+                LatLng latLng = new LatLng(markerPico1.getLatitude(), markerPico1.getLongitude());
+
+                if(corMarker.equals("green")){
+                    markerPico = mMap.addMarker(
+                            new MarkerOptions()
+                                    .position(latLng)
+                                    .title(nome)
+                                    //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_green_skate_40))
+                    );
+                }else if(corMarker.equals("red")){
+                    markerPico = mMap.addMarker(
+                            new MarkerOptions()
+                                    .position(latLng)
+                                    .title(nome)
+                                    //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_red_skate_40))
+                    );
+                }
+
+            }
+
+        }
+    }
+
+
     // getLastLocation
     @SuppressWarnings("MissingPermission")
     public void getLastLocation() {
@@ -329,7 +340,6 @@ public class MapaPicosSkate extends AppCompatActivity
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     @Override
     public boolean onSupportNavigateUp() {

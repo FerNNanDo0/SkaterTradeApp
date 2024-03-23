@@ -24,7 +24,7 @@
         tools:targetApi="31">
 
         <service
-            android:name="com.droid.app.skaterTrader.service.MyFirebaseMessagingService"
+            android:name=".service.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -57,12 +57,17 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
 
-
+        <activity
+            android:name=".activity.InfoActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.skateTrade" />
         <activity
             android:name=".activity.ConfigDadosLojaActivity"
             android:exported="false"
+            android:parentActivityName=".activity.ActivityMainLoja"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.skateTrade"/>
+            android:theme="@style/Theme.skateTrade" />
         <activity
             android:name=".activity.ActivityMainLoja"
             android:exported="false"
@@ -90,11 +95,10 @@
             android:exported="false"
             android:parentActivityName=".activity.ActivityMain"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.skateTrade" />
+            android:theme="@style/Theme.skateTrade" /> <!-- android:hardwareAccelerated="false" -->
         <activity
             android:name=".activity.CadastrarAnunciosActivity"
             android:exported="false"
-            android:hardwareAccelerated="false"
             android:parentActivityName=".activity.MeusAnunciosActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.skateTrade" />
@@ -104,11 +108,17 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.skateTrade" />
         <activity
+            android:name=".activity.EditAnuncioActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.MeusAnunciosActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.skateTrade"/>
+        <activity
             android:name=".activity.AcessoActivity"
             android:exported="true"
             android:parentActivityName=".activity.ActivityMain"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.skateTrade"/>
+            android:theme="@style/Theme.skateTrade" />
         <activity
             android:name=".activity.ActivityMain"
             android:exported="true"
@@ -119,17 +129,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!--            <intent-filter>-->
-        <!--                <action android:name="android.intent.action.VIEW" />-->
-
-        <!--                <category android:name="android.intent.category.DEFAULT" />-->
-        <!--                <category android:name="android.intent.category.BROWSABLE" />-->
-
-        <!--                <data-->
-        <!--                    android:host="https://skatertrade.web.app/acesso.html"-->
-        <!--                    android:scheme="https" />-->
-        <!--            </intent-filter>-->
     </application>
 
 </manifest>

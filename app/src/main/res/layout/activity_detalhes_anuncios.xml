@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="1dp"
+    android:gravity="center|top"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:paddingLeft="5dp"
+    android:paddingTop="10dp"
+    android:paddingRight="5dp"
+    android:paddingBottom="2dp"
+    tools:context="com.droid.app.skaterTrader.activity.DetalhesProdutosActivity">
+
+    <com.synnapps.carouselview.CarouselView
+        android:id="@+id/carouselView"
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        android:layout_marginBottom="6dp"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:background="@color/white"
+        android:elevation="2dp"
+        app:fillColor="#FFFFFFFF"
+        android:contentDescription="@string/lista_imgs_carouselView"
+        app:pageColor="#00000000"
+        app:radius="3dp"
+        app:slideInterval="3000"
+        app:strokeColor="#BABABA"
+        app:strokeWidth="1dp" />
+
+    <TextView
+        android:id="@+id/textViewTituloD"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:text="@string/titulo"
+        android:textColor="@color/black"
+        android:textSize="17sp" />
+
+    <TextView
+        android:id="@+id/textViewValorD"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:paddingBottom="4dp"
+        android:text="@string/valor_hint"
+        android:textColor="@color/purple_700"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@android:color/darker_gray" />
+
+    <TextView
+        android:id="@+id/textViewEstadoD"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:padding="2dp"
+        android:text="@string/estado"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:drawableStartCompat="@drawable/location_on_24" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="1dp"
+        android:background="@android:color/darker_gray" />
+
+    <TextView
+        android:id="@+id/textViewDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:text="@string/descri_o"
+        android:textColor="@color/dark"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/btnWhats"
+        style="@style/botaoPadrao"
+        android:layout_width="378dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:drawableEnd="@drawable/ic_action_whats"
+        android:paddingStart="75dp"
+        android:paddingEnd="60dp"
+        android:text="@string/conversar"
+        android:textSize="19sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:rippleColor="@color/rippleColorBtn" />
+
+    <!-- this attribute determines which template is used. The other option is
+     @layout/gnt_medium_template_view
+     @layout/gnt_small_template_view  -->
+    <com.google.android.ads.nativetemplates.TemplateView
+        android:id="@+id/myTemplate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/todo"
+        android:layout_marginTop="30dp"
+        android:visibility="gone"
+        app:gnt_template_type="@layout/gnt_small_template_view"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
+        tools:visibility="visible" />
+
+</LinearLayout>

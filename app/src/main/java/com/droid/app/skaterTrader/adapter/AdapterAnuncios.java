@@ -35,15 +35,26 @@ public class AdapterAnuncios extends RecyclerView.Adapter<AdapterAnuncios.MyView
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Anuncio anuncio = listAnuncios.get(position);
-        holder.titulo.setText( anuncio.getTitulo() );
-        holder.valor.setText( anuncio.getValor() );
 
-        // pegar primeira imagem da lista
-        String urlCapa = anuncio.getFotos().get(0);
-        //Picasso.get().load(urlCapa).into(holder.foto);
-        Glide.with(context).load(urlCapa).into(holder.foto);
+        if(anuncio != null){
+            holder.titulo.setText( anuncio.getTitulo() );
+            holder.valor.setText( anuncio.getValor() );
+            holder.estado.setText( anuncio.getEstado() );
 
-        holder.progressBarImg.setVisibility(View.GONE);
+            // pegar primeira imagem da lista
+            String urlCapa = anuncio.getFotos().get(0);
+
+            // define a imagem
+            //Picasso.get().load(urlCapa).into(holder.foto);
+            Glide.with(context).load(urlCapa).into(holder.foto);
+
+            holder.progressBarImg.setVisibility(View.GONE);
+        }else{
+            holder.progressBarImg.setVisibility(View.VISIBLE);
+            onBindViewHolder(holder, position);
+        }
+
+
     }
 
     @Override
@@ -52,13 +63,14 @@ public class AdapterAnuncios extends RecyclerView.Adapter<AdapterAnuncios.MyView
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView titulo, valor;
+        TextView titulo, valor, estado;
         ImageView foto;
         ProgressBar progressBarImg;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             titulo = itemView.findViewById(R.id.titulo);
             valor = itemView.findViewById(R.id.valor);
+            estado = itemView.findViewById(R.id.estado);
             foto = itemView.findViewById(R.id.imageAnuncio);
             progressBarImg = itemView.findViewById(R.id.progressBarImg);
         }
