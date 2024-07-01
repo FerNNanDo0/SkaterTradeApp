@@ -45,6 +45,7 @@ public class RotacionarImgs {
     private static String getImagePath(Uri contentUri, @NonNull Activity activity) {
         String[] campos = { MediaStore.Images.Media.DATA };
         Cursor cursor = activity.getContentResolver().query(contentUri, campos, null, null, null);
+        assert cursor != null;
         cursor.moveToFirst();
         String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
         cursor.close();

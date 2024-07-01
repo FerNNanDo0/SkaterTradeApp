@@ -1,8 +1,10 @@
 package com.droid.app.skaterTrader.firebase;
 
+import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 
+import com.droid.app.skaterTrader.R;
 import com.droid.app.skaterTrader.activity.ActivityMainLoja;
 import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
 import com.droid.app.skaterTrader.model.User;
@@ -19,12 +21,12 @@ public class LoginUsers {
         this.viewModel = viewModel;
     }
 
-    public void logar(String email, String senha){
+    public void logar(String email, String senha, Context context){
         FirebaseRef.getAuth().signInWithEmailAndPassword(email,senha)
                 .addOnCompleteListener( task -> {
                     if ( task.isSuccessful() ){
 
-                        String tipoUser = User.user().getDisplayName();
+                        String tipoUser = UserFirebase.getTipoUser();//User.user().getDisplayName();
 
                         if(tipoUser.equals("L")){
                             viewModel.setLogado(tipoUser);
@@ -39,13 +41,14 @@ public class LoginUsers {
                             throw Objects.requireNonNull(task.getException());
 
                         }catch (FirebaseAuthInvalidCredentialsException e){
-                            execao = "E-mail ou senha não correspondem a um usuário cadastrado!";
+                            execao = context.getString(R.string.nao_correspondem_a_um_usuario_cadastrado);
 
                         }catch (FirebaseAuthInvalidUserException e){
-                            execao = "Usuario não está cadastrado.";
+                            execao = context.getString(R.string.usuario_n_o_est_cadastrado);
 
                         }catch ( Exception e ){
-                            execao = "Usuario não está cadastrado."+ e.getMessage();
+                            execao = context.getString(R.string.erro_ao_cadastrar_usuario)+ e.getMessage();
+
                             e.printStackTrace();
                         }
                         viewModel.setErroLogin(execao);

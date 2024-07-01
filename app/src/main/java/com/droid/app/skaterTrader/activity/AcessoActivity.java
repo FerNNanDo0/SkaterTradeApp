@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -20,8 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.droid.app.skaterTrader.databinding.AcessoActivityBinding;
-import com.droid.app.skaterTrader.firebase.CadastrarUsers;
-import com.droid.app.skaterTrader.firebase.LoginUsers;
 import com.droid.app.skaterTrader.helper.FecharTecladoSys;
 import com.droid.app.skaterTrader.helper.IntentActionView;
 import com.droid.app.skaterTrader.model.User;
@@ -119,46 +118,45 @@ public class AcessoActivity extends AppCompatActivity
         assert getSupportActionBar() != null;
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getColor(R.color.purple_500)));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Login");
+        getSupportActionBar().setTitle(getString(R.string.login));
     }
 
     private void cadastrarUser(String email, String senha){
 
         // observe msg Toast email de comfirm
         viewModelFirebase.getLiveDataShowToast().observe(this,
-                this::exibirToast
+            this::exibirToast
         );
 
         // observe cadastro
         viewModelFirebase.getResultCadastro().observe(this,
-                bol -> {
-                    if(bol){
-                        //atualizar nome
-                        user.atulizarNome(this);
-                        startActivity(activity2);
-                    }
+            bol -> {
+                if(bol){
+                    //atualizar nome
+                    user.atulizarNome(this);
+                    startActivity(activity2);
                 }
+            }
         );
 
         // observe Erro de cadastro
         viewModelFirebase.getErroCadastro().observe(this,
-                erro -> {
-                    exibirToast("ERRO: "+erro);
-                    configBtnAndProgressUI(View.VISIBLE, View.GONE, View.VISIBLE);
-                }
+            erro -> {
+                exibirToast(getString(R.string.erro)+erro);
+                configBtnAndProgressUI(View.VISIBLE, View.GONE, View.VISIBLE);
+            }
         );
 
         // Cadastrar User
-        CadastrarUsers cadastrarUsers = new CadastrarUsers(viewModelFirebase, "USER");
-        cadastrarUsers.cadastrarUser(email, senha);
+        viewModelFirebase.cadastrarUsuario(email, senha, this);
     }
     private void logarUser(String email, String senha){
         // config btns da ui
         configdBtns(false);
 
         viewModelFirebase.getResultLogin().observe(this,
-            bol -> {
-                if(bol.equals("L")){ // LOJA
+            tipoUser -> {
+                if(tipoUser.equals("L")){ // LOJA
                     startActivity(new Intent(this, ActivityMainLoja.class));
                     finish();
 
@@ -185,8 +183,7 @@ public class AcessoActivity extends AppCompatActivity
         );
 
         // logar User
-        LoginUsers loginUsers = new LoginUsers(viewModelFirebase);
-        loginUsers.logar(email, senha);
+        viewModelFirebase.logar(email, senha, this);
 
     }
 
@@ -235,7 +232,7 @@ public class AcessoActivity extends AppCompatActivity
                         cadastrarUser( user.getEmail(), user.getSenha() );
 
                     }else{
-                        exibirToast("Informe seu nome");
+                        exibirToast(getString(R.string.informe_seu_nome));
                     }
 
                 }else{  // loguin
@@ -249,10 +246,10 @@ public class AcessoActivity extends AppCompatActivity
                 }
 
             }else{
-                exibirToast("Para a maior segurança informe uma Senha com no mínimo 10 caracters.");
+                exibirToast(getString(R.string.informe_uma_senha_dica));
             }
         }else{
-            exibirToast("Informe um e-mail");
+            exibirToast(getString(R.string.informe_um_e_mail));
         }
     }
     public void logarComGoogle(){
@@ -282,7 +279,7 @@ public class AcessoActivity extends AppCompatActivity
         IdpResponse response = result.getIdpResponse();
 
         if(response != null){
-            if (result.getResultCode() == RESULT_OK) {
+            if (result.getResultCode() == Activity.RESULT_OK) {
                 // Successfully signed in
                 FirebaseUser userF = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -303,11 +300,11 @@ public class AcessoActivity extends AppCompatActivity
                 assert response.getError() != null;
                 if (response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
 
-                    exibirToast("Problemas com acesso a internet");
+                    exibirToast(getString(R.string.problemas_com_acesso_a_internet));
                     return;
                 }
                 if (response.getError().getErrorCode() == ErrorCodes.PROVIDER_ERROR) {
-                    exibirToast("Erro: "+response.getError());
+                    exibirToast(getString(R.string.erro)+response.getError());
                 }
 
             }
@@ -333,21 +330,21 @@ public class AcessoActivity extends AppCompatActivity
         progressBar.setVisibility( progressConfig );
         btnAcesso.setVisibility(btnConfig);
         btnGoogle.setVisibility(btnConfig);
-        //btnLoja.setVisibility(btnConfig);
+        btnLoja.setVisibility(btnConfig);
         linearLayout3.setVisibility(layConfig);
     }
 
     private void configdBtns(boolean bol){
         btnAcesso.setEnabled(bol);
         btnGoogle.setEnabled(bol);
-        //btnLoja.setEnabled(bol);
+        btnLoja.setEnabled(bol);
     }
 
     private void configSwitch(int txt, int pd, int visib1, int visib2, int title ){
         btnAcesso.setText(txt);
         btnAcesso.setPadding(pd, 0, 0, 0);
         editTextNome.setVisibility(visib1);
-        //btnLoja.setVisibility(visib1);
+        btnLoja.setVisibility(visib1);
         textViewRedefinir.setVisibility(visib2);
         Objects.requireNonNull(getSupportActionBar()).setTitle(title);
     }

@@ -14,7 +14,7 @@ public class InfoActivity extends AppCompatActivity {
 
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(getString(R.string.app_name)+" Info");
+        getSupportActionBar().setTitle(getString(R.string.app_name)+getString(R.string.txt_info));
     }
     @Override
     public boolean onSupportNavigateUp() {

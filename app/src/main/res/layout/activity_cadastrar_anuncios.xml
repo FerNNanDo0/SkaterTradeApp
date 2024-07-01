@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EBFFFFFF"
+    android:background="#FFFFFF"
     android:orientation="vertical"
-    tools:context="com.droid.app.skaterTrader.activity.CadastrarAnunciosActivity">
+    tools:context="com.droid.app.skaterTrader.activity.CadastrarOuEditarAnunciosActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -44,7 +44,7 @@
                     android:layout_margin="3dp"
                     android:layout_weight="1"
                     android:adjustViewBounds="true"
-                    android:background="@color/white"
+                    android:background="#FFFFFF"
                     android:contentDescription="@string/todo"
                     android:elevation="2dp"
                     android:scaleType="centerCrop"
@@ -55,7 +55,7 @@
                     android:layout_width="0dp"
                     android:layout_height="125dp"
                     android:adjustViewBounds="true"
-                    android:background="@color/white"
+                    android:background="#FFFFFF"
                     android:layout_margin="3dp"
                     android:layout_weight="1"
                     android:contentDescription="@string/todo"
@@ -68,7 +68,7 @@
                     android:layout_width="0dp"
                     android:layout_height="125dp"
                     android:adjustViewBounds="true"
-                    android:background="@color/white"
+                    android:background="#FFFFFF"
                     android:layout_margin="3dp"
                     android:layout_weight="1"
                     android:contentDescription="@string/todo"
@@ -137,6 +137,24 @@
                 android:textColorHint="@color/silver" />
 
             <EditText
+                android:id="@+id/editTextEstado"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="16dp"
+                android:visibility="gone"
+                android:autofillHints=""
+                android:background="@drawable/bg_edit_text"
+                android:ems="10"
+                android:hint="@string/seu_estado"
+                android:inputType="textPersonName|textCapWords"
+                android:maxLength="30"
+                android:padding="10dp"
+                android:textColor="@color/dark"
+                android:textColorHint="@color/silver" />
+
+            <EditText
                 android:id="@+id/editTextTitulo"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
@@ -187,13 +205,38 @@
                 android:textColor="@color/dark"
                 android:textColorHint="@color/silver" />
 
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editTextNumeroDDD"
+                android:layout_width="170dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="3dp"
+                android:autofillHints=""
+                android:background="@drawable/bg_edit_text"
+                android:ems="10"
+                android:text="@string/_55"
+                android:hint="@string/ddd"
+                android:inputType="numberSigned"
+                android:maxLength="5"
+                android:padding="10dp"
+                android:textColor="@color/dark"
+                android:textColorHint="@color/silver" />
+
             <EditText
                 android:id="@+id/editTextNumeroFone"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="16dp"
+                android:layout_weight="1"
                 android:autofillHints=""
                 android:background="@drawable/bg_edit_text"
                 android:ems="10"
@@ -203,6 +246,8 @@
                 android:padding="10dp"
                 android:textColor="@color/dark"
                 android:textColorHint="@color/silver" />
+
+        </LinearLayout>
 
             <Button
                 android:id="@+id/buttonSalvarAnuncio"

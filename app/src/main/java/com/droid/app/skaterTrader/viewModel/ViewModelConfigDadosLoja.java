@@ -15,18 +15,22 @@ public class ViewModelConfigDadosLoja extends ViewModel {
     MutableLiveData<Boolean> bol;
     MutableLiveData<Loja> loja;
     MutableLiveData<DatabaseError> error;
+    GetDadosLojas getDadosLojas;
 
     public ViewModelConfigDadosLoja() {
         this.bol = new MutableLiveData<>();
         this.loja = new MutableLiveData<>();
         this.error = new MutableLiveData<>();
+        getDadosLojas = new GetDadosLojas();
     }
 
+    public void removeEventListener(){
+        getDadosLojas.removeEventListener();
+    }
 
     // Get dados da loja
     public void getDadosDB(@NonNull ProgressBar progress){
         progress.setVisibility(View.VISIBLE);
-        GetDadosLojas getDadosLojas = new GetDadosLojas();
         getDadosLojas.getDadosDb(this);
     }
 
@@ -53,7 +57,7 @@ public class ViewModelConfigDadosLoja extends ViewModel {
     // Salvar imagem logo da loja
     public void salvarImgLogoLoja(byte[] dadosImg) {
         Loja loja = new Loja(this);
-        loja.salvarImgLogoLoja(dadosImg);
+        loja.salvarImgLogoLoja(dadosImg, "atualizar");
     }
 
     // Atualiza dados da loja ao DB

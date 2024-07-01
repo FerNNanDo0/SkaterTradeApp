@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.droid.app.skaterTrader.activity.CadastrarAnunciosActivity;
+import com.droid.app.skaterTrader.activity.CadastrarOuEditarAnunciosActivity;
 import com.droid.app.skaterTrader.activity.DetalhesProdutosActivity;
 import com.droid.app.skaterTrader.model.Anuncio;
 import com.droid.app.skaterTrader.adapter.AdapterAnuncios;
@@ -43,17 +43,17 @@ public class ClickRecyclerView {
                             @Override
                             public void onItemClick(View view, int position) {
                                 anuncioSelected = anuncioList.get(position);
-                                Intent i = new Intent(context, CadastrarAnunciosActivity.class);
+                                Intent i = new Intent(context, CadastrarOuEditarAnunciosActivity.class);
                                 i.putExtra("anuncioSelected",anuncioSelected);
                                 context.startActivity(i);
                             }
 
                             @Override
                             public void onLongItemClick(View view, int position) {
-                                anuncioSelected = anuncioList.get(position);
+                                /*anuncioSelected = anuncioList.get(position);
                                 System.out.println("id: "+anuncioSelected.getIdAnuncio());
 
-                                alertExcluir();
+                                alertExcluir();*/
                             }
 
                             @Override

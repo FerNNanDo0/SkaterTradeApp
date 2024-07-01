@@ -39,8 +39,6 @@ public class ViewModelRequestCNPJ extends ViewModel {
             }
         });
     }
-
-
     // getter setter
 
     // request CNPJ
@@ -50,11 +48,9 @@ public class ViewModelRequestCNPJ extends ViewModel {
     private void setLiveDataErroRequestCnpj(String erro){
         this.liveDataErroRequestCnpj.postValue(erro);
     }
-
     public MutableLiveData<ModelCnpj> getLiveDataRequestDadosCnpj() {
         return liveDataRequestDadosCnpj;
     }
-
     public MutableLiveData<String> getLiveDataErroRequestCnpj() {
         return liveDataErroRequestCnpj;
     }

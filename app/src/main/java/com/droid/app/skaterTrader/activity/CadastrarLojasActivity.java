@@ -23,23 +23,22 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.droid.app.skaterTrader.R;
 import com.droid.app.skaterTrader.databinding.ActivityCadastrarLojasBinding;
-import com.droid.app.skaterTrader.firebase.CadastrarUsers;
-import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
 import com.droid.app.skaterTrader.helper.ConfigDadosImgBitmap;
+import com.droid.app.skaterTrader.helper.FecharTecladoSys;
 import com.droid.app.skaterTrader.helper.Gallery;
 import com.droid.app.skaterTrader.helper.MaskEditUtil;
 import com.droid.app.skaterTrader.helper.MaskEditCpfCNPJ;
 import com.droid.app.skaterTrader.helper.Permissions;
+import com.droid.app.skaterTrader.helper.RequestsPermission;
 import com.droid.app.skaterTrader.helper.RotacionarImgs;
 import com.droid.app.skaterTrader.model.Consulta;
 import com.droid.app.skaterTrader.model.Loja;
+import com.droid.app.skaterTrader.viewModel.ViewModelDadosConsulta;
 import com.droid.app.skaterTrader.viewModel.ViewModelRequestCNPJ;
 import com.droid.app.skaterTrader.viewModel.ViewModelFirebase;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,9 +67,10 @@ public class CadastrarLojasActivity extends AppCompatActivity {
 
     ActivityCadastrarLojasBinding binding;
     final String TYPE = "LOJA";
-
     ViewModelRequestCNPJ viewModelCNPJ;
     ViewModelFirebase viewModelFirebase;
+    ViewModelDadosConsulta viewModelDadosConsulta;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,17 +78,18 @@ public class CadastrarLojasActivity extends AppCompatActivity {
         binding = ActivityCadastrarLojasBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // iniciar ViewModel e buscar dados para consultas
+        startComponents();
+
+        // buscar dados para consultas
         getDadosConsultas();
 
         // validar permissions
-        Permissions.validatePermissions(permissions, this, 1);
+        Permissions.validatePermissions(RequestsPermission.permissions, this, 1);
 
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Cadastrar loja");
+        getSupportActionBar().setTitle(getString(R.string.cadastrar_loja));
 
-        startComponents();
     }
 
     private void startComponents() {
@@ -111,8 +112,13 @@ public class CadastrarLojasActivity extends AppCompatActivity {
         // referencia da loja
         loja = new Loja();
 
-        // intancia do View Model
+
+        // instance ViewModelCNPJ
         viewModelCNPJ = new ViewModelProvider(this).get(ViewModelRequestCNPJ.class);
+        // instance ViewModelFirebase
+        viewModelFirebase = new ViewModelProvider(this).get(ViewModelFirebase.class);
+        // instance ViewModelDadosConsulta
+        viewModelDadosConsulta = new ViewModelProvider(this).get(ViewModelDadosConsulta.class);
     }
 
     // btn Cadastro da loja
@@ -134,7 +140,7 @@ public class CadastrarLojasActivity extends AppCompatActivity {
                                 if( listaFotoLogo.size() > 0){
 
                                     // ocultar teclado do sistema
-                                    closedKeyBoard();
+                                    FecharTecladoSys.closedKeyBoard(this);
                                     configBtnAndProgress(false,View.VISIBLE);
 
 
@@ -147,25 +153,25 @@ public class CadastrarLojasActivity extends AppCompatActivity {
                                     }
 
                                 }else{
-                                    exibirToast("Escolha uma imagem como \"logo\" para sua loja");
+                                    exibirToast(getString(R.string.escolha_uma_imagem_como_logo_para_sua_loja));
                                 }
                             }else{
-                                exibirToast("Para a maior segurança informe uma Senha com no mínimo 10 caracters.");
+                                exibirToast(getString(R.string.no_m_nimo_10_caracters));
                             }
                         }else{
-                            exibirToast("Informe um E-mail válido para sua loja!");
+                            exibirToast(getString(R.string.informe_um_e_mail_v_lido_para_sua_loja));
                         }
                     }else{
-                        exibirToast("Informe um telefone válido!");
+                        exibirToast(getString(R.string.informe_um_telefone_v_lido));
                     }
                 }else{
-                    exibirToast("Informe um CPF ou CNPJ válido!");
+                    exibirToast(getString(R.string.informe_um_cpf_ou_cnpj_v_lido));
                 }
             }else{
-                exibirToast("Informe o seu NOME!");
+                exibirToast(getString(R.string.informe_o_seu_nome));
             }
         }else{
-            exibirToast("Informe o nome da sua loja!");
+            exibirToast(getString(R.string.informe_o_nome_da_sua_loja));
         }
     }
 
@@ -184,14 +190,14 @@ public class CadastrarLojasActivity extends AppCompatActivity {
 
                 configBtnAndProgress(true, View.GONE);
                 configEditText(editNomeLoja);
-                exibirToast("Esse nome já foi cadastrados no sistema!");
+                exibirToast(getString(R.string.esse_nome_j_foi_cadastrados_no_sistema));
 
             }else{
                 if( consult.getTelefone().equals(telefone) ){
 
                     configBtnAndProgress(true, View.GONE);
                     configEditText(editNumero);
-                    exibirToast("Esse número de telefone já foi cadastrados no sistema!");
+                    exibirToast(getString(R.string.cadastrados_no_sistema));
 
                 }else{
                     if( consult.getCpfOrCnpj().equals(cpfOuCnpj) ){
@@ -200,9 +206,9 @@ public class CadastrarLojasActivity extends AppCompatActivity {
                         configEditText(editCpfOrCnpj);
 
                         if(cpfOuCnpj.length() > 14) { // se > 14 então é CNPJ
-                            exibirToast("Esse CNPJ já foi cadastrados no sistema!");
+                            exibirToast(getString(R.string.esse_cnpj_j_foi_cadastrados_no_sistema));
                         }else{
-                            exibirToast("Esse CPF já foi cadastrados no sistema!");
+                            exibirToast(getString(R.string.esse_cpf_j_foi_cadastrados_no_sistema));
                         }
                     }else{
                         //Iniciar validação de dados antes do cadastro
@@ -212,14 +218,13 @@ public class CadastrarLojasActivity extends AppCompatActivity {
             }
         }
     }
+
+    /// add viewModel
     private void getDadosConsultas() {
 
-        DatabaseReference database = FirebaseRef.getDatabase();
-        DatabaseReference consultasRef = database.child("consultas");
-        consultasRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
+        // observe dados
+        viewModelDadosConsulta.getDataSnapshot().observe(this,
+            snapshot -> {
                 for(DataSnapshot snap : snapshot.getChildren()){
                     Consulta consulta = snap.getValue(Consulta.class);
 
@@ -228,12 +233,10 @@ public class CadastrarLojasActivity extends AppCompatActivity {
 
                 }
             }
+        );
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        //getDados
+        viewModelDadosConsulta.getDadosConsulta();
     }
 
     private void validarCPFeCNPJ(){
@@ -246,41 +249,8 @@ public class CadastrarLojasActivity extends AppCompatActivity {
             loja.setEmail(emailLoja);
             loja.setSenha(senhaLoja);
 
-            // requisição de dados do CNPJ
-            /*new VerificarCNPJ( cpfOuCnpj , new ResultCnpj() {
-                @Override
-                public void onRequestDadosCnpj(ModelCnpj modelCnpj) {
-                    loja.setCpfOrCnpj(cpfOuCnpj);
-                    loja.setModelCnpj(modelCnpj);
-                    cadastrarLoja();
-                }
-
-                @Override
-                public void onErroRequestCnpj(String erro) {
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    handler.post(() ->
-                        erroRequestCnpj(erro)
-                    );
-                }
-            });*/
-
-            //observe dos dados do cnpj
-            viewModelCNPJ.getLiveDataRequestDadosCnpj().observe(this,
-                modelCnpj -> {
-                    loja.setCpfOrCnpj(cpfOuCnpj);
-                    loja.setModelCnpj(modelCnpj);
-                    //cadastrarLoja();
-                    firebaseCadastrarLoja();
-                });
-
-            //observe de erros
-            viewModelCNPJ.getLiveDataErroRequestCnpj().observe(this,
-                    this::erroRequestCnpj
-                );
-
             // obter dados
-            viewModelCNPJ.getDadosCNPJ(cpfOuCnpj);
-
+            getDadosCNPJ(cpfOuCnpj);
 
         }else{ // se não é CPF
 
@@ -301,11 +271,31 @@ public class CadastrarLojasActivity extends AppCompatActivity {
             }else{ // CPF Inválido
 
                 configBtnAndProgress(true, View.GONE);
-                exibirToast("CPF Inválido");
+                exibirToast(getString(R.string.cpf_inv_lido));
                 configEditText(editCpfOrCnpj);
             }
         }
     }
+
+    private void getDadosCNPJ(String cpfOuCnpj){
+
+        //observe dos dados do cnpj
+        viewModelCNPJ.getLiveDataRequestDadosCnpj().observe(this,
+                modelCnpj -> {
+                    loja.setCpfOrCnpj(cpfOuCnpj);
+                    loja.setModelCnpj(modelCnpj);
+                    //cadastrarLoja();
+                    firebaseCadastrarLoja();
+                });
+
+        //observe de erros
+        viewModelCNPJ.getLiveDataErroRequestCnpj().observe(this,
+                this::erroRequestCnpj
+        );
+
+        viewModelCNPJ.getDadosCNPJ(cpfOuCnpj);
+    }
+
     private boolean verificarCPF(String cpf) {
         CPFValidator cpfValidator = new CPFValidator();
         List<ValidationMessage> erros = cpfValidator.invalidMessagesFor(cpf);
@@ -321,13 +311,13 @@ public class CadastrarLojasActivity extends AppCompatActivity {
 
         switch (erro){
             case "ERRO 1":
-                exibirToast("Houve uma falha na comunicação ao tentar verificar o CNPJ, tente mais tarde!");
+                exibirToast(getString(R.string.houve_uma_falha_na_comunica));
                 configEditText(editCpfOrCnpj);
                 configBtnAndProgress(true, View.GONE);
                 break;
 
             case "ERRO 2":
-                exibirToast("CNPJ Inválido");
+                exibirToast(getString(R.string.cnpj_inv_lido));
                 configEditText(editCpfOrCnpj);
                 configBtnAndProgress(true, View.GONE);
                 break;
@@ -340,8 +330,6 @@ public class CadastrarLojasActivity extends AppCompatActivity {
 
     // salvar no firebase
     private void firebaseCadastrarLoja(){
-        //instance ViewModelFirebase
-        viewModelFirebase = new ViewModelProvider(this).get(ViewModelFirebase.class);
 
         // observe msg Toast email de comfirm
         viewModelFirebase.getLiveDataShowToast().observe(this,
@@ -353,6 +341,7 @@ public class CadastrarLojasActivity extends AppCompatActivity {
             bol -> {
                 if(bol){
                     startActivity(new Intent( this, ActivityMainLoja.class));
+                    finish();
                 }
             }
         );
@@ -360,14 +349,13 @@ public class CadastrarLojasActivity extends AppCompatActivity {
         // observe Erro de cadastro
         viewModelFirebase.getErroCadastro().observe(this,
             erro -> {
-                exibirToast("ERRO: "+erro);
+                exibirToast(getString(R.string.erro)+erro);
                 configBtnAndProgress(true,View.GONE);
             }
         );
 
         // Cadastrar LOJA
-        CadastrarUsers cadastrarUsers = new CadastrarUsers(viewModelFirebase, dadosImg, TYPE);
-        cadastrarUsers.cadastrarUser(emailLoja, senhaLoja );
+        viewModelFirebase.cadastrarLoja(dadosImg, TYPE, emailLoja, senhaLoja ,loja, this);
     }
 
     private void exibirToast(@NonNull String msg) {
@@ -428,21 +416,12 @@ public class CadastrarLojasActivity extends AppCompatActivity {
     }
     private void alertPermission(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Permissões negadas!");
-        builder.setMessage("Para postar imagens voçê precisa permitir o acesso a galeria.");
+        builder.setTitle(getString(R.string.permiss_es_negadas));
+        builder.setMessage(R.string.permitir_o_acesso_a_galeria);
         builder.setCancelable(false);
-        builder.setPositiveButton("Comfirmar", (dialog, which)-> finish());
+        builder.setPositiveButton(getString(R.string.comfirmar), (dialog, which)-> finish());
         AlertDialog alert = builder.create();
         alert.show();
-    }
-
-    // methodo que oculta o teclado do sistema
-    private void closedKeyBoard(){
-        View view = getWindow().getCurrentFocus();
-        if(view != null){
-            InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            manager.hideSoftInputFromWindow( view.getWindowToken(),0);
-        }
     }
 
     private void configBtnAndProgress(boolean bol, int param){

@@ -1,13 +1,11 @@
 package com.droid.app.skaterTrader.model;
 
 import android.app.Activity;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ProgressBar;
+import android.content.Context;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
-
+import com.droid.app.skaterTrader.R;
 import com.droid.app.skaterTrader.firebase.UserFirebase;
 import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
 import com.droid.app.skaterTrader.viewModel.ViewModelConfigDadosLoja;
@@ -111,12 +109,12 @@ public class Loja {
         this.viewModelConfig = viewModel;
     }
 
-    public Loja(ViewModelFirebase viewModel) {
-        this.viewModelFirebase = viewModel;
-    }
-
     public Loja() {
 
+    }
+
+    public void setViewModel(ViewModelFirebase viewModel){
+        this.viewModelFirebase = viewModel;
     }
 
     // gerar ID para o usuario
@@ -127,17 +125,20 @@ public class Loja {
         return id;
     }
 
-    public void salvarDados( byte[] dadosImg) {
+    public void salvarDados( byte[] dadosImg, Context context) {
         //salvar dados no Firebase
         database = FirebaseRef.getDatabase();
         lojaRef = database.child("lojas").child(getIdLoja());
 
-        atulizarTipoDeUser();
+        atulizarTipoDeUser(context);
 
+        // salvar dados
         lojaRef.setValue(this)
             .addOnCompleteListener(task -> {
+
+                // salvar dados para consulta
                 if(task.isSuccessful()){
-                    salvarImgLogoLoja(dadosImg);
+                    salvarImgLogoLoja(dadosImg, "cadastro");
 
                     // gerar um id para consulta
                     String idConsulta = lojaRef.push().getKey();
@@ -157,7 +158,7 @@ public class Loja {
     }
 
     // salvar imagens no storage
-    public void salvarImgLogoLoja( byte[] img) {
+    public void salvarImgLogoLoja( byte[] img, String type) {
         try{
             // iniciar referencias do firebase
             storage = FirebaseRef.getStorage();
@@ -168,13 +169,13 @@ public class Loja {
 
             // fazer upload da imagem
             UploadTask uploadTask = imgAnuncio.putBytes(img);
-            uploadTask.addOnSuccessListener( taskSnapshot -> fazerDownloadUrlFoto());
+            uploadTask.addOnSuccessListener( taskSnapshot -> fazerDownloadUrlFoto(type));
 
         }catch (Exception e){
             e.printStackTrace();
         }
     }
-    public void fazerDownloadUrlFoto(){
+    public void fazerDownloadUrlFoto(String type){
         // Faz download da Url da foto
         imgAnuncio.getDownloadUrl().addOnCompleteListener( task -> {
 
@@ -185,7 +186,10 @@ public class Loja {
 
             // update img perfil
             FirebaseRef.upDateImgPerfil(null, urlImgStorage);
-            atualizarDadosDB();
+
+            if(type.equals("atualizar")){
+                atualizarDadosDB();
+            }
         });
     }
 
@@ -220,7 +224,7 @@ public class Loja {
     }
 
     // salvar tipo de user
-    public void atulizarTipoDeUser(){
+    public void atulizarTipoDeUser(Context context){
         try {
             if(UserFirebase.UserLogado()){
                 FirebaseUser user = FirebaseRef.getAuth().getCurrentUser();
@@ -234,7 +238,8 @@ public class Loja {
                         .addOnCompleteListener( (@NonNull Task<Void> task) -> {
                             if(!task.isSuccessful()){
                                 Toast.makeText(activity,
-                                        "Erro ao definir tipo de perfil", Toast.LENGTH_SHORT).show();
+                                        context.getString(R.string.erro_ao_definir_tipo_de_perfil),
+                                        Toast.LENGTH_SHORT).show();
                             }
                         });
             }

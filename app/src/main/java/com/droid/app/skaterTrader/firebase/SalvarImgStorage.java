@@ -1,10 +1,6 @@
 package com.droid.app.skaterTrader.firebase;
 
-import android.content.Intent;
-
 import androidx.annotation.NonNull;
-
-import com.droid.app.skaterTrader.activity.ActivityMain;
 import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
 import com.droid.app.skaterTrader.model.Anuncio;
 import com.droid.app.skaterTrader.viewModel.ViewModelCadastroAnuncio;

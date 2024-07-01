@@ -46,7 +46,7 @@ public class RedefinirSenhaActivity extends AppCompatActivity {
         assert getSupportActionBar() != null;
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getColor(R.color.purple_500)));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Redefinir senha");
+        getSupportActionBar().setTitle(getString(R.string.redefinir_senha));
 
         editRedefinir = binding.editRedefinir;//findViewById(R.id.editRedefinir);
 
@@ -64,7 +64,7 @@ public class RedefinirSenhaActivity extends AppCompatActivity {
         if( !email.isEmpty() ){
             redefinirSenha(email);
         }else{
-            Snackbar.make(view, "Digite seu E-mail", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(view, getString(R.string.digite_seu_e_mail), Snackbar.LENGTH_LONG).show();
         }
     }
     public void redefinirSenha(String emailAddress){
@@ -79,13 +79,14 @@ public class RedefinirSenhaActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         Log.i("Sucesso","Password reset email sent successfully.");
 
-                        String message = "Foi enviado um link para redefinição de senha no email "+emailAddress;
+                        String message = getString(R.string.foi_enviado_um_link_para_redefini_senha)+emailAddress;
                         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
 
                         startActivity(new Intent(getApplicationContext(), AcessoActivity.class));
                         finish();
                     }else{
                         String erroMsg = task.getException().getMessage();
+                        assert erroMsg != null;
                         Snackbar.make(view, erroMsg, Snackbar.LENGTH_LONG).show();
                     }
 

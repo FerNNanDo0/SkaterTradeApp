@@ -30,8 +30,6 @@ import com.droid.app.skaterTrader.helper.RotacionarImgs;
 import com.droid.app.skaterTrader.model.Loja;
 import com.droid.app.skaterTrader.model.User;
 import com.droid.app.skaterTrader.viewModel.ViewModelConfigDadosLoja;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 
@@ -47,8 +45,6 @@ public class ConfigDadosLojaActivity extends AppCompatActivity
     ProgressBar progressBar;
     byte[] dadosImg;
     Loja loja;
-    ValueEventListener eventListener;
-    DatabaseReference lojaRef;
 
     String oldNomeL,oldNomeU, oldPhone, nomeL, nomeU, phone;
 
@@ -59,10 +55,13 @@ public class ConfigDadosLojaActivity extends AppCompatActivity
         super.onStart();
         getDadosDb();
     }
+
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        lojaRef.removeEventListener(eventListener);
+    protected void onStop() {
+        super.onStop();
+        if(viewModel != null){
+            viewModel.removeEventListener();
+        }
     }
 
     @Override
@@ -75,7 +74,7 @@ public class ConfigDadosLojaActivity extends AppCompatActivity
 
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Dados do perfil");
+        getSupportActionBar().setTitle(getString(R.string.dados_do_perfil));
 
         iniciarComponentes();
 
@@ -172,13 +171,13 @@ public class ConfigDadosLojaActivity extends AppCompatActivity
                     viewModel.atualizarDadosDB(loja);
 
                 }else{
-                    sendMsgToast("Informe o Número de celular ou whatsApp da loja");
+                    sendMsgToast(getString(R.string.informe_o_n_mero_de_celular_ou_whatsapp_da_loja));
                 }
             }else{
-                sendMsgToast("Informe o nome do responsavel pela loja");
+                sendMsgToast(getString(R.string.informe_o_nome_do_responsavel_pela_loja));
             }
         }else{
-            sendMsgToast("Informe o nome da loja");
+            sendMsgToast(getString(R.string.informe_o_nome_da_loja));
         }
 
     }

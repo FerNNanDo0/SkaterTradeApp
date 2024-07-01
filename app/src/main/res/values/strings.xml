@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Skater Trade</string>
+    <string name="app_name">Skater App</string>
     <string name="login">Login</string>
     <string name="cadastro">Cadastro</string>
     <string name="cadastrar">Cadastrar</string>
@@ -73,7 +73,7 @@
     <string name="txt_recursos_app">Segue abaixo alguns recursos do App</string>
 
     <string name="title_infoApp">Sobre este App</string>
-    <string name="txt_0_Info">O SkaterTrade é um aplicativo inovador desenvolvido por skatista especialmente para a comunidade de skatistas apaixonados por esse esporte radical. Ele oferece uma plataforma única que permite aos skatistas comprar, vender e negociar peças de skate de forma fácil e conveniente. Com uma interface intuitiva e recursos robustos, o SkaterTrade se torna o ponto de encontro virtual perfeito para os entusiastas do skate.</string>
+    <string name="txt_0_Info">O <b>SkaterTrade</b> é um aplicativo inovador desenvolvido por skatista especialmente para a comunidade de skatistas apaixonados por esse esporte radical. Ele oferece uma plataforma única que permite aos skatistas comprar, vender e negociar peças de skate de forma fácil e conveniente. Com uma interface intuitiva e recursos robustos, o SkaterTrade se torna o ponto de encontro virtual perfeito para os entusiastas do skate.</string>
 
     <string name="title_txt_1"><b>1 - Listagem de Produtos</b></string>
     <string name="txt_1_Info">Os usuários podem criar anúncios detalhados para listar as peças de skate que desejam vender. Eles podem incluir fotos, descrições, preços e informações de contato.</string>
@@ -87,11 +87,115 @@
     <string name="title_txt_4"><b>4 - Segurança e Privacidade</b></string>
     <string name="txt_4_Info">O SkaterTrade prioriza a segurança dos usuários e seus dados pessoais são protegidos por medidas de segurança robustas.</string>
 
-    <string name="txt_5_Info"> <b>O SkaterTrade</b> \né mais do que apenas um aplicativo de compra e venda; é uma comunidade vibrante de skatistas que compartilham sua paixão pelo esporte e pelo estilo de vida. Com sua ampla gama de recursos e foco na segurança e facilidade de uso, o SkaterTrade se torna a escolha número um para skatistas em busca de peças de skate de qualidade e boas negociações. Se você é um skatista ávido, não perca a oportunidade de fazer parte desta comunidade exclusiva. Baixe o SkaterTrade hoje e comece a negociar suas peças de skate favoritas!</string>
+    <string name="txt_5_Info">O <b>SkaterTrade</b> \né mais do que apenas um aplicativo de compra e venda; é uma comunidade vibrante de skatistas que compartilham sua paixão pelo esporte e pelo estilo de vida. Com sua ampla gama de recursos e foco na segurança e facilidade de uso, o app SkaterTrade se torna a escolha número um para skatistas em busca de peças de skate de qualidade e boas negociações. Se você é um skatista ávido, não perca a oportunidade de fazer parte desta comunidade exclusiva. Baixe o SkaterTrade hoje e comece a negociar suas peças de skate favoritas!</string>
     <string name="cadastrar_anuncio_titleActionBar">Cadastrar anúncio</string>
     <string name="editar_anuncio_titleActionBar">Editar anúncio</string>
     <string name="edit_hint_cidade">Cidade</string>
     <string name="excluir_an_ncio_menu">Excluir Anúncio</string>
+    <string name="erro">"ERRO: "</string>
+    <string name="erro2">"ERRO!"</string>
+    <string name="informe_seu_nome">Informe seu nome</string>
+    <string name="informe_uma_senha_dica">Para a maior segurança informe uma Senha com no mínimo 10 caracters.</string>
+    <string name="informe_um_e_mail">Informe um e-mail</string>
+    <string name="problemas_com_acesso_a_internet">Problemas com acesso a internet</string>
+    <string name="ola">"Olá "</string>
+    <string name="atualiza_o_dispon_vel">Atualização disponível!</string>
+    <string name="dica_atualizacao_google_play">Uma nova versão para esse app está disponível no Google Play.</string>
+    <string name="msg_btn_atualizar">"Atualizar"</string>
+    <string name="msg_btn_cancelar">Cancelar</string>
+    <string name="lojas_em_breve_estar_dipon_vel">Lojas em breve estará diponível</string>
+    <string name="suporte_skatertrade">Suporte SkaterTrade</string>
+    <string name="ok_btn">Ok</string>
+    <string name="msg_regiao">REGIÃO</string>
+    <string name="estado_code">estado</string>
+    <string name="selecione_o_estado">Selecione o estado</string>
+    <string name="selecione_a_categoria">Selecione a categoria</string>
+    <string name="categoria_code">categoria</string>
+    <string name="cadastrar_loja">Cadastrar loja</string>
+    <string name="escolha_uma_imagem_como_logo_para_sua_loja">Escolha uma imagem como \"logo\" para sua loja</string>
+    <string name="informe_o_nome_da_sua_loja">Informe o nome da sua loja!</string>
+    <string name="informe_o_seu_nome">Informe o seu NOME!</string>
+    <string name="informe_um_cpf_ou_cnpj_v_lido">Informe um CPF ou CNPJ válido!</string>
+    <string name="informe_um_telefone_v_lido">Informe um telefone válido!</string>
+    <string name="no_m_nimo_10_caracters">Para a maior segurança informe uma Senha com no mínimo 10 caracters.</string>
+    <string name="informe_um_e_mail_v_lido_para_sua_loja">Informe um E-mail válido para sua loja!</string>
+    <string name="esse_nome_j_foi_cadastrados_no_sistema">Esse nome já foi cadastrados no sistema!</string>
+    <string name="cadastrados_no_sistema">Esse número de telefone já foi cadastrados no sistema!</string>
+    <string name="esse_cpf_j_foi_cadastrados_no_sistema">Esse CPF já foi cadastrados no sistema!</string>
+    <string name="esse_cnpj_j_foi_cadastrados_no_sistema">Esse CNPJ já foi cadastrados no sistema!</string>
+    <string name="cpf_inv_lido">CPF Inválido</string>
+    <string name="cnpj_inv_lido">CNPJ Inválido</string>
+    <string name="houve_uma_falha_na_comunica">Houve uma falha na comunicação tente novamente mais tarde!</string>
+    <string name="permiss_es_negadas">Permissões negadas!</string>
+    <string name="permitir_o_acesso_a_galeria">Para postar imagens voçê precisa permitir o acesso a galeria.</string>
+    <string name="comfirmar">Comfirmar</string>
+    <string name="excluir_an_ncio">Excluir anúncio!</string>
+    <string name="deseja_excluir_esse_an_ncio">Tem certeza que deseja excluir esse anúncio?</string>
+    <string name="nao">Não</string>
+    <string name="sim">Sim</string>
+    <string name="estados_info">Estados</string>
+    <string name="seu_estado">Seu Estado</string>
+    <string name="categorias_info">Categorias</string>
+    <string name="escolha_ao_menos_uma_imagem">Escolha ao menos uma imagem</string>
+    <string name="escolha_uma_categoria">Escolha uma categoria</string>
+    <string name="escolha_um_estado">Escolha um estado</string>
+    <string name="preencha_uma_descri_o">Preencha uma descrição</string>
+    <string name="preencha_um_n_mero_de_celular_v_lido">Preencha um número de celular válido</string>
+    <string name="preencha_um_valor_r">Preencha um valor R$</string>
+    <string name="preencha_um_t_tulo">Preencha um título</string>
+    <string name="preencha_uma_cidade">Preencha uma cidade</string>
+    <string name="salvando_an_ncio_aguarde">Salvando Anúncio aguarde...</string>
+    <string name="atualizando_an_ncio_aguarde">Atualizando Anúncio aguarde...</string>
+    <string name="erro_outra_foto">Erro ao recuperar imagem, tente outra imagem ou tire outra foto</string>
+    <string name="txt_info">" Info"</string>
+    <string name="ol_encontrei_seu_text_info">Olá encontrei seu anúncio no App Skater e gostaria de mais informações.\nTítulo do anúncio: %s</string>
+    <string name="detalhes_do_an_ncio">Detalhes do anúncio</string>
+    <string name="dados_do_perfil">Dados do perfil</string>
+    <string name="informe_o_n_mero_de_celular_ou_whatsapp_da_loja">Informe o Número de celular ou whatsApp da loja</string>
+    <string name="informe_o_nome_do_responsavel_pela_loja">Informe o nome do responsavel pela loja</string>
+    <string name="informe_o_nome_da_loja">Informe o nome da loja</string>
+    <string name="redefinir_senha">Redefinir senha</string>
+    <string name="digite_seu_e_mail">Digite seu E-mail</string>
+    <string name="foi_enviado_um_link_para_redefini_senha">"Foi enviado um link para redefinição de senha no email "</string>
+    <string name="ok">Ok</string>
+    <string name="para_editar_ou_excluir_o_an_ncio_basta_clicar_nele">\nPara editar ou excluir o anúncio basta clicar nele</string>
+    <string name="dica">Dica!</string>
+    <string name="meus_an_ncios">Meus anúncios</string>
+    <string name="marcar_pico_neste_local">Marcar pico neste local ?</string>
+    <string name="marcar">Marcar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="defina_um_nome_pro_pico">Defina um nome pro pico</string>
+    <string name="campo_obrigat_rio">Campo obrigatório!</string>
+    <string name="escolha_o_status_do_pico">Escolha o status do pico</string>
+    <string name="info_status_do_marcador">Info: Status do marcador</string>
+    <string name="entendi">Entendi</string>
+    <string name="seu_local">Seu Local</string>
+    <string name="ddd">cod área</string>
+    <string name="preencha_um_c_digo_de_rea_v_lido">Preencha um código de área válido</string>
+    <string name="preencha_um_estado">Preencha um estado</string>
+    <string name="n_o_h_an_ncios_para_esse_filtro">Não há anúncios para esse filtro</string>
+    <string name="buscando_an_ncios_dispon_veis">Buscando Anúncios disponíveis</string>
+    <string name="erro_ao_carregar_an_ncios">Erro ao carregar anúncios.</string>
+    <string name="edit_text_filtro_hint">Digite seu filtro de região</string>
+    <string name="enviado_para_seu_email">Um email de confirmação foi enviado para seu email.</string>
+    <string name="digite_uma_senha_mais_forte">Digite uma senha mais forte!</string>
+    <string name="digite_um_e_mail_v_lido">Digite um e-mail válido!</string>
+    <string name="ja_foi_cadastrada_no_sistema">Uma conta com esse E-mail já foi cadastrada no sistema!\nFaça o login</string>
+    <string name="erro_ao_cadastrar_usuario">"Erro ao cadastrar usuario: "</string>
+    <string name="nao_correspondem_a_um_usuario_cadastrado">E-mail ou senha não correspondem a um usuário cadastrado!</string>
+    <string name="usuario_n_o_est_cadastrado">Usuario não está cadastrado.</string>
+    <string name="um_novo_an_ncio_foi_publicado">Um novo anúncio foi publicado.</string>
+    <string name="novo_an_ncio">Novo anúncio.</string>
+    <string name="novo_anuncio">Novo anuncio</string>
+    <string name="erro_ao_atualizar_foto_de_perfil">Erro ao atualizar foto de perfil</string>
+    <string name="compartilhar_app">Compartilhar App</string>
+    <string name="erro_ao_definir_tipo_de_perfil">Erro ao definir tipo de perfil</string>
+    <string name="erro_ao_atualizar_nome_de_perfil">Erro ao atualizar nome de perfil</string>
+    <string name="_55">+55</string>
+    <string name="e_mail_da_loja">E-mail da loja</string>
+    <string name="cpf_ou_cnpj">CPF ou CNPJ</string>
+    <string name="ative_o_gps_para_ver_an_ncios_mais_pr_ximos_a_voc">Ative o GPS para ver anúncios mais próximos a você</string>
+    <string name="ative_o_gps_para_ver_picos_mais_pr_ximos_a_voc">Ative o GPS para ver picos mais próximos a você</string>
 
 
     <string-array name="categorias">
@@ -134,6 +238,7 @@
         <item>SE</item>
         <item>SP</item>
         <item>TO</item>
+        <item>Outro</item>
     </string-array>
 
 </resources>

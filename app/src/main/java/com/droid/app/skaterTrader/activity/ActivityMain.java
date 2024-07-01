@@ -10,8 +10,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -22,18 +20,21 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.droid.app.skaterTrader.R;
 import com.droid.app.skaterTrader.adapter.AdapterAnuncios;
@@ -43,12 +44,13 @@ import com.droid.app.skaterTrader.helper.ClickRecyclerView;
 import com.droid.app.skaterTrader.helper.ConfigDadosImgBitmap;
 import com.droid.app.skaterTrader.helper.Gallery;
 import com.droid.app.skaterTrader.helper.IntentActionView;
-import com.droid.app.skaterTrader.helper.Permissions;
+import com.droid.app.skaterTrader.service.LocationService;
 import com.droid.app.skaterTrader.helper.RotacionarImgs;
 import com.droid.app.skaterTrader.model.Anuncio;
 import com.droid.app.skaterTrader.model.User;
 import com.droid.app.skaterTrader.service.InitSdkAdmob;
 import com.droid.app.skaterTrader.viewModel.ViewModelAnuncios;
+import com.droid.app.skaterTrader.viewModel.ViewModelLocationUser;
 import com.google.android.ads.nativetemplates.TemplateView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.nativead.NativeAd;
@@ -59,46 +61,34 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
 import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.android.play.core.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import dmax.dialog.SpotsDialog;
-
 @SuppressLint("NotifyDataSetChanged")
 public class ActivityMain extends AppCompatActivity
         implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
+
     RecyclerView recyclerViewMain;
-    private final List<Anuncio> anuncioList = new ArrayList<>();
     private AdapterAnuncios adapterAnuncios;
-    private DatabaseReference databaseRef;
-    DatabaseReference anunciosRef;
-    DatabaseReference anunciosFiltroRef;
     private AlertDialog alertDialog;
     TemplateView template;
     Anuncio anuncio;
     byte[] dadosImg;
     ViewModelAnuncios viewModel;
+    ViewModelLocationUser viewModelLocation;
     String filtro = "";
     String estadosSelected = "";
     String categoriaSelected = "";
     MenuItem menuRedefinir;
     ClickRecyclerView clickRecyclerView;
-    ValueEventListener valueEventListener1, valueEventListener2;
     Button btn_regiao, btn_categoria;
-    String[] permissions = new String[]{
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-    };
     NativeAd Ad;
     DrawerLayout drawer;
     ActionBarDrawerToggle actionBarDrawerToggle;
@@ -106,41 +96,39 @@ public class ActivityMain extends AppCompatActivity
     CircleImageView circleImageViewUser;
     ImageButton btnEditImgLogo;
     TextView nameUser, emailUser;
+    TextView textViewInforme;
     int codeImg = 0;
     Uri img;
-    String name = "Olá ";
+    String name;
     String email;
     final int MY_REQUEST_CODE = 188;
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if(alertDialog != null && anuncioList.size() > 0 ){
-            alertDialog.dismiss();
-            alertDialog.cancel();
-        }
-    }
+    View viewEditTextFiltro;
+    TextView textViewFiltro;
+    LocationService location;
+    String str;
 
     @Override
     protected void onStop() {
         super.onStop();
-        //anunciosRef.removeEventListener(valueEventListener);
-        if (valueEventListener1 != null) {
-            anunciosFiltroRef.removeEventListener(valueEventListener1);
-        }
-        if (valueEventListener2 != null) {
-            anunciosFiltroRef.removeEventListener(valueEventListener2);
-        }
-    }
+        viewModel.removeEventListener();
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
         this.Ad = InitSdkAdmob.getAd();
         if (Ad != null) {
             Ad.destroy();
             template.setVisibility(View.GONE);
+            Log.i("tag",">> ad.destroy() <");
         }
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        /*this.Ad = InitSdkAdmob.getAd();
+        if (Ad != null) {
+            Ad.destroy();
+            template.setVisibility(View.GONE);
+            Log.i("tag",">> ad.destroy() <");
+        }
+        Log.i("tag",">> ad.destroy()1 <");*/
     }
 
     @SuppressLint("SetTextI18n")
@@ -148,6 +136,18 @@ public class ActivityMain extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         // verificar atulização do App no google Play
+        verificarUpdateGooglePlay();
+
+        if(codeImg == 1){
+            nameUser.setText(name);
+            emailUser.setText(email);
+            Glide.with(this).load(img).into(circleImageViewUser);
+        }
+
+        location.getLastLocation();
+    }
+
+    private void verificarUpdateGooglePlay(){
         AppUpdateManager appUpdateManager = AppUpdateManagerFactory.create(this);
         Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
 
@@ -158,25 +158,13 @@ public class ActivityMain extends AppCompatActivity
                 alertAtulizacao(appUpdateManager, appUpdateInfo);
             }
         });
-
-        if(codeImg == 1){
-            nameUser.setText(name);
-            emailUser.setText(email);
-            Glide.with(this).load(img).into(circleImageViewUser);
-        }
-
-        if(alertDialog != null && anuncioList.size() > 0 ){
-            alertDialog.dismiss();
-            alertDialog.cancel();
-        }
     }
-
     private void alertAtulizacao(AppUpdateManager appUpdateManager, AppUpdateInfo appUpdateInfo){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Atualização disponível!");
-        builder.setMessage("Uma nova versão para esse app está disponível no Google Play.");
+        builder.setTitle(getString(R.string.atualiza_o_dispon_vel));
+        builder.setMessage(getString(R.string.dica_atualizacao_google_play));
         builder.setCancelable(false);
-        builder.setPositiveButton("Atualizar", (dialog, which) -> {
+        builder.setPositiveButton(getString(R.string.msg_btn_atualizar), (dialog, which) -> {
 
             try {
                 appUpdateManager.startUpdateFlowForResult(
@@ -193,14 +181,13 @@ public class ActivityMain extends AppCompatActivity
 
             dialog.dismiss();
         });
-        builder.setNegativeButton("Cancelar", (dialog, which) -> finish());
+        builder.setNegativeButton(getString(R.string.msg_btn_cancelar), (dialog, which) -> finish());
 
         AlertDialog dialog = builder.create();
         dialog.show();
     }
 
     //////// ======= \\\\\\\
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -218,6 +205,17 @@ public class ActivityMain extends AppCompatActivity
         // iniciar componentes da tela
         iniciarComponentes();
 
+        // ativar notificação
+        FirebaseMessaging.getInstance().subscribeToTopic(getString(R.string.novo_anuncio));
+
+        // --------> init ViewModel
+        viewModel = new ViewModelProvider(this).get(ViewModelAnuncios.class);
+        viewModelLocation = new ViewModelProvider(this).get(ViewModelLocationUser.class);
+        location = new LocationService(this, viewModelLocation, viewModel);
+
+        // init observer
+        observerViewModel();
+
         // se usuário tiver logado
         if (User.UserLogado()) {
 
@@ -227,13 +225,11 @@ public class ActivityMain extends AppCompatActivity
                 startActivity(new Intent(this, ActivityMainLoja.class));
                 finish();
             }else{
-                // validar permissions
-                Permissions.validatePermissions(permissions, this, 1);
-
                 // navigation Drawer // config menu drawer
                 configNavigationDrawer();
             }
         }
+
         // permissão de notificação
         new NotificationAnuncio().askNotificationPermission(this);
 
@@ -241,7 +237,9 @@ public class ActivityMain extends AppCompatActivity
         configRecycler();
 
         // buscar anuncios do db
-        recuperarAnuncios();
+        //recuperarAnuncios();
+        // buscar anuncios do db com base na localização do usuário
+        //location.getLastLocation();
 
         // init SDK Ads
         MobileAds.initialize(this, initializationStatus -> {
@@ -251,7 +249,6 @@ public class ActivityMain extends AppCompatActivity
         template = findViewById(R.id.my_template);
         InitSdkAdmob.initSdkAdmob(this, template);
     }
-
     private void configActionBar(){
         // config da toolBar
         assert getSupportActionBar() != null;
@@ -269,14 +266,15 @@ public class ActivityMain extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         actionBarDrawerToggle.syncState();
     }
-
     // click do navigationDrawer
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_store:
-                Toast.makeText(this, "Lojas em breve estará diponível", Toast.LENGTH_LONG).show();
+                Toast.makeText(this,
+                        getString(R.string.lojas_em_breve_estar_dipon_vel),
+                        Toast.LENGTH_LONG).show();
                 break;
 
             case R.id.picosRole:
@@ -309,7 +307,6 @@ public class ActivityMain extends AppCompatActivity
     private void launchGallery(){
         Gallery.open(this, 0);
     }
-
     private void definirImagemPerfi(@Nullable Uri imgSelected){
         try {
             // transformar em bitMap
@@ -362,13 +359,16 @@ public class ActivityMain extends AppCompatActivity
     }
 
     private void iniciarComponentes() {
-        databaseRef = FirebaseRef.getDatabase();
         anuncio = new Anuncio();
         recyclerViewMain = findViewById(R.id.recyclerViewMain);
         btn_regiao = findViewById(R.id.regiao);
         btn_regiao.setOnClickListener(this);
         btn_categoria = findViewById(R.id.categoria);
         btn_categoria.setOnClickListener(this);
+        textViewInforme = findViewById(R.id.textViewInforme);
+
+        viewEditTextFiltro = getLayoutInflater().inflate(R.layout.edit_text_filtro, null);
+        textViewFiltro = viewEditTextFiltro.findViewById(R.id.editTextFiltro);
     }
     private void configRecycler() {
         recyclerViewMain.setLayoutManager( new LinearLayoutManager(this));
@@ -383,7 +383,6 @@ public class ActivityMain extends AppCompatActivity
         }
         return super.onPrepareOptionsMenu(menu);
     }
-    @SuppressLint("SetTextI18n")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -391,9 +390,43 @@ public class ActivityMain extends AppCompatActivity
         menuRedefinir.setVisible(false);
 
         // definir Informações de perfil do usuario
+        definirInfoPerfilUser();
+
+        return super.onCreateOptionsMenu(menu);
+    }
+    @SuppressLint({"NonConstantResourceId", "IntentReset"})
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(User.UserLogado()){
+            if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+                return true;
+            }
+        }
+        switch ( item.getItemId() ){
+            case R.id.acessoUsers:
+                startActivity( new Intent(this, AcessoActivity.class) );
+                break;
+
+            case R.id.suport:
+                sendEmailSupport();
+                break;
+
+            case R.id.anuncios:
+                startActivity( new Intent(this, MeusAnunciosActivity.class) );
+                break;
+
+            case R.id.redefinir:
+                resetFiltroAnuncios();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void definirInfoPerfilUser(){
         if(User.UserLogado() && User.user() != null){
             img = User.user().getPhotoUrl();
-            name += User.user().getDisplayName();
+            name = getString(R.string.ola)+User.user().getDisplayName();
             email = User.user().getEmail();
 
             nameUser = findViewById(R.id.nameUser);
@@ -431,42 +464,14 @@ public class ActivityMain extends AppCompatActivity
                 e.printStackTrace();
             }
         }
-        return super.onCreateOptionsMenu(menu);
-    }
-    @SuppressLint({"NonConstantResourceId", "IntentReset"})
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(User.UserLogado()){
-            if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-                return true;
-            }
-        }
-        switch ( item.getItemId() ){
-            case R.id.acessoUsers:
-                startActivity( new Intent(this, AcessoActivity.class) );
-                break;
-
-            case R.id.suport:
-                sendEmailSupport();
-                break;
-
-            case R.id.anuncios:
-                startActivity( new Intent(this, MeusAnunciosActivity.class) );
-                break;
-
-            case R.id.redefinir:
-                recuperarAnuncios();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void sendEmailSupport(){
         Uri email = Uri.parse("mailto:agenciamagnus2023@gmail.com");
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(email); // only email apps should handle this
-        intent.putExtra(Intent.EXTRA_EMAIL, "Suporte SkaterTrade");
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Suporte SkaterTrade");
+        intent.putExtra(Intent.EXTRA_EMAIL, getString(R.string.suporte_skatertrade));
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.suporte_skatertrade));
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         }
@@ -515,168 +520,153 @@ public class ActivityMain extends AppCompatActivity
             launchGallery();
         }
     }
+
     private void setAlertDialog(String titulo, Spinner spinner, View viewSpinner, String code) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(titulo);
         builder.setView(viewSpinner);
 
-        builder.setPositiveButton("Ok", (dialog, which) -> {
+        builder.setPositiveButton(getString(R.string.ok), (dialog, which) -> {
             filtro = spinner.getSelectedItem().toString();
             if( code.equals("estado") ){
+
+                /*if( filtro.equals("Outro") ){
+                    OutroFiltro(titulo);
+                    dialog.dismiss();
+                }*/
                 recuperarAnunnciosPorEstado(filtro);
+                dialog.cancel();
+
             } else if ( code.equals("categoria") ) {
                 recuperarAnunnciosPorCategoria(filtro);
+                dialog.cancel();
             }
         });
-        builder.setNegativeButton("Cancelar", (dialog, which) -> {
 
-        });
+        builder.setNegativeButton(getString(R.string.msg_btn_cancelar), (dialog, which) -> dialog.cancel());
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void OutroFiltro(String titulo) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(titulo);
+        builder.setView(viewEditTextFiltro);
+
+        builder.setPositiveButton(getString(R.string.ok_btn),
+            (dialog, which) -> {
+                if(!textViewFiltro.getText().toString().isEmpty()){
+                    filtro = textViewFiltro.getText().toString().toUpperCase();
+                    recuperarAnunnciosPorEstado(filtro);
+                }
+                dialog.cancel();
+            });
+
+        AlertDialog dialogg = builder.create();
+        dialogg.show();
     }
 
     // add viewModel
     private void recuperarAnunnciosPorEstado(String estado) {
         estadosSelected = estado;
-        anunciosFiltroRef = databaseRef.child("anuncios").child(estado);
-        valueEventListener1 = anunciosFiltroRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                anuncioList.clear();
-                alertDialogCustom("Buscando anúncios");
-                for(DataSnapshot categorias : snapshot.getChildren()){
-                    for(DataSnapshot anuncios : categorias.getChildren()){
 
-                        Anuncio anuncio = anuncios.getValue(Anuncio.class);
-                        if(anuncio != null){
-                            if( !categoriaSelected.isEmpty() &&
-                                anuncio.getCategoria().equals(categoriaSelected)
-                            ){
-                                anuncioList.add( anuncio );
-                            }
+        viewModel.filtrarEstadoAnuncios(estado, categoriaSelected, this);
 
-                            if( categoriaSelected.isEmpty() ){
-                                anuncioList.add( anuncio );
-                            }
-                        }
-                    }
-                }
+        if(menuRedefinir != null){
+            menuRedefinir.setVisible(true);
+        }
 
-
-                // set ViewModel 1
-                viewModel.setListModel(anuncioList);
-
-                menuRedefinir.setVisible(true);
-
-                // defnir nome btn
-                String btnTxt =  String.format("REGIÃO-%s",filtro);
-                btn_regiao.setText(btnTxt);
-
-                alertDialog.dismiss();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        // defnir nome btn
+        String btnTxt =  String.format(getString(R.string.msg_regiao)+"-%s",estado);
+        btn_regiao.setText(btnTxt);
     }
     // add viewModel
     public void recuperarAnunnciosPorCategoria(String categoria) {
         categoriaSelected = categoria;
-        anunciosFiltroRef = databaseRef.child("anuncios");
-        valueEventListener2 = anunciosRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                // recuperar os dados
-                anuncioList.clear();
-                for( DataSnapshot estados : snapshot.getChildren() ){
-                    for(DataSnapshot categorias : estados.getChildren()){
-                        for(DataSnapshot anuncios : categorias.getChildren()){
 
-                            Anuncio anuncio = anuncios.getValue(Anuncio.class);
-                            if(anuncio != null){
-                                if ( !estadosSelected.isEmpty() &&
-                                      anuncio.getEstado().equals(estadosSelected) &&
-                                      anuncio.getCategoria().equals(categoria)
-                                ){
-                                    anuncioList.add( anuncio );
-                                    System.out.println("estado: "+estadosSelected);
-                                }
+        viewModel.filtrarCategoriaAnuncios(categoria, estadosSelected, this);
 
-                                if( estadosSelected.isEmpty() &&
-                                    anuncio.getCategoria().equals( categoria )
-                                ){
-                                    anuncioList.add( anuncio );
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // set ViewModel
-                viewModel.setListModel(anuncioList);
-
-                menuRedefinir.setVisible(true);
-
-                alertDialog.dismiss();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        menuRedefinir.setVisible(true);
     }
 
-
-    private void recuperarAnuncios() {
-        // --------> init ViewModel
-        viewModel = new ViewModelProvider(this).get(ViewModelAnuncios.class);
-        observerViewModel();
-
-        viewModel.recuperarAnuncios();
+    public void recuperarAnuncios() {
+        viewModel.recuperarAnuncios(this);
     }
+
+    private void resetFiltroAnuncios(){
+        if(menuRedefinir != null){
+            menuRedefinir.setVisible(false);
+
+            estadosSelected = "";
+            categoriaSelected = "";
+            // defnir nome btn
+            btn_regiao.setText(R.string.regiao);
+            recuperarAnuncios();
+        }
+    }
+
     private void observerViewModel() {
+        viewModel.getShowMsg().observe(this, this::alertDialogCustom );
 
         // model recuperar anuncios
-        viewModel.getList().observe(ActivityMain.this,
+        viewModel.getList().observe(this,
             anuncios -> {
-
                 if(anuncios != null){
-                    
+                    if(anuncios.isEmpty()){
+                        recyclerViewMain.setVisibility(View.GONE);
+                        textViewInforme.setVisibility(View.VISIBLE);
+                        textViewInforme.setText(getString(R.string.n_o_h_an_ncios_para_esse_filtro));
+                        alertDialog.cancel();
+                    }else{
+                        recyclerViewMain.setVisibility(View.VISIBLE);
+                        textViewInforme.setVisibility(View.GONE);
 
-                    adapterAnuncios = new AdapterAnuncios(anuncios,this);
-                    recyclerViewMain.setAdapter( adapterAnuncios );
-                    adapterAnuncios.notifyDataSetChanged();
-                    alertDialog.dismiss();
+                        adapterAnuncios = new AdapterAnuncios(anuncios,this);
+                        recyclerViewMain.setAdapter( adapterAnuncios );
+                        adapterAnuncios.notifyDataSetChanged();
 
-                    clickRecyclerView = new ClickRecyclerView(recyclerViewMain,anuncios,adapterAnuncios,this);
-                    clickRecyclerView.clickExibirRecyclerView();
+                        clickRecyclerView = new ClickRecyclerView(recyclerViewMain,anuncios,adapterAnuncios,this);
+                        clickRecyclerView.clickExibirRecyclerView();
+                        alertDialog.cancel();
+                    }
                 }
-
-
-                if(menuRedefinir != null){
-                    menuRedefinir.setVisible(false);
-
-                    estadosSelected = "";
-                    categoriaSelected = "";
-                    // defnir nome btn
-                    btn_regiao.setText(R.string.regiao);
-                }
-
-
-
-                alertDialog.dismiss();
-
             }
         );
 
-        viewModel.getShowMsg().observe(this, this::alertDialogCustom );
+        // filtrar com base na localização do usuário
+        viewModelLocation.getEstado().observe(this,
+                estado -> {
+
+                    ExecutorService executor = Executors.newFixedThreadPool(1);
+                    executor.execute(() -> {
+
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        String[] estados = getResources().getStringArray(R.array.estados);
+
+                        for (int i=0; i<estados.length; i++){
+                            String str2 = estados[i];
+                            if(estado.contains(str2)){
+                                this.str = str2.trim();
+                                break;
+                            }
+                        }
+
+                        handler.post(()->{
+                            recuperarAnunnciosPorEstado(str);
+                            Log.i("TAG", ">> "+str);
+                            if(alertDialog != null){
+                                alertDialog.cancel();
+                            }
+                        });
+
+                    });
+                }
+        );
     }
     @SuppressLint("InflateParams")
     public void filtrarEstados() {
-        String code = "estado";
+        String code = getString(R.string.estado_code);
+        String titulo = getString(R.string.selecione_o_estado);
         //config spinner
         View viewSpinner1 = getLayoutInflater().inflate(R.layout.dialog_spinner, null);
         Spinner spinnerEstado = viewSpinner1.findViewById(R.id.spinnerFiltro);
@@ -690,11 +680,27 @@ public class ActivityMain extends AppCompatActivity
         adapterSpinner1.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
         spinnerEstado.setAdapter(adapterSpinner1);
 
-        setAlertDialog("Selecione o estado", spinnerEstado, viewSpinner1, code);
+        setAlertDialog(titulo, spinnerEstado, viewSpinner1, code);
+
+        // define o click do spinner Estado
+        spinnerEstado.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //Log.d("TAG", ">> "+position+" >> "+parent.getSelectedItem().toString());
+                if(parent.getSelectedItem().toString().equals("Outro") ){
+                    OutroFiltro(titulo);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
     @SuppressLint("InflateParams")
     public void filtrarCategorias() {
-        String code = "categoria";
+        String code = getString(R.string.categoria_code);
         //config spinner
         View viewSpinner2 = getLayoutInflater().inflate(R.layout.dialog_spinner, null);
         Spinner spinnerCategorias = viewSpinner2.findViewById(R.id.spinnerFiltro);
@@ -708,6 +714,6 @@ public class ActivityMain extends AppCompatActivity
         adapterSpinner2.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
         spinnerCategorias.setAdapter(adapterSpinner2);
 
-        setAlertDialog("Selecione a categoria", spinnerCategorias, viewSpinner2, code);
+        setAlertDialog(getString(R.string.selecione_a_categoria), spinnerCategorias, viewSpinner2, code);
     }
 }

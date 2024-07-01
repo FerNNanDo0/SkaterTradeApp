@@ -37,8 +37,8 @@ public class ViewModelCadastroAnuncio extends ViewModel {
 
 
 
-    // salvar
-    public void salvarImgAnuncioStorage(@NonNull Anuncio anuncio, List<byte[]> listaFotosRecuperadas){
+    // salvar anúncio para o usuário
+    public void salvarAnuncio(@NonNull Anuncio anuncio, List<byte[]> listaFotosRecuperadas){
         salvarImgStorage.interarImg(anuncio, listaFotosRecuperadas);
     }
 
@@ -50,4 +50,12 @@ public class ViewModelCadastroAnuncio extends ViewModel {
     public void setUrlImgStorage(String urlImgStorage) {
         this.urlImgStorage.postValue( urlImgStorage );
     }
+
+
+
+    // salvar anúncio para loja
+    public void salvarAnuncioLoja(@NonNull Anuncio anuncio, List<byte[]> listaFotosRecuperadas){
+        salvarImgStorage.interarImg(anuncio, listaFotosRecuperadas);
+    }
+
 }

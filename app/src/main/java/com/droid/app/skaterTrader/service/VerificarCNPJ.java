@@ -1,28 +1,18 @@
 package com.droid.app.skaterTrader.service;
 
 import static com.droid.app.skaterTrader.helper.RemoveChars.removerCharacters;
-
-import android.os.Handler;
-import android.os.Looper;
-
 import androidx.annotation.NonNull;
 import com.droid.app.skaterTrader.model.ModelCnpj;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 public class VerificarCNPJ {
-
     private final String TOKEN = "f7fc0266-e337-4158-b957-4f01b9e8bfbc-b6aa315b-2629-41c2-9f00-ce227deb61a3";
     static Request request;
     static OkHttpClient client;
@@ -134,9 +124,7 @@ public class VerificarCNPJ {
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
-
             }
         }
     }
-
 }

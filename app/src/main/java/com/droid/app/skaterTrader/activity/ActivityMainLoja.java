@@ -262,6 +262,8 @@ public class ActivityMainLoja extends AppCompatActivity
             //loja.salvarImgLogoLoja(dadosImg);
             Glide.with(this).load(imgSelected).into(circleImageViewUser);
 
+            recreate();
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

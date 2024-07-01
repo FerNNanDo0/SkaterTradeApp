@@ -23,6 +23,7 @@ public class Anuncio implements Parcelable{
     private String cidade;
     private String titulo;
     private String valor;
+    private String DDD;
     private String phone;
     private String desc;
     private String estado;
@@ -47,6 +48,7 @@ public class Anuncio implements Parcelable{
         cidade = in.readString();
         titulo = in.readString();
         valor = in.readString();
+        DDD = in.readString();
         phone = in.readString();
         desc = in.readString();
         estado = in.readString();
@@ -60,6 +62,7 @@ public class Anuncio implements Parcelable{
         dest.writeString(cidade);
         dest.writeString(titulo);
         dest.writeString(valor);
+        dest.writeString(DDD);
         dest.writeString(phone);
         dest.writeString(desc);
         dest.writeString(estado);
@@ -105,7 +108,7 @@ public class Anuncio implements Parcelable{
                 .child(getIdAnuncio())
                 .setValue(this);
 
-        NotificationAnuncio.notification(context);
+        NotificationAnuncio.notification(context, getTitulo());
     }
 
     // remover anúncio
@@ -194,5 +197,13 @@ public class Anuncio implements Parcelable{
 
     public void setFotos(List<String> fotos) {
         this.fotos = fotos;
+    }
+
+    public void setDDD(String ddd) {
+        this.DDD = ddd;
+    }
+
+    public String getDDD(){
+        return DDD;
     }
 }

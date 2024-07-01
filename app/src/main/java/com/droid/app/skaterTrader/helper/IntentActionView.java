@@ -6,6 +6,8 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
+import com.droid.app.skaterTrader.R;
+
 public class IntentActionView {
 
     public static void browseTo(Activity activity){
@@ -26,7 +28,7 @@ public class IntentActionView {
         sendIntent.putExtra(Intent.EXTRA_TEXT, urlApp);
         sendIntent.setType("text/plain");
 
-        Intent shareIntent = Intent.createChooser(sendIntent, "Compartilhar App");
+        Intent shareIntent = Intent.createChooser(sendIntent, activity.getString(R.string.compartilhar_app));
         activity.startActivity(shareIntent);
     }
 }

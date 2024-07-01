@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.droid.app.skaterTrader.R;
 import com.droid.app.skaterTrader.activity.ActivityMain;
 import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
 import com.google.android.gms.tasks.Task;
@@ -87,7 +88,8 @@ public class User {
                     .addOnCompleteListener( (@NonNull Task<Void> task) -> {
                         if(!task.isSuccessful()){
                             Toast.makeText(context,
-                                    "Erro ao atualizar nome de perfil", Toast.LENGTH_SHORT).show();
+                                    context.getString(R.string.erro_ao_atualizar_nome_de_perfil),
+                                    Toast.LENGTH_SHORT).show();
                         }
                     });
             }
@@ -115,6 +117,7 @@ public class User {
 
                     // update img perfil
                     FirebaseRef.upDateImgPerfil(activity, urlImgStorage);
+
                 });
             });
         }catch (Exception e){

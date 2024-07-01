@@ -86,7 +86,7 @@
                     android:ems="10"
                     android:gravity="center"
                     android:maxLength="18"
-                    android:hint="CPF ou CNPJ"
+                    android:hint="@string/cpf_ou_cnpj"
                     android:inputType="number"
                     android:textColor="@color/dark2"
                     android:textSize="18sp" />
@@ -98,7 +98,7 @@
                     android:layout_marginTop="5dp"
                     android:ems="10"
                     android:gravity="center"
-                    android:hint="E-mail da loja"
+                    android:hint="@string/e_mail_da_loja"
                     android:background="@drawable/bg_edit_text"
                     android:inputType="textWebEmailAddress"
                     android:textColor="@color/dark2"

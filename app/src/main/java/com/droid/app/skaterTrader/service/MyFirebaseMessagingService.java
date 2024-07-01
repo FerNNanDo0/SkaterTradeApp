@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.droid.app.skaterTrader.R;
+import com.droid.app.skaterTrader.activity.ActivityMain;
 import com.droid.app.skaterTrader.model.Loja;
 import com.droid.app.skaterTrader.model.User;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -61,13 +62,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     .setAutoCancel(true)
                     .setContentIntent( pendingIntent );
         }else{
+            Intent intent = new Intent(this, ActivityMain.class);
+            PendingIntent pendingIntent = PendingIntent
+                    .getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+
             // criar notificação
             notification = new NotificationCompat.Builder(this, canal)
                     .setContentTitle( titulo )
                     .setContentText( msg )
                     .setSmallIcon( R.drawable.ic_notification_ )
                     .setSound( uriSom )
-                    .setAutoCancel(true);
+                    .setAutoCancel(true)
+                    .setContentIntent( pendingIntent );
         }
 
 
@@ -97,5 +103,4 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Log.i("TOKEN >", token );
     }
-
 }

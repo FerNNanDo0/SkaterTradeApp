@@ -6,9 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.graphics.drawable.ColorDrawable;
-import android.location.Location;
 import android.os.Bundle;
-import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,17 +16,11 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 import com.droid.app.skaterTrader.R;
 import com.droid.app.skaterTrader.databinding.ActivityMapaPicosSkateBinding;
-import com.droid.app.skaterTrader.firebaseRefs.FirebaseRef;
+
 import com.droid.app.skaterTrader.helper.Informe;
+import com.droid.app.skaterTrader.service.LocationService;
 import com.droid.app.skaterTrader.model.MarkerPico;
 import com.droid.app.skaterTrader.viewModel.ViewModelMapaPicos;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -38,25 +30,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 public class MapaPicosSkate extends AppCompatActivity
         implements OnMapReadyCallback {
     GoogleMap mMap;
-    FusedLocationProviderClient mFusedLocationClient;
-    LocationSettingsRequest mLocationSettingsRequest;
-    LocationRequest mLocationRequest;
-    LocationCallback mLocationCallback;
-    Marker markerPico, markerMeuLocal;
+    Marker markerPico;
     EditText EditTitulo;
     LatLng myLocation;
-    int codeL = 0;
     int drawableMarker;
     RadioButton radioButton1, radioButton2;
-
+    LocationService location;
     ActivityMapaPicosSkateBinding binding;
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -72,6 +57,8 @@ public class MapaPicosSkate extends AppCompatActivity
 
         //config toolbar
         configActionBar();
+
+        location = new LocationService(this, null, null);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -99,10 +86,12 @@ public class MapaPicosSkate extends AppCompatActivity
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
+
         // pegar localização
-        getLastLocation();
+        myLocation = location.locationUpdate(mMap);
+
         mMap.clear();
-        mMap.setOnMapClickListener(this::configurarPicoEscolhido);
+        mMap.setOnMapLongClickListener(this::configurarPicoEscolhido);
     }
     private void configurarPicoEscolhido(LatLng latLng) {
         View view = getLayoutInflater().inflate(R.layout.view_add_marker_alert, null);
@@ -113,11 +102,11 @@ public class MapaPicosSkate extends AppCompatActivity
         radioButton2 =  view.findViewById(R.id.radioButton2);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Marcar pico neste local ?");
+        builder.setTitle(getString(R.string.marcar_pico_neste_local));
         builder.setCancelable(false);
         builder.setView(view);
-        builder.setPositiveButton("Marcar", null);
-        builder.setNegativeButton("Cancelar", (dialog, wish) -> dialog.cancel());
+        builder.setPositiveButton(getString(R.string.marcar), null);
+        builder.setNegativeButton(getString(R.string.cancelar), (dialog, wish) -> dialog.cancel());
 
         final AlertDialog mDialog = builder.create();
         mDialog.setOnShowListener( dialog -> {
@@ -127,8 +116,8 @@ public class MapaPicosSkate extends AppCompatActivity
 
                 if(EditTitulo.getText().toString().isEmpty()){
                     Toast.makeText(
-                            getApplicationContext(), "Defina um nome pro pico", Toast.LENGTH_SHORT).show();
-                    EditTitulo.setError("Campo obrigatório!");
+                            getApplicationContext(), getString(R.string.defina_um_nome_pro_pico), Toast.LENGTH_SHORT).show();
+                    EditTitulo.setError(getString(R.string.campo_obrigat_rio));
                     EditTitulo.setFocusable(true);
                     EditTitulo.requestFocus();
                 }else{
@@ -149,7 +138,7 @@ public class MapaPicosSkate extends AppCompatActivity
                         dialog.dismiss();
 
                     }else{
-                        Toast.makeText(this, "Escolha o status do pico", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.escolha_o_status_do_pico), Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -160,18 +149,20 @@ public class MapaPicosSkate extends AppCompatActivity
     // btn floating
     public void focusMyLocation(View view) {
         if ( myLocation != null ){
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
         }else{
-            locationUpdate();
+            //locationUpdate();
+            myLocation = location.locationUpdate(mMap);
         }
     }
+
     public void infoMarkerStatusPico(){
         View viewInfoMarker = getLayoutInflater().inflate(R.layout.info_status_marker, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Info: Status do marcador");
+        builder.setTitle(getString(R.string.info_status_do_marcador));
         builder.setCancelable(true);
         builder.setView(viewInfoMarker);
-        builder.setNegativeButton("Entendi", (dialog, wish) ->
+        builder.setNegativeButton(getString(R.string.entendi), (dialog, wish) ->
             dialog.cancel()
         );
         AlertDialog dialog = builder.create();
@@ -233,74 +224,6 @@ public class MapaPicosSkate extends AppCompatActivity
         }
     }
 
-
-    // getLastLocation
-    @SuppressWarnings("MissingPermission")
-    public void getLastLocation() {
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        mFusedLocationClient.getLastLocation()
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful() && task.getResult() != null) {
-
-                        //obtém a última localização conhecida
-                        Location mLastLocation = task.getResult();
-
-                        // definir a Lati e Longi para marcar o local
-                        double lati = mLastLocation.getLatitude();
-                        double longi = mLastLocation.getLongitude();
-                        myLocation = new LatLng(lati, longi);
-                        addMyMarker(myLocation);
-                        locationUpdate();
-                    }
-                });
-    }
-    public void locationUpdate() {
-    // LocationResquest com as definições requeridas
-        //noinspection deprecation
-        mLocationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(1000)        // 1 seconds, in milliseconds
-                .setFastestInterval(1000); // 1 second, in milliseconds
-
-        // Construção dum LocationSettingsRequest com as definições requeridas
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-        builder.addLocationRequest(mLocationRequest);
-        mLocationSettingsRequest = builder.build();
-
-        // Callback a ser chamado quando houver alterações na localização
-        mLocationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                super.onLocationResult(locationResult);
-
-                Location currentLocation = locationResult.getLastLocation();
-                assert currentLocation != null;
-
-                // definir a Lati e Longi para marcar o local
-                myLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-                addMyMarker(myLocation);
-                startLocationUpdates();
-            }
-        };
-    }
-    //Inicia o processo de pedido de actualizações de localização
-    public void startLocationUpdates() {
-        SettingsClient mSettingsClient = LocationServices.getSettingsClient(this);
-        // Verifica se as definições do dispositivo estão configuradas para satisfazer
-        // as requeridas pelo LocationSettingsRequest.
-        mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
-                .addOnSuccessListener(locationSettingsResponse -> {
-                    // Todas as definições do dispositivo estão configuradas para satisfazer as requeridas.
-                    // Inicia o pedido de actualizações de localização
-
-                    //noinspection MissingPermission
-                    mFusedLocationClient.requestLocationUpdates(mLocationRequest,
-                            mLocationCallback, Looper.myLooper());
-                })
-                .addOnFailureListener(e -> {
-
-                });
-    }
     private void addMarkerPico(String nome, LatLng latLng, int drawableMarker, String corMarker){
         // Adicione um marcador onde vc clicar
         markerPico = mMap.addMarker(
@@ -314,20 +237,7 @@ public class MapaPicosSkate extends AppCompatActivity
         // salvar no db
         salvarPicoNoDB(latLng, nome, corMarker);
     }
-    private void addMyMarker(LatLng myLocation){
-        if (markerMeuLocal != null) {
-            markerMeuLocal.remove();
-        }
-        markerMeuLocal = mMap.addMarker(
-                new MarkerOptions().position(myLocation)
-                        .title("Seu Local")
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_skate35))
-        );
-        if (codeL == 0) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
-            codeL = 1;
-        }
-    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_info, menu);

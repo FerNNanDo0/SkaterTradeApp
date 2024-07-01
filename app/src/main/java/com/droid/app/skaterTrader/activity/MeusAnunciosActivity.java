@@ -20,7 +20,6 @@ import com.droid.app.skaterTrader.R;
 import com.droid.app.skaterTrader.adapter.AdapterAnuncios;
 import com.droid.app.skaterTrader.viewModel.ViewModelAnuncios;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import java.util.Collections;
 
 import dmax.dialog.SpotsDialog;
 @SuppressLint("NotifyDataSetChanged")
@@ -37,12 +36,6 @@ public class MeusAnunciosActivity extends AppCompatActivity {
     ViewModelAnuncios viewModel;
     ActivityAnunciosBinding binding;
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // busca anuncios do usuario
-        recuperarAnunciosUser();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,11 +48,13 @@ public class MeusAnunciosActivity extends AppCompatActivity {
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getColor(R.color.purple_500)));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setElevation(0);
-        getSupportActionBar().setTitle("Meus anúncios");
+        getSupportActionBar().setTitle(getString(R.string.meus_an_ncios));
 
         iniciarComponentes();
         clickBtnFloat();
 
+        // busca anuncios do usuario
+        recuperarAnunciosUser();
     }
 
     // iniciar componentes
@@ -75,12 +70,15 @@ public class MeusAnunciosActivity extends AppCompatActivity {
     }
 
     private void recuperarAnunciosUser() {
+        // --------> ViewModel
+        viewModel = new ViewModelProvider(this).get(ViewModelAnuncios.class);
+
         observerViewModel();
+
+        viewModel.recuperarAnunciosUser(this);
     }
 
     private void observerViewModel() {
-        // --------> ViewModel
-        viewModel = new ViewModelProvider(this).get(ViewModelAnuncios.class);
 
         // observe msg carregando anuncios
         viewModel.getShowMsg().observe( this, this::alertDialogCustom );
@@ -99,7 +97,6 @@ public class MeusAnunciosActivity extends AppCompatActivity {
 
                         adapterAnuncios = new AdapterAnuncios(anuncios,this);
                         recyclerViewAnuncios.setAdapter( adapterAnuncios );
-                        alertDialog.dismiss();
                         adapterAnuncios.notifyDataSetChanged();
 
                         clickRecyclerView = new ClickRecyclerView(
@@ -108,35 +105,33 @@ public class MeusAnunciosActivity extends AppCompatActivity {
                         );
                         clickRecyclerView.clickRecyclerView();
 
-
-                        informeDicaUser();
                     }
                 }
                 alertDialog.dismiss();
+
+                informeDicaUser();
         });
 
         // observe msg erro ao carregar anuncios
         viewModel.getErroMsg().observe(this,
             msgErro -> {
             alertDialog.dismiss();
-            alertInformation("Erro!", msgErro, false);
+            alertInformation(getString(R.string.erro2), msgErro, false);
         });
 
-        viewModel.recuperarAnunciosUser();
     }
 
     private void informeDicaUser(){
         if(Informe.recuperarCodePermission(getApplicationContext()).equals("0")){
-            alertInformation("Dica!",
-                    "Para excluir anúncios basta pressionar o anúncio que deseja excluir e comfirmar.\n" +
-                            "Para editar o anúncio basta clicar nele",
+            alertInformation(getString(R.string.dica),
+                    getString(R.string.para_editar_ou_excluir_o_an_ncio_basta_clicar_nele),
                     true);
         }
     }
 
     private void clickBtnFloat(){
         floatBtn = binding.floatingActionButton;//findViewById(R.id.floatingActionButton);
-        floatBtn.setOnClickListener(v -> startActivity( new Intent(getApplicationContext(), CadastrarAnunciosActivity.class)));
+        floatBtn.setOnClickListener(v -> startActivity( new Intent(getApplicationContext(), CadastrarOuEditarAnunciosActivity.class)));
     }
     public void alertDialogCustom(String txt) {
         alertDialog = new SpotsDialog.Builder()
@@ -151,7 +146,7 @@ public class MeusAnunciosActivity extends AppCompatActivity {
         builder.setTitle(titulo);
         builder.setMessage(msg);
         builder.setCancelable(false);
-        builder.setPositiveButton("Ok", (dialog, which) -> {
+        builder.setPositiveButton(getString(R.string.ok), (dialog, which) -> {
             if(aBoolean){
                 Informe.salvarCodePermission("1", getApplicationContext());
             }

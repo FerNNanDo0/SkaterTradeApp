@@ -21,21 +21,24 @@ import com.droid.app.skaterTrader.R;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 public class NotificationAnuncio extends AppCompatActivity {
-    public static void notification(@NonNull Context context) {
-        FirebaseMessaging.getInstance().subscribeToTopic("Novo anúncio");
+
+    static NotificationManagerCompat notificationManager;
+    static NotificationCompat.Builder notification;
+
+    public static void notification(@NonNull Context context, String titulo) {
 
         // criar notificação
         String canal = context.getString(R.string.default_notification_channel_id);
         Uri uriSom = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(context, canal)
-                .setContentTitle("Novo anúncio.")
-                .setContentText("Um novo anúncio foi publicado.")
+        notification = new NotificationCompat.Builder(context, canal)
+                .setContentTitle(context.getString(R.string.novo_an_ncio))
+                .setContentText(context.getString(R.string.um_novo_an_ncio_foi_publicado) + " " + titulo)
                 .setSmallIcon(R.drawable.ic_notification_)
                 .setSound(uriSom)
                 .setAutoCancel(true);
 
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager = NotificationManagerCompat.from(context);
 
         if (ActivityCompat.checkSelfPermission(context,
                 Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -64,6 +67,5 @@ public class NotificationAnuncio extends AppCompatActivity {
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 // FCM SDK (and your app) can post notifications.
                 // Inform user that that your app will not show notifications.
-
             });
 }

@@ -12,8 +12,8 @@ android {
         applicationId "com.droid.app.skaterTrader"
         minSdk 24
         targetSdk 34
-        versionCode 21
-        versionName "21.0"
+        versionCode 24
+        versionName "24.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -39,37 +39,39 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'] )
 
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     //implementation 'androidx.annotation:annotation:1.6.0'
     implementation 'com.android.support:support-annotations:28.0.0'
-    implementation 'com.google.android.gms:play-services-maps:18.2.0'
-    implementation 'com.google.android.gms:play-services-location:21.1.0'
+    implementation 'com.google.android.gms:play-services-maps:19.0.0'
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
 
 
     //implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.12'
 
     // firebase config library
-    implementation platform('com.google.firebase:firebase-bom:32.7.2')
+    implementation platform('com.google.firebase:firebase-bom:32.2.2')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.firebase:firebase-storage'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-messaging'
 
-    implementation('com.google.android.gms:play-services-auth:20.0.0')
-    implementation 'com.firebaseui:firebase-ui-auth:8.0.2'
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
+
 
     // google play core
+    //noinspection RiskyLibrary
     implementation 'com.google.android.play:core:1.10.3'
     //implementation "androidx.core:core:2.2.0"
 
     // google admob
-    implementation 'com.google.android.gms:play-services-ads:22.6.0'
+    implementation 'com.google.android.gms:play-services-ads:23.1.0'
     implementation project(':nativetemplate')
 
     // splashscreen

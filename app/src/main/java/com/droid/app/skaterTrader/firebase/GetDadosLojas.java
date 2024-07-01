@@ -19,10 +19,12 @@ public class GetDadosLojas {
     Loja loja;
 
 
-    //add viewmodel
+    public void removeEventListener(){
+        lojaRef.removeEventListener(eventListener);
+    }
+
     public void getDadosDb(ViewModelConfigDadosLoja viewModel) {
         loja = new Loja();
-
 
         //obter dados no Firebase
         database = FirebaseRef.getDatabase();
